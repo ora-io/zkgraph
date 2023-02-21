@@ -1,0 +1,14 @@
+{
+  "name": "zkgraph",
+  "scripts": {
+    "test": "asc demo-uniswap-v2-idx-zkgraph/mapping.ts -o build/mapping.wasm --bindings esm && node src/test.js",
+    "compile": "asc main.ts --lib ./demo-uniswap-v2-idx-zkgraph -t build/main.wat -O --noAssert -o build/main.wasm --disable bulk-memory --use abort=sdk/zkwasm/abort --target release"
+  },
+  "type": "module",
+  "dependencies": {
+    "ethers": "^5.7.2"
+  },
+  "devDependencies": {
+    "assemblyscript": "^0.27.0"
+  }
+}

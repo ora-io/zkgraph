@@ -2,7 +2,8 @@
 
 ## Compile
 ```bash
-asc main.ts --lib ./demo-uniswap-v2-idx-zkgraph -t main.wat -O --noAssert -o main.wasm --disable bulk-memory --use abort=sdk/zkwasm/abort --target release
+npm install
+npm run compile
 ```
 
 ## Notice
