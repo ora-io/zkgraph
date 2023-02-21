@@ -1,0 +1,17 @@
+specVersion: 0.0.2
+description: Indexing the Real Time ETH Price in USDC based on the UniswapV2 USDC-ETH Pool.
+repository: https://github.com/hyperoracle/zkgraph
+dataSources:
+  - kind: ethereum/contract
+    network: mainnet
+    source:
+      address: '0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc'
+      startBlock: 16317568
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.1
+      language: wasm/assemblyscript
+      file: ./mapping.ts
+      eventHandlers:
+        - event: Sync(uint112,uint112)
+          handler: handleEvent
