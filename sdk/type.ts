@@ -51,6 +51,16 @@ export class Bytes extends Uint8Array {
         return dst
     }
 
+    toU32(): u32 {
+        assert(this.length <= 4);
+        var rst: u32 = 0;
+        for (var i = 0; i < min(4, this.length); i++) {
+            rst = rst << 8;
+            rst += this[i];
+        }
+        return rst;
+    }
+
     @operator('==')
     __opeq(right: Bytes): bool {
         if (this.length != right.length) {
