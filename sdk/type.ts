@@ -39,7 +39,8 @@ export class Bytes extends Uint8Array {
 
     slice(start: i32, end: i32): Bytes {
         if (start < 0 || end < 0 || start > this.length || end > this.length || start >= end) {
-            throw new Error("Invalid slice parameters");
+            return Bytes.new(0);
+            // throw new Error("Invalid slice parameters");
         }
 
         const len = end - start;
