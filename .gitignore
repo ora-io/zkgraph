@@ -106,3 +106,5 @@ dist
 build
 *.wasm
 *.wat
+
+.DS_Store
