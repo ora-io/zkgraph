@@ -29,7 +29,7 @@ export function read_bytes_from_u64_to_dst(dst: Bytes, byte_length: i32): Bytes 
         }
         else
         {
-            // less then 16 bytes on demand
+            // less then 8 bytes on demand
             var u64_cache = wasm_public_input();
             var u8_cache: i64 = u64_cache;
             for (var j:i32 = i * 8; j < byte_length; j++)

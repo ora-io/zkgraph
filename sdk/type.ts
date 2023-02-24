@@ -77,5 +77,3 @@ export class Bytes extends Uint8Array {
     }
 
 }
-
-export function abort(a: usize, b: usize, c: u32, d: u32): void { }
