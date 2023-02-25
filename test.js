@@ -1,6 +1,35 @@
 import { providers, utils } from "ethers";
+import { handleEvent } from "./build/module.js";
 
-import { handleEvent } from "../build/mapping.js";
+function hexToUint8Array(hex) {
+  if (hex.startsWith("0x")) {
+    hex = hex.substring(2);
+  }
+  let arr = [];
+  for (let i = 0, l = hex.length; i < l; i += 2) {
+    arr.push(parseInt(hex.substr(i, 2), 16));
+  }
+  return new Uint8Array(arr);
+}
+
+function uint8array2str(byteArray) {
+  const encoder = new TextEncoder();
+  const str = encoder.encode(byteArray);
+  const decoder = new TextDecoder();
+  return decoder.decode(str);
+}
+
+function callWasm(eventSig, topic1, topic2, topic3, data) {
+  let output = handleEvent(
+    hexToUint8Array(eventSig),
+    hexToUint8Array(topic1),
+    hexToUint8Array(topic2),
+    hexToUint8Array(topic3),
+    hexToUint8Array(data)
+  );
+
+  return uint8array2str(output);
+}
 
 const provider = new providers.JsonRpcProvider("https://eth.llamarpc.com");
 
@@ -20,43 +49,16 @@ async function geLastLog(provider, address, txhash, eventName) {
   return lastLog;
 }
 
-function hexToUint8Array(hex) {
-  if (hex.startsWith("0x")) {
-    hex = hex.substring(2);
-  }
-  let arr = [];
-  for (let i = 0, l = hex.length; i < l; i += 2) {
-    arr.push(parseInt(hex.substr(i, 2), 16));
-  }
-  return new Uint8Array(arr);
-}
-
-function uint8array2str(byteArray) {
-  return Buffer.from(byteArray).toString("hex");
-}
-
-function callWasm(eventSig, topic1, topic2, topic3, data) {
-  let output = handleEvent(
-    hexToUint8Array(eventSig),
-    hexToUint8Array(topic1),
-    hexToUint8Array(topic2),
-    hexToUint8Array(topic3),
-    hexToUint8Array(data)
-  );
-
-  return uint8array2str(output);
-}
-
-function generateProof(eventSig, topic1, topic2, topic3, data, output) {
+function generateInput(eventSig, topic1, topic2, topic3, data, output) {
   let dataLength = data.length;
   if (data.startsWith("0x")) {
     dataLength = dataLength - 2;
   }
   dataLength = dataLength / 2;
-  let proof = `${eventSig}:bytes-packed ${topic1}:bytes-packed ${topic2}:bytes-packed ${topic3}:bytes-packed 0x${dataLength.toString(
+  let publicinput = `${eventSig}:bytes-packed ${topic1}:bytes-packed ${topic2}:bytes-packed ${topic3}:bytes-packed 0x${dataLength.toString(
     16
   )}:i64 ${data}:bytes-packed ${output}:bytes-packed`;
-  return proof;
+  return publicinput;
 }
 
 let log = await geLastLog(
@@ -66,15 +68,15 @@ let log = await geLastLog(
   "Sync(uint112,uint112)"
 );
 
+console.log(log);
+
 let emptyValue = "0x" + "0".repeat(64);
 let [eventSig, topic1 = emptyValue, topic2 = emptyValue, topic3 = emptyValue] =
   log.topics;
 let data = log.data || emptyValue;
-// let data =
-//   "0x000000000000000000000000000000000000000000000000000000000000001c000000000000000000000000000000000000000000000000000000000000001c";
 
 let output = callWasm(eventSig, topic1, topic2, topic3, data);
 console.log(output);
 
-let proof = generateProof(eventSig, topic1, topic2, topic3, data, output);
+let proof = generateInput(eventSig, topic1, topic2, topic3, data, output);
 console.log(proof);

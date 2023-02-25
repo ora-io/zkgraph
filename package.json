@@ -1,14 +1,14 @@
 {
   "name": "zkgraph",
   "scripts": {
-    "test": "asc demo.ts -O --noAssert -o build/demo.wasm --bindings esm && node src/test.js",
+    "dev": "vite",
+    "compile:demo": "asc demo.ts -O --noAssert -o build/module.wasm --exportRuntime --disable bulk-memory --use abort=demo/abort --target release --runtime stub",
     "compile": "asc main.ts --lib ./demo-uniswap-v2-idx-zkgraph -t build/main.wat -O --noAssert -o build/main.wasm --disable bulk-memory --use abort=sdk/zkwasm/abort --target release --runtime stub"
   },
   "type": "module",
   "dependencies": {
-    "ethers": "^5.7.2"
-  },
-  "devDependencies": {
-    "assemblyscript": "^0.27.0"
+    "assemblyscript": "^0.27.0",
+    "ethers": "^5.7.2",
+    "vite": "^4.1.4"
   }
 }
