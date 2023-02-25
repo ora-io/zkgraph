@@ -66,10 +66,10 @@ let log = await geLastLog(
   "Sync(uint112,uint112)"
 );
 
-let emptyTopic = "0x" + "0".repeat(64);
-let [eventSig, topic1 = emptyTopic, topic2 = emptyTopic, topic3 = emptyTopic] =
+let emptyValue = "0x" + "0".repeat(64);
+let [eventSig, topic1 = emptyValue, topic2 = emptyValue, topic3 = emptyValue] =
   log.topics;
-let data = log.data || "";
+let data = log.data || emptyValue;
 // let data =
 //   "0x000000000000000000000000000000000000000000000000000000000000001c000000000000000000000000000000000000000000000000000000000000001c";
 
