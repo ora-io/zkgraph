@@ -1,10 +1,8 @@
 import { providers, utils } from "ethers";
 
-import { handleEvent } from '../build/mapping.js';
+import { handleEvent } from "../build/mapping.js";
 
-const provider = new providers.JsonRpcProvider(
-  "https://eth.llamarpc.com"
-);
+const provider = new providers.JsonRpcProvider("https://eth.llamarpc.com");
 
 async function geLastLog(provider, txhash, eventName) {
   let lastLog = null;
@@ -33,21 +31,48 @@ function hexToUint8Array(hex) {
   return new Uint8Array(arr);
 }
 
+function uint8array2str(byteArray) {
+  return Buffer.from(byteArray).toString("hex");
+}
+
+function callWasm(eventSig, topic1, topic2, topic3, data) {
+  let output = handleEvent(
+    hexToUint8Array(eventSig),
+    hexToUint8Array(topic1),
+    hexToUint8Array(topic2),
+    hexToUint8Array(topic3),
+    hexToUint8Array(data)
+  );
+
+  return uint8array2str(output);
+}
+
+function generateProof(eventSig, topic1, topic2, topic3, data, output) {
+  let dataLength = data.length;
+  if (data.startsWith("0x")) {
+    dataLength = dataLength - 2;
+  }
+  dataLength = dataLength / 2;
+  let proof = `${eventSig}:bytes-packed ${topic1}:bytes-packed ${topic2}:bytes-packed ${topic3}:bytes-packed 0x${dataLength.toString(
+    16
+  )}:i64 ${data}:bytes-packed ${output}:bytes-packed`;
+  return proof;
+}
+
 let log = await geLastLog(
   provider,
   "0x9825d7590e5c31b6cd3fd4e12a4afff309b64d6a9aedead86ae80997ac6aaea6",
   "Sync(uint112,uint112)"
 );
 
-let [eventSig, topic1 = "", topic2 = "", topic3 = ""] = log.topics;
+let emptyTopic = "0x" + "0".repeat(64);
+let [eventSig, topic1 = emptyTopic, topic2 = emptyTopic, topic3 = emptyTopic] = log.topics;
 let data = log.data || "";
-console.log(data)
+// let data =
+//   "0x000000000000000000000000000000000000000000000000000000000000001c000000000000000000000000000000000000000000000000000000000000001c";
 
-let res = handleEvent(
-  hexToUint8Array(eventSig),
-  hexToUint8Array(topic1),
-  hexToUint8Array(topic2),
-  hexToUint8Array(topic3),
-  hexToUint8Array(data)
-);
-console.log(res);
+let output = callWasm(eventSig, topic1, topic2, topic3, data);
+console.log(output);
+
+let proof = generateProof(eventSig, topic1, topic2, topic3, data, output);
+console.log(proof);
