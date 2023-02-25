@@ -4,14 +4,14 @@ import { handleEvent } from "../build/mapping.js";
 
 const provider = new providers.JsonRpcProvider("https://eth.llamarpc.com");
 
-async function geLastLog(provider, txhash, eventName) {
+async function geLastLog(provider, address, txhash, eventName) {
   let lastLog = null;
   let expectTopic = utils.id(eventName);
   const receipt = await provider.getTransactionReceipt(txhash);
   for (let j = receipt.logs.length - 1; j >= 0; j--) {
     const log = receipt.logs[j];
     const logTopic = log.topics[0];
-    if (logTopic === expectTopic) {
+    if (logTopic === expectTopic && log.address == address) {
       lastLog = log;
       break;
     }
@@ -61,12 +61,14 @@ function generateProof(eventSig, topic1, topic2, topic3, data, output) {
 
 let log = await geLastLog(
   provider,
+  "0x8c09571bc1932fEb1367853bA26e1f5Dc9e1249b",
   "0x9825d7590e5c31b6cd3fd4e12a4afff309b64d6a9aedead86ae80997ac6aaea6",
   "Sync(uint112,uint112)"
 );
 
 let emptyTopic = "0x" + "0".repeat(64);
-let [eventSig, topic1 = emptyTopic, topic2 = emptyTopic, topic3 = emptyTopic] = log.topics;
+let [eventSig, topic1 = emptyTopic, topic2 = emptyTopic, topic3 = emptyTopic] =
+  log.topics;
 let data = log.data || "";
 // let data =
 //   "0x000000000000000000000000000000000000000000000000000000000000001c000000000000000000000000000000000000000000000000000000000000001c";
