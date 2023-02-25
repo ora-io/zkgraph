@@ -1,5 +1,5 @@
 import { providers, utils } from "ethers";
-import { handleEvent } from "./build/module.js";
+import { instantiate } from "./build/module.js";
 
 function hexToUint8Array(hex) {
   if (hex.startsWith("0x")) {
@@ -19,8 +19,12 @@ function uint8array2str(byteArray) {
   return decoder.decode(str);
 }
 
-function callWasm(eventSig, topic1, topic2, topic3, data) {
-  let output = handleEvent(
+async function callWasm(eventSig, topic1, topic2, topic3, data) {
+  const exports = await instantiate(
+    await WebAssembly.compileStreaming(fetch("./build/module.wasm")),
+    {}
+  );
+  let output = exports.handleEvent(
     hexToUint8Array(eventSig),
     hexToUint8Array(topic1),
     hexToUint8Array(topic2),
@@ -75,7 +79,7 @@ let [eventSig, topic1 = emptyValue, topic2 = emptyValue, topic3 = emptyValue] =
   log.topics;
 let data = log.data || emptyValue;
 
-let output = callWasm(eventSig, topic1, topic2, topic3, data);
+let output = await callWasm(eventSig, topic1, topic2, topic3, data);
 console.log(output);
 
 let proof = generateInput(eventSig, topic1, topic2, topic3, data, output);
