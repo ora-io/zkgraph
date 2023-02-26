@@ -59,9 +59,16 @@ function generateInput(eventSig, topic1, topic2, topic3, data, output) {
     dataLength = dataLength - 2;
   }
   dataLength = dataLength / 2;
-  let publicinput = `${eventSig}:bytes-packed ${topic1}:bytes-packed ${topic2}:bytes-packed ${topic3}:bytes-packed 0x${dataLength.toString(
-    16
-  )}:i64 ${data}:bytes-packed ${output}:bytes-packed`;
+
+  let publicinput = new Array(7);
+  publicinput[0] = `${eventSig}:bytes-packed`;
+  publicinput[1] = `${topic1}:bytes-packed`;
+  publicinput[2] = `${topic2}:bytes-packed`;
+  publicinput[3] = `${topic3}:bytes-packed`;
+  publicinput[4] = `0x${dataLength.toString(16)}:i64`;
+  publicinput[5] = `${data}:bytes-packed`;
+  publicinput[6] = `${output}:bytes-packed`;
+
   return publicinput;
 }
 
