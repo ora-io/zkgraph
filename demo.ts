@@ -127,12 +127,12 @@ export function read_bytes_from_u64_to_dst(dst: Bytes, byte_length: i32): Bytes 
     {
         if (i * 8 + 8 < byte_length)
         {
-            dst64[i] = wasm_public_input();
+            dst64[i] = wasm_private_input();
         }
         else
         {
             // less then 8 bytes on demand
-            var u64_cache = wasm_public_input();
+            var u64_cache = wasm_private_input();
             var u8_cache: i64 = u64_cache;
             for (var j:i32 = i * 8; j < byte_length; j++)
             {
@@ -152,7 +152,7 @@ export function read_bytes_from_u64(byte_length: i32): Bytes {
 }
 
 export function read_len_then_bytes(): Bytes {
-    var blen = wasm_public_input() as i32;
+    var blen = wasm_private_input() as i32;
     var bytes = read_bytes_from_u64(blen);
     return bytes;
 }
