@@ -111,17 +111,24 @@ async function testverify() {
 
   Web3EthContract.setProvider("https://rpc.ankr.com/eth_goerli");
   let contract = new Web3EthContract(contract_abi.abi, address);
-  let result = await contract.methods
-    .verify(aggregate_proof, instances, aux, [args])
-    .call();
-  console.log("verification result:", result.toString());
+  try {
+    let result = await contract.methods
+      .verify(aggregate_proof, instances, aux, [args])
+      .call();
+  } catch (error) {
+    console.log(error.message);
+    console.log("verify failed");
+    return;
+  }
 
-//   const provider = new providers.JsonRpcProvider(
-//     "https://rpc.ankr.com/eth_goerli"
-//   );
-//   const verify_contract = new Contract(address, contract_abi.abi, provider);
-//   const result = await verify_contract.verify(aggregate_proof, instances, aux, [args]);
-//   console.log(result);
+  console.log("verify success");
+
+  //   const provider = new providers.JsonRpcProvider(
+  //     "https://rpc.ankr.com/eth_goerli"
+  //   );
+  //   const verify_contract = new Contract(address, contract_abi.abi, provider);
+  //   const result = await verify_contract.verify(aggregate_proof, instances, aux, [args]);
+  //   console.log(result);
 }
 
 await testverify();
