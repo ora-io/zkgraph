@@ -24,7 +24,6 @@ function bytesToBN(data) {
   return bns;
 }
 
-
 // https://github.com/zkcrossteam/g1024/blob/916c489fefa65ce8d4ee1a387f2bd4a3dcca8337/src/data/image.ts#L95
 function parseArgs(raw) {
   let parsedInputs = new Array();
@@ -90,16 +89,14 @@ const contract_abi = {
 };
 
 async function testverify() {
-  let taskID = "63fb4995e73963fcd44c8cc2";
+  let taskID = "63fc46fde73963fcd44c936f";
   let tasks = await zkwasmTaskHelper.loadTasks({ id: taskID });
   let task = tasks[0];
-  console.log(task);
 
   let aggregate_proof = bytesToBN(task.proof);
   let instances = bytesToBN(task.instances);
   let aux = bytesToBN(task.aux);
   let image = await zkwasmImageHelper.queryImage(task.md5);
-  console.log(image);
   if (image.deployment.length == 0) {
     console.log("contract not deployed");
   }
@@ -108,8 +105,9 @@ async function testverify() {
   console.log(address);
 
   let args = parseArgs(task.public_inputs).map((x) => x.toString(10));
-  console.log("args are:", args);
-  console.log(aggregate_proof, instances, aux);
+  if (args.length == 0) {
+    args = [0];
+  }
 
   Web3EthContract.setProvider("https://rpc.ankr.com/eth_goerli");
   let contract = new Web3EthContract(contract_abi.abi, address);
