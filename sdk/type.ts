@@ -39,8 +39,8 @@ export class Bytes extends Uint8Array {
         return changetype<Bytes>(_bytes_ptr);
     }
 
-    static to_rawarr_ptr(_bytes_ptr:usize): usize{
-        return PtrDeref.read(_bytes_ptr);
+    to_rawarr_ptr(): usize{
+        return PtrDeref.read(changetype<usize>(this));
     }
 
     fill(_val: u8 = 0): void {
