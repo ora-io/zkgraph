@@ -16,13 +16,6 @@ class PtrDeref {
  */
 export class Bytes extends Uint8Array {
     // clean/unsafe version of new Array<u8>(_len)
-    static from_rawarr(_arr_heap_ptr:usize, _len:i32): Bytes{
-        var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
-        PtrDeref.write(_bytes_ptr, _arr_heap_ptr);
-        PtrDeref.write(_bytes_ptr + 4, _arr_heap_ptr);
-        PtrDeref.write(_bytes_ptr + 8, _len);
-        return changetype<Bytes>(_bytes_ptr);
-    }
     static new(_len: i32): Bytes {
         // alloc Array<u8> mem
         var _bytes_ptr = heap.alloc(12); // offsetof<B>() == 12
@@ -37,6 +30,19 @@ export class Bytes extends Uint8Array {
         PtrDeref.write(_bytes_ptr + 8, _len);
         return _bytes;
     }
+
+    static from_rawarr(_arr_heap_ptr:usize, _len:i32): Bytes{
+        var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
+        PtrDeref.write(_bytes_ptr, _arr_heap_ptr);
+        PtrDeref.write(_bytes_ptr + 4, _arr_heap_ptr);
+        PtrDeref.write(_bytes_ptr + 8, _len);
+        return changetype<Bytes>(_bytes_ptr);
+    }
+
+    static to_rawarr_ptr(_bytes_ptr:usize): usize{
+        return PtrDeref.read(_bytes_ptr);
+    }
+
     fill(_val: u8 = 0): void {
         for (var i: i32 = 0; i < this.length; i++) {
             this[i] = _val;
