@@ -38,7 +38,7 @@ export class Bytes extends Uint8Array {
         return _bytes;
     }
 
-    static from_rawarr(_arr_heap_ptr:usize, _len:i32): Bytes{
+    static from_rawarr_ptr(_arr_heap_ptr:usize, _len:i32): Bytes{
         // var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
         var _bytes_ptr = _static_alloc(12)
         PtrDeref.write(_bytes_ptr, _arr_heap_ptr);
