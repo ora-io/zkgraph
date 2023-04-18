@@ -11,28 +11,36 @@ class PtrDeref {
     }
 }
 
+let _available_ptr:usize = 10000; // in js local: max mem size == 65535 (guess)
+function _static_alloc(_len:usize):usize{
+    var _pre_ptr = _available_ptr
+    _available_ptr += _len
+    return _pre_ptr
+}
+
 /**
  * Uint8Array with clean 'new' and fill without memory.fill
  */
 export class Bytes extends Uint8Array {
     // clean/unsafe version of new Array<u8>(_len)
-    static new(_len: i32): Bytes {
-        // alloc Array<u8> mem
-        var _bytes_ptr = heap.alloc(12); // offsetof<B>() == 12
-        // alloc data mem
-        var _arr_heap_ptr = heap.alloc(_len)
-        // write data ptr to the 0th, 1st fields of Array<u8>
-        PtrDeref.write(_bytes_ptr, _arr_heap_ptr);
-        PtrDeref.write(_bytes_ptr + 4, _arr_heap_ptr);
 
+    static new(_len: i32): Bytes {
+        var _bytes_ptr = _static_alloc(12)
+        var _arr_data_ptr = _static_alloc(_len)
+        // write data ptr to the 0th, 1st fields of Array<u8>
+        PtrDeref.write(_bytes_ptr, _arr_data_ptr);
+        PtrDeref.write(_bytes_ptr + 4, _arr_data_ptr);
+        PtrDeref.write(_bytes_ptr + 8, _len);
+        // _available_ptr += (12+_len)
+        // _available_ptr += 2 // just for nop
         var _bytes = changetype<Bytes>(_bytes_ptr);
         // write data len to the 2nd, 3rd fields of Array<u8>, equivalent to .length=_len
-        PtrDeref.write(_bytes_ptr + 8, _len);
         return _bytes;
     }
 
     static from_rawarr(_arr_heap_ptr:usize, _len:i32): Bytes{
-        var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
+        // var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
+        var _bytes_ptr = _static_alloc(12)
         PtrDeref.write(_bytes_ptr, _arr_heap_ptr);
         PtrDeref.write(_bytes_ptr + 4, _arr_heap_ptr);
         PtrDeref.write(_bytes_ptr + 8, _len);
