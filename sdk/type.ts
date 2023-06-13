@@ -1,3 +1,8 @@
+// zkWASM friendly and Subgraph compatible AssemblyScript API for zkGraph:
+// (https://thegraph.com/docs/en/developing/assemblyscript-api/)
+// Reference Implementation:
+// (https://github.com/graphprotocol/graph-tooling/tree/main/packages/ts)
+
 /**
  * dereference helper
  */
@@ -103,5 +108,221 @@ export class Bytes extends Uint8Array {
       }
     }
     return true;
+  }
+
+  static fromHexString(hex: string): Bytes {
+    if (hex.length % 2 !== 0) {
+      throw new Error("Input length must be even.");
+    }
+
+    const startIndex = hex.startsWith("0x") ? 2 : 0;
+    const byteLength = (hex.length - startIndex) / 2;
+    const arr = new Bytes(byteLength);
+
+    for (let i = 0; i < byteLength; i++) {
+      const byteHex = hex.substr(startIndex + i * 2, 2);
+      arr[i] = parseInt(byteHex, 16);
+    }
+
+    return arr;
+  }
+
+  static fromI32(i: i32): Bytes {
+    const arr = Bytes.new(4);
+    arr[0] = i & 0xff;
+    arr[1] = (i >> 8) & 0xff;
+    arr[2] = (i >> 16) & 0xff;
+    arr[3] = (i >> 24) & 0xff;
+    return arr;
+  }
+
+  // These two functions generates ~1k lines of wat
+  toHex(): string {
+    let hex = "0x";
+    for (let i = 0; i < this.length; i++) {
+      const byteHex = this[i].toString(16).padStart(2, "0");
+      hex += byteHex;
+    }
+    return hex;
+  }
+
+  toString(): string {
+    let str = "";
+    for (let i = 0; i < this.length; i++) {
+      str += String.fromCharCode(this[i]);
+    }
+    return str;
+  }
+
+  // Maybe need a foreign for this in zkwasm
+  // toBase58(): string {
+  //   // Implementation of base58 encoding
+  //   // ...
+  // }
+
+  concat(other: Bytes): Bytes {
+    const length = this.length + other.length;
+    const result = Bytes.new(length);
+
+    for (let i = 0; i < this.length; i++) {
+      result[i] = this[i];
+    }
+
+    for (let i = 0; i < other.length; i++) {
+      result[this.length + i] = other[i];
+    }
+
+    return result;
+  }
+
+  concatI32(other: i32): Bytes {
+    const intArr = Bytes.fromI32(other);
+    return this.concat(intArr);
+  }
+}
+
+export class ByteArray extends Uint8Array {
+  static new(length: i32): ByteArray {
+    const arrDataPtr = _static_alloc(length);
+    const bytesPtr = _static_alloc(12);
+    PtrDeref.write(bytesPtr, arrDataPtr);
+    PtrDeref.write(bytesPtr + 4, arrDataPtr);
+    PtrDeref.write(bytesPtr + 8, length);
+    return changetype<ByteArray>(bytesPtr);
+  }
+
+  static fromI32(x: i32): ByteArray {
+    const bytes = ByteArray.new(4);
+    bytes[0] = x & 0xff;
+    bytes[1] = (x >> 8) & 0xff;
+    bytes[2] = (x >> 16) & 0xff;
+    bytes[3] = (x >> 24) & 0xff;
+    return bytes;
+  }
+
+  static fromHexString(hex: string): ByteArray {
+    if (hex.length % 2 !== 0) {
+      throw new Error("Input length must be even.");
+    }
+
+    const startIndex = hex.startsWith("0x") ? 2 : 0;
+    const byteLength = (hex.length - startIndex) / 2;
+    const arr = ByteArray.new(byteLength);
+
+    for (let i = 0; i < byteLength; i++) {
+      const byteHex = hex.substr(startIndex + i * 2, 2);
+      arr[i] = parseInt(byteHex, 16);
+    }
+
+    return arr;
+  }
+
+  toHexString(): string {
+    let hex = "0x";
+    for (let i = 0; i < this.length; i++) {
+      const byteHex = this[i].toString(16).padStart(2, "0");
+      hex += byteHex;
+    }
+    return hex;
+  }
+
+  toString(): string {
+    let str = "";
+    for (let i = 0; i < this.length; i++) {
+      str += String.fromCharCode(this[i]);
+    }
+    return str;
+  }
+
+  // Maybe need a foreign for this in zkwasm
+  // toBase58(): string {
+  //   // Implementation of base58 encoding
+  //   // ...
+  // }
+
+  toU32(): u32 {
+    if (this.length > 4) {
+      throw new Error("Overflow: Byte array cannot be converted to u32");
+    }
+    let result: u32 = 0;
+    for (let i = 0; i < this.length; i++) {
+      result |= (<u32>this[i]) << (8 * i);
+    }
+    return result;
+  }
+
+  toI32(): i32 {
+    if (this.length > 4) {
+      throw new Error("Overflow: Byte array cannot be converted to i32");
+    }
+    let result: i32 = 0;
+    for (let i = 0; i < this.length; i++) {
+      result |= (<i32>this[i]) << (8 * i);
+    }
+    return result;
+  }
+
+  equals(y: ByteArray): bool {
+    if (this.length !== y.length) {
+      return false;
+    }
+    for (let i = 0; i < this.length; i++) {
+      if (this[i] !== y[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  concat(other: ByteArray): ByteArray {
+    const length = this.length + other.length;
+    const result = ByteArray.new(length);
+
+    for (let i = 0; i < this.length; i++) {
+      result[i] = this[i];
+    }
+
+    for (let i = 0; i < other.length; i++) {
+      result[this.length + i] = other[i];
+    }
+
+    return result;
+  }
+
+  concatI32(other: i32): ByteArray {
+    const intArr = ByteArray.fromI32(other);
+    return this.concat(intArr);
+  }
+}
+
+/**
+ * Address class
+ * 20-byte Ethereum address
+ */
+export class Address extends Bytes {
+  static fromString(s: string): Address {
+    // not sure if this works without conversion.ts
+    return changetype<Address>(changetype<Bytes>(s));
+  }
+
+  /** Convert `Bytes` that must be exactly 20 bytes long to an address.
+   * Passing in a value with fewer or more bytes will result in an error */
+  static fromBytes(b: Bytes): Address {
+    if (b.length != 20) {
+      throw new Error(
+        `Bytes of length ${b.length} can not be converted to 20 byte addresses`
+      );
+    }
+    return changetype<Address>(b);
+  }
+
+  static zero(): Address {
+    const self = ByteArray.new(20);
+
+    for (let i = 0; i < 20; i++) {
+      self[i] = 0;
+    }
+
+    return changetype<Address>(self);
   }
 }
