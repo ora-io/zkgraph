@@ -1,7 +1,6 @@
 # Customized ZKGraphs Running on ZKWASM
 
 ## Compile
-
 Compilation will be based on main.ts, and generate `main.wasm` and `main.wat` in `build` folder.
 
 ```bash
