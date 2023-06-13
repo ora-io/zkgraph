@@ -2,7 +2,7 @@
  * dereference helper
  */
 class PtrDeref {
-  data: usize;
+  data: usize = 0;
   static read(ptr: usize): usize {
     return changetype<PtrDeref>(ptr).data;
   }
@@ -52,10 +52,11 @@ export class Bytes extends Uint8Array {
     return PtrDeref.read(changetype<usize>(this));
   }
 
-  fill(_val: u8 = 0): void {
+  fill(_val: u8 = 0): this {
     for (var i: i32 = 0; i < this.length; i++) {
       this[i] = _val;
     }
+    return this;
     // this.arr.fill(_val)
   }
 
