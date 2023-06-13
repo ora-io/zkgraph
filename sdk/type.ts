@@ -19,6 +19,7 @@ function _static_alloc(_len:usize):usize{
 }
 
 /**
+ * Bytes class
  * Uint8Array with clean 'new' and fill without memory.fill
  */
 export class Bytes extends Uint8Array {
@@ -38,7 +39,7 @@ export class Bytes extends Uint8Array {
         return _bytes;
     }
 
-    static from_rawarr_ptr(_arr_heap_ptr:usize, _len:i32): Bytes{
+    static fromRawarrPtr(_arr_heap_ptr:usize, _len:i32): Bytes{
         // var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
         var _bytes_ptr = _static_alloc(12)
         PtrDeref.write(_bytes_ptr, _arr_heap_ptr);
@@ -47,7 +48,7 @@ export class Bytes extends Uint8Array {
         return changetype<Bytes>(_bytes_ptr);
     }
 
-    to_rawarr_ptr(): usize{
+    toRawarrPtr(): usize{
         return PtrDeref.read(changetype<usize>(this));
     }
 
@@ -96,5 +97,4 @@ export class Bytes extends Uint8Array {
         }
         return true;
     }
-
 }
