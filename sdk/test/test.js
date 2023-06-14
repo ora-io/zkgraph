@@ -1,4 +1,3 @@
-import { testAddress, testByteArray } from "../../build/sdk/test.js";
+import { test } from "../../build/sdk/test.js";
 
-testAddress();
-testByteArray();
+test();
