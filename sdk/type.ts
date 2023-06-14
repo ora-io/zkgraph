@@ -2,7 +2,13 @@
 // (https://thegraph.com/docs/en/developing/assemblyscript-api/)
 // Reference Implementation:
 // (https://github.com/graphprotocol/graph-tooling/tree/main/packages/ts)
-import {bytesToString, bytesToHex, bigIntToString, bigIntToHex, stringToH160} from "./conversion";
+import {
+  bytesToString,
+  bytesToHex,
+  bigIntToString,
+  bigIntToHex,
+  stringToH160,
+} from "./conversion";
 
 /**
  * dereference helper
@@ -104,9 +110,9 @@ export class ByteArray extends Uint8Array {
    * start with '0x'
    */
   static fromHexString(hex: string): ByteArray {
-    assert(hex.length % 2 == 0, 'input ' + hex + ' has odd length');
+    assert(hex.length % 2 == 0, "input " + hex + " has odd length");
     // Skip possible `0x` prefix.
-    if (hex.length >= 2 && hex.charAt(0) == '0' && hex.charAt(1) == 'x') {
+    if (hex.length >= 2 && hex.charAt(0) == "0" && hex.charAt(1) == "x") {
       hex = hex.substr(2);
     }
     const output = Bytes.new(hex.length / 2);
@@ -149,7 +155,7 @@ export class ByteArray extends Uint8Array {
   toU32(): u32 {
     for (let i = 4; i < this.length; i++) {
       if (this[i] != 0) {
-        assert(false, 'overflow converting ' + this.toHexString() + ' to u32');
+        assert(false, "overflow converting " + this.toHexString() + " to u32");
       }
     }
     const paddedBytes = new Bytes(4);
@@ -157,7 +163,8 @@ export class ByteArray extends Uint8Array {
     paddedBytes[1] = 0;
     paddedBytes[2] = 0;
     paddedBytes[3] = 0;
-    const minLen = paddedBytes.length < this.length ? paddedBytes.length : this.length;
+    const minLen =
+      paddedBytes.length < this.length ? paddedBytes.length : this.length;
     for (let i = 0; i < minLen; i++) {
       paddedBytes[i] = this[i];
     }
@@ -178,7 +185,7 @@ export class ByteArray extends Uint8Array {
     const padding = isNeg ? 255 : 0;
     for (let i = 4; i < this.length; i++) {
       if (this[i] != padding) {
-        assert(false, 'overflow converting ' + this.toHexString() + ' to i32');
+        assert(false, "overflow converting " + this.toHexString() + " to i32");
       }
     }
     const paddedBytes = new Bytes(4);
@@ -186,7 +193,8 @@ export class ByteArray extends Uint8Array {
     paddedBytes[1] = padding;
     paddedBytes[2] = padding;
     paddedBytes[3] = padding;
-    const minLen = paddedBytes.length < this.length ? paddedBytes.length : this.length;
+    const minLen =
+      paddedBytes.length < this.length ? paddedBytes.length : this.length;
     for (let i = 0; i < minLen; i++) {
       paddedBytes[i] = this[i];
     }
@@ -223,7 +231,7 @@ export class ByteArray extends Uint8Array {
     const padding = isNeg ? 255 : 0;
     for (let i = 8; i < this.length; i++) {
       if (this[i] != padding) {
-        assert(false, 'overflow converting ' + this.toHexString() + ' to i64');
+        assert(false, "overflow converting " + this.toHexString() + " to i64");
       }
     }
     const paddedBytes = new Bytes(8);
@@ -235,7 +243,8 @@ export class ByteArray extends Uint8Array {
     paddedBytes[5] = padding;
     paddedBytes[6] = padding;
     paddedBytes[7] = padding;
-    const minLen = paddedBytes.length < this.length ? paddedBytes.length : this.length;
+    const minLen =
+      paddedBytes.length < this.length ? paddedBytes.length : this.length;
     for (let i = 0; i < minLen; i++) {
       paddedBytes[i] = this[i];
     }
@@ -259,7 +268,7 @@ export class ByteArray extends Uint8Array {
   toU64(): u64 {
     for (let i = 8; i < this.length; i++) {
       if (this[i] != 0) {
-        assert(false, 'overflow converting ' + this.toHexString() + ' to u64');
+        assert(false, "overflow converting " + this.toHexString() + " to u64");
       }
     }
     const paddedBytes = new Bytes(8);
@@ -271,7 +280,8 @@ export class ByteArray extends Uint8Array {
     paddedBytes[5] = 0;
     paddedBytes[6] = 0;
     paddedBytes[7] = 0;
-    const minLen = paddedBytes.length < this.length ? paddedBytes.length : this.length;
+    const minLen =
+      paddedBytes.length < this.length ? paddedBytes.length : this.length;
     for (let i = 0; i < minLen; i++) {
       paddedBytes[i] = this[i];
     }
@@ -287,7 +297,7 @@ export class ByteArray extends Uint8Array {
     return x;
   }
 
-  @operator('==')
+  @operator("==")
   equals(other: ByteArray): boolean {
     if (this.length != other.length) {
       return false;
@@ -300,7 +310,7 @@ export class ByteArray extends Uint8Array {
     return true;
   }
 
-  @operator('!=')
+  @operator("!=")
   notEqual(other: ByteArray): boolean {
     return !(this == other);
   }
@@ -439,7 +449,9 @@ export class Address extends Bytes {
    * Passing in a value with fewer or more bytes will result in an error */
   static fromBytes(b: Bytes): Address {
     if (b.length != 20) {
-      throw new Error(`Bytes of length ${b.length} can not be converted to 20 byte addresses`);
+      throw new Error(
+        `Bytes of length ${b.length} can not be converted to 20 byte addresses`
+      );
     }
     return changetype<Address>(b);
   }
@@ -557,7 +569,10 @@ export class BigInt extends Uint8Array {
   }
 
   isI32(): boolean {
-    return BigInt.fromI32(i32.MIN_VALUE) <= this && this <= BigInt.fromI32(i32.MAX_VALUE);
+    return (
+      BigInt.fromI32(i32.MIN_VALUE) <= this &&
+      this <= BigInt.fromI32(i32.MAX_VALUE)
+    );
   }
 
   // abs(): BigInt {
@@ -611,32 +626,32 @@ export class BigInt extends Uint8Array {
   //   return bigInt.mod(this, other);
   // }
 
-  @operator('==')
+  @operator("==")
   equals(other: BigInt): boolean {
     return BigInt.compare(this, other) == 0;
   }
 
-  @operator('!=')
+  @operator("!=")
   notEqual(other: BigInt): boolean {
     return !(this == other);
   }
 
-  @operator('<')
+  @operator("<")
   lt(other: BigInt): boolean {
     return BigInt.compare(this, other) == -1;
   }
 
-  @operator('>')
+  @operator(">")
   gt(other: BigInt): boolean {
     return BigInt.compare(this, other) == 1;
   }
 
-  @operator('<=')
+  @operator("<=")
   le(other: BigInt): boolean {
     return !(this > other);
   }
 
-  @operator('>=')
+  @operator(">=")
   ge(other: BigInt): boolean {
     return !(this < other);
   }
@@ -690,14 +705,16 @@ export class BigInt extends Uint8Array {
     let aRelevantBytes = a.length;
     while (
       aRelevantBytes > 0 &&
-      ((!aIsNeg && a[aRelevantBytes - 1] == 0) || (aIsNeg && a[aRelevantBytes - 1] == 255))
+      ((!aIsNeg && a[aRelevantBytes - 1] == 0) ||
+        (aIsNeg && a[aRelevantBytes - 1] == 255))
     ) {
       aRelevantBytes -= 1;
     }
     let bRelevantBytes = b.length;
     while (
       bRelevantBytes > 0 &&
-      ((!bIsNeg && b[bRelevantBytes - 1] == 0) || (bIsNeg && b[bRelevantBytes - 1] == 255))
+      ((!bIsNeg && b[bRelevantBytes - 1] == 0) ||
+        (bIsNeg && b[bRelevantBytes - 1] == 255))
     ) {
       bRelevantBytes -= 1;
     }
@@ -793,7 +810,7 @@ export class BigDecimal {
   //   return BigDecimal.compare(this, other) == 0;
   // }
 
-  @operator('!=')
+  @operator("!=")
   notEqual(other: BigDecimal): boolean {
     return !(this == other);
   }
@@ -808,12 +825,12 @@ export class BigDecimal {
   //   return BigDecimal.compare(this, other) == 1;
   // }
 
-  @operator('<=')
+  @operator("<=")
   le(other: BigDecimal): boolean {
     return !(this > other);
   }
 
-  @operator('>=')
+  @operator(">=")
   ge(other: BigDecimal): boolean {
     return !(this < other);
   }

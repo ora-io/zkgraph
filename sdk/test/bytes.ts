@@ -10,7 +10,7 @@ export function testBytesWithByteArray(): void {
   assert(longArray.toU32() == 4_294_705_147);
   assert(longArray.toI32() == 4_294_705_147);
 
-  const bytes = Bytes.fromHexString('0x56696b746f726961');
+  const bytes = Bytes.fromHexString("0x56696b746f726961");
   assert((bytes[0] = 0x56));
   assert((bytes[1] = 0x69));
   assert((bytes[2] = 0x6b));

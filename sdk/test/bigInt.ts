@@ -1,4 +1,4 @@
-import { BigInt, ByteArray, Bytes } from '../type';
+import { BigInt, ByteArray, Bytes } from "../type";
 
 // Test some BigInt methods.
 export function testBigInt(): void {
@@ -18,13 +18,18 @@ export function testBigInt(): void {
   assert(!five.isZero() && five.isI32());
   assert(five == BigInt.fromI32(5));
   assert(five != minusFive);
-  assert(five == BigInt.fromUnsignedBytes(Bytes.fromUint8Array(fiveBytes.subarray(0, 1))));
+  assert(
+    five ==
+      BigInt.fromUnsignedBytes(Bytes.fromUint8Array(fiveBytes.subarray(0, 1)))
+  );
   assert(fiveBytes.toU32() == 5);
   assert(fiveBytes.toI32() == 5);
 
   const x = new ByteArray(1);
   x[0] = 255;
-  assert(BigInt.fromUnsignedBytes(Bytes.fromByteArray(x)) == BigInt.fromI32(255));
+  assert(
+    BigInt.fromUnsignedBytes(Bytes.fromByteArray(x)) == BigInt.fromI32(255)
+  );
 
   const zero = BigInt.fromSignedBytes(Bytes.fromByteArray(new ByteArray(0)));
   assert(zero.isZero() && zero.isI32());
@@ -123,7 +128,7 @@ export function testBigInt(): void {
   assert(longArray.toU32() == 4_294_705_147);
   assert(longArray.toI32() == 4_294_705_147);
 
-  const bytes = Bytes.fromHexString('0x56696b746f726961');
+  const bytes = Bytes.fromHexString("0x56696b746f726961");
   assert((bytes[0] = 0x56));
   assert((bytes[1] = 0x69));
   assert((bytes[2] = 0x6b));
@@ -141,7 +146,9 @@ export function testBigInt(): void {
   //   Bytes.fromUTF8('Hello, World!') == ByteArray.fromHexString('0x48656c6c6f2c20576f726c6421'),
   // );
   assert(
-    Bytes.fromUTF8('Hello, World!').equals(ByteArray.fromHexString('0x48656c6c6f2c20576f726c6421')),
+    Bytes.fromUTF8("Hello, World!").equals(
+      ByteArray.fromHexString("0x48656c6c6f2c20576f726c6421")
+    )
   );
   console.log("✅ Test BigInt");
 }
