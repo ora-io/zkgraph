@@ -373,7 +373,6 @@ export class ByteArray extends Uint8Array {
  * Uint8Array with clean 'new' and fill without memory.fill
  */
 export class Bytes extends ByteArray {
-
   // Functions from initial implementations
   // --------------------------------------
   /**
