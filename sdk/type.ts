@@ -186,7 +186,7 @@ export class ByteArray extends Uint8Array {
    * Interprets the byte array as a little-endian U32.
    * Throws in case of overflow.
    *
-   * WASM cost: 409 lines of wat.
+   * WASM cost: 233 lines of wat.
    */
   toU32(): u32 {
     for (let i = 4; i < this.length; i++) {
@@ -194,7 +194,7 @@ export class ByteArray extends Uint8Array {
         assert(false, "overflow converting " + this.toHexString() + " to u32");
       }
     }
-    const paddedBytes = new Bytes(4);
+    const paddedBytes = Bytes.new(4);
     paddedBytes[0] = 0;
     paddedBytes[1] = 0;
     paddedBytes[2] = 0;
@@ -216,7 +216,7 @@ export class ByteArray extends Uint8Array {
    * Interprets the byte array as a little-endian I32.
    * Throws in case of overflow.
    *
-   * WASM cost: 393 lines of wat.
+   * WASM cost: 224 lines of wat.
    */
   toI32(): i32 {
     const isNeg = this.length > 0 && this[this.length - 1] >> 7 == 1;
@@ -226,7 +226,7 @@ export class ByteArray extends Uint8Array {
         assert(false, "overflow converting " + this.toHexString() + " to i32");
       }
     }
-    const paddedBytes = new Bytes(4);
+    const paddedBytes = Bytes.new(4);
     paddedBytes[0] = padding;
     paddedBytes[1] = padding;
     paddedBytes[2] = padding;
@@ -269,7 +269,7 @@ export class ByteArray extends Uint8Array {
    * Interprets the byte array as a little-endian I64.
    * Throws in case of overflow.
    *
-   * WASM cost: 499 lines of wat.
+   * WASM cost: 319 lines of wat.
    */
   toI64(): i64 {
     const isNeg = this.length > 0 && this[this.length - 1] >> 7 == 1;
@@ -279,7 +279,7 @@ export class ByteArray extends Uint8Array {
         assert(false, "overflow converting " + this.toHexString() + " to i64");
       }
     }
-    const paddedBytes = new Bytes(8);
+    const paddedBytes = Bytes.new(8);
     paddedBytes[0] = padding;
     paddedBytes[1] = padding;
     paddedBytes[2] = padding;
@@ -309,7 +309,7 @@ export class ByteArray extends Uint8Array {
    * Interprets the byte array as a little-endian U64.
    * Throws in case of overflow.
    *
-   * WASM cost: 467 lines of wat.
+   * WASM cost: 287 lines of wat.
    */
   toU64(): u64 {
     for (let i = 8; i < this.length; i++) {
@@ -317,7 +317,7 @@ export class ByteArray extends Uint8Array {
         assert(false, "overflow converting " + this.toHexString() + " to u64");
       }
     }
-    const paddedBytes = new Bytes(8);
+    const paddedBytes = Bytes.new(8);
     paddedBytes[0] = 0;
     paddedBytes[1] = 0;
     paddedBytes[2] = 0;
