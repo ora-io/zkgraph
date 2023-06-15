@@ -34,6 +34,11 @@ function _static_alloc(_len: usize): usize {
  * ByteArray Class
  */
 export class ByteArray extends Uint8Array {
+  /**
+   *
+   * WASM cost: 62 lines of wat.
+   */
+  // 29 lines of wat
   static new(_len: i32): ByteArray {
     var _bytes_ptr = _static_alloc(12);
     var _arr_data_ptr = _static_alloc(_len);
@@ -46,6 +51,8 @@ export class ByteArray extends Uint8Array {
 
   /**
    * Returns bytes in little-endian order.
+   *
+   * WASM cost: 62 lines of wat.
    */
   static fromI32(x: i32): ByteArray {
     const self = ByteArray.new(4);
@@ -58,6 +65,8 @@ export class ByteArray extends Uint8Array {
 
   /**
    * Returns bytes in little-endian order.
+   *
+   * WASM cost: 62 lines of wat.
    */
   static fromU32(x: u32): ByteArray {
     const self = ByteArray.new(4);
@@ -70,6 +79,8 @@ export class ByteArray extends Uint8Array {
 
   /**
    * Returns bytes in little-endian order.
+   *
+   * WASM cost: 113 lines of wat.
    */
   static fromI64(x: i64): ByteArray {
     const self = ByteArray.new(8);
@@ -86,6 +97,8 @@ export class ByteArray extends Uint8Array {
 
   /**
    * Returns bytes in little-endian order.
+   *
+   * WASM cost: 113 lines of wat.
    */
   static fromU64(x: u64): ByteArray {
     const self = ByteArray.new(8);
@@ -100,6 +113,11 @@ export class ByteArray extends Uint8Array {
     return self;
   }
 
+  /**
+   * Returns empty ByteArray.
+   *
+   * WASM cost: 62 lines of wat.
+   */
   static empty(): ByteArray {
     return ByteArray.fromI32(0);
   }
@@ -108,6 +126,8 @@ export class ByteArray extends Uint8Array {
    * Convert the string `hex` which must consist of an even number of
    * hexadecimal digits to a `ByteArray`. The string `hex` can optionally
    * start with '0x'
+   *
+   * WASM cost: 1524 lines of wat.
    */
   static fromHexString(hex: string): ByteArray {
     assert(hex.length % 2 == 0, "input " + hex + " has odd length");
@@ -122,23 +142,38 @@ export class ByteArray extends Uint8Array {
     return output;
   }
 
+  /**
+   * WASM cost: 388 lines of wat.
+   */
   static fromUTF8(str: string): ByteArray {
     const utf8 = String.UTF8.encode(str);
     return changetype<ByteArray>(ByteArray.wrap(utf8));
   }
 
-  // static fromBigInt(bigInt: BigInt): ByteArray {
-  //   return changetype<ByteArray>(bigInt);
-  // }
+  /**
+   * WASM cost: 0 lines of wat.
+   */
+  static fromBigInt(bigInt: BigInt): ByteArray {
+    return changetype<ByteArray>(bigInt);
+  }
 
+  /**
+   * WASM cost: 1230 lines of wat.
+   */
   toHex(): string {
     return bytesToHex(this);
   }
 
+  /**
+   * WASM cost: 1230 lines of wat.
+   */
   toHexString(): string {
     return bytesToHex(this);
   }
 
+  /**
+   * WASM cost: 1061 lines of wat.
+   */
   toString(): string {
     return bytesToString(this);
   }
@@ -150,8 +185,9 @@ export class ByteArray extends Uint8Array {
   /**
    * Interprets the byte array as a little-endian U32.
    * Throws in case of overflow.
+   *
+   * WASM cost: 409 lines of wat.
    */
-
   toU32(): u32 {
     for (let i = 4; i < this.length; i++) {
       if (this[i] != 0) {
@@ -179,6 +215,8 @@ export class ByteArray extends Uint8Array {
   /**
    * Interprets the byte array as a little-endian I32.
    * Throws in case of overflow.
+   *
+   * WASM cost: 393 lines of wat.
    */
   toI32(): i32 {
     const isNeg = this.length > 0 && this[this.length - 1] >> 7 == 1;
@@ -207,16 +245,22 @@ export class ByteArray extends Uint8Array {
   }
 
   /** Create a new `ByteArray` that consist of `this` directly followed by
-   * the bytes from `other` */
+   * the bytes from `other`
+   *
+   * WASM cost: 933 lines of wat.
+   */
   concat(other: ByteArray): ByteArray {
-    const newArray = new ByteArray(this.length + other.length);
+    const newArray = ByteArray.new(this.length + other.length);
     newArray.set(this, 0);
     newArray.set(other, this.length);
     return newArray;
   }
 
   /** Create a new `ByteArray` that consists of `this` directly followed by
-   * the representation of `other` as bytes */
+   * the representation of `other` as bytes
+   *
+   * WASM cost: 951 lines of wat.
+   */
   concatI32(other: i32): ByteArray {
     return this.concat(ByteArray.fromI32(other));
   }
@@ -224,8 +268,9 @@ export class ByteArray extends Uint8Array {
   /**
    * Interprets the byte array as a little-endian I64.
    * Throws in case of overflow.
+   *
+   * WASM cost: 499 lines of wat.
    */
-
   toI64(): i64 {
     const isNeg = this.length > 0 && this[this.length - 1] >> 7 == 1;
     const padding = isNeg ? 255 : 0;
@@ -263,8 +308,9 @@ export class ByteArray extends Uint8Array {
   /**
    * Interprets the byte array as a little-endian U64.
    * Throws in case of overflow.
+   *
+   * WASM cost: 467 lines of wat.
    */
-
   toU64(): u64 {
     for (let i = 8; i < this.length; i++) {
       if (this[i] != 0) {
@@ -297,6 +343,9 @@ export class ByteArray extends Uint8Array {
     return x;
   }
 
+  /**
+   * WASM cost: 50 lines of wat.
+   */
   @operator("==")
   equals(other: ByteArray): boolean {
     if (this.length != other.length) {
@@ -310,6 +359,9 @@ export class ByteArray extends Uint8Array {
     return true;
   }
 
+  /**
+   * WASM cost: 50 lines of wat.
+   */
   @operator("!=")
   notEqual(other: ByteArray): boolean {
     return !(this == other);
@@ -321,6 +373,14 @@ export class ByteArray extends Uint8Array {
  * Uint8Array with clean 'new' and fill without memory.fill
  */
 export class Bytes extends ByteArray {
+
+  // Functions from initial implementations
+  // --------------------------------------
+  /**
+   * WASM cost: 19 lines of wat.
+   *
+   * Not removed for backward compatibility
+   */
   static new(_len: i32): Bytes {
     var _bytes_ptr = _static_alloc(12);
     var _arr_data_ptr = _static_alloc(_len);
@@ -377,6 +437,9 @@ export class Bytes extends ByteArray {
     return dst;
   }
 
+  /**
+   * WASM cost: 40 lines of wat.
+   */
   toU32(): u32 {
     assert(this.length <= 4);
     var rst: u32 = 0;
@@ -387,24 +450,32 @@ export class Bytes extends ByteArray {
     return rst;
   }
 
-  @operator("==")
-  __opeq(right: Bytes): bool {
-    if (this.length != right.length) {
-      // console.log(this.length.toString() + '---' + right.length.toString());
-      return false;
-    }
-    for (var i = 0; i < this.length; i++) {
-      if (this[i] != right[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
+  // Disabled due to the existence of implementation of ByteArray
+  // @operator("==")
+  // __opeq(right: Bytes): bool {
+  //   if (this.length != right.length) {
+  //     // console.log(this.length.toString() + '---' + right.length.toString());
+  //     return false;
+  //   }
+  //   for (var i = 0; i < this.length; i++) {
+  //     if (this[i] != right[i]) {
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // }
+  // --------------------------------------
 
+  /**
+   * WASM cost: 0 line of wat.
+   */
   static fromByteArray(byteArray: ByteArray): Bytes {
     return changetype<Bytes>(byteArray);
   }
 
+  /**
+   * WASM cost: 0 line of wat.
+   */
   static fromUint8Array(uint8Array: Uint8Array): Bytes {
     return changetype<Bytes>(uint8Array);
   }
@@ -413,40 +484,59 @@ export class Bytes extends ByteArray {
    * Convert the string `hex` which must consist of an even number of
    * hexadecimal digits to a `ByteArray`. The string `hex` can optionally
    * start with '0x'
+   *
+   * WASM cost: 1524 line of wat.
    */
   static fromHexString(str: string): Bytes {
     return changetype<Bytes>(ByteArray.fromHexString(str));
   }
 
+  /**
+   * WASM cost: 392 line of wat.
+   */
   static fromUTF8(str: string): Bytes {
     return Bytes.fromByteArray(ByteArray.fromUTF8(str));
   }
 
+  /**
+   * WASM cost: 62 line of wat.
+   */
   static fromI32(i: i32): Bytes {
     return changetype<Bytes>(ByteArray.fromI32(i));
   }
 
+  /**
+   * WASM cost: 62 line of wat.
+   */
   static empty(): Bytes {
     return changetype<Bytes>(ByteArray.empty());
   }
 
-  concat(other: Bytes): Bytes {
-    return changetype<Bytes>(super.concat(other));
-  }
+  // Disabled for now
+  // (ERROR TS2394: This overload signature is not compatible with its implementation signature.)
+  // concat(other: Bytes): Bytes {
+  //   return changetype<Bytes>(super.concat(other));
+  // }
 
-  concatI32(other: i32): Bytes {
-    return changetype<Bytes>(super.concat(ByteArray.fromI32(other)));
-  }
+  // concatI32(other: i32): Bytes {
+  //   return changetype<Bytes>(super.concat(ByteArray.fromI32(other)));
+  // }
 }
 
 /** An Ethereum address (20 bytes). */
 export class Address extends Bytes {
+  /**
+   * WASM cost: 360 line of wat.
+   */
   static fromString(s: string): Address {
     return changetype<Address>(stringToH160(s));
   }
 
   /** Convert `Bytes` that must be exactly 20 bytes long to an address.
-   * Passing in a value with fewer or more bytes will result in an error */
+   * Passing in a value with fewer or more bytes will result in an error
+   *
+   * WASM cost: 1342 line of wat.
+   */
   static fromBytes(b: Bytes): Address {
     if (b.length != 20) {
       throw new Error(
@@ -456,6 +546,9 @@ export class Address extends Bytes {
     return changetype<Address>(b);
   }
 
+  /**
+   * WASM cost: 44 line of wat.
+   */
   static zero(): Address {
     const self = ByteArray.new(20);
 
