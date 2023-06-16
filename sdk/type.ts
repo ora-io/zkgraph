@@ -423,81 +423,81 @@ export class Bytes extends ByteArray {
   // Functions from initial implementations
   // Custom implementations to get the initial Hyper Oracle MVP.
   // -----------------------------------------------------------
-  /**
-   * Try not to use this.
-   *
-   * It's a custom implementation to get the initial Hyper Oracle MVP.
-   */
-  static new(_len: i32): Bytes {
-    var _bytes_ptr = _static_alloc(12);
-    var _arr_data_ptr = _static_alloc(_len);
-    // write data ptr to the 0th, 1st fields of Array<u8>
-    PtrDeref.write(_bytes_ptr, _arr_data_ptr);
-    PtrDeref.write(_bytes_ptr + 4, _arr_data_ptr);
-    PtrDeref.write(_bytes_ptr + 8, _len);
-    // _available_ptr += (12+_len)
-    // _available_ptr += 2 // just for nop
-    var _bytes = changetype<Bytes>(_bytes_ptr);
-    // write data len to the 2nd, 3rd fields of Array<u8>, equivalent to .length=_len
-    return _bytes;
-  }
+  // /**
+  //  * Try not to use this.
+  //  *
+  //  * It's a custom implementation to get the initial Hyper Oracle MVP.
+  //  */
+  // static new(_len: i32): Bytes {
+  //   var _bytes_ptr = _static_alloc(12);
+  //   var _arr_data_ptr = _static_alloc(_len);
+  //   // write data ptr to the 0th, 1st fields of Array<u8>
+  //   PtrDeref.write(_bytes_ptr, _arr_data_ptr);
+  //   PtrDeref.write(_bytes_ptr + 4, _arr_data_ptr);
+  //   PtrDeref.write(_bytes_ptr + 8, _len);
+  //   // _available_ptr += (12+_len)
+  //   // _available_ptr += 2 // just for nop
+  //   var _bytes = changetype<Bytes>(_bytes_ptr);
+  //   // write data len to the 2nd, 3rd fields of Array<u8>, equivalent to .length=_len
+  //   return _bytes;
+  // }
 
-  /**
-   * Try not to use this.
-   *
-   * It's a custom implementation to get the initial Hyper Oracle MVP.
-   */
-  static fromRawarrPtr(_arr_heap_ptr: usize, _len: i32): Bytes {
-    // var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
-    var _bytes_ptr = _static_alloc(12);
-    PtrDeref.write(_bytes_ptr, _arr_heap_ptr);
-    PtrDeref.write(_bytes_ptr + 4, _arr_heap_ptr);
-    PtrDeref.write(_bytes_ptr + 8, _len);
-    return changetype<Bytes>(_bytes_ptr);
-  }
+  // /**
+  //  * Try not to use this.
+  //  *
+  //  * It's a custom implementation to get the initial Hyper Oracle MVP.
+  //  */
+  // static fromRawarrPtr(_arr_heap_ptr: usize, _len: i32): Bytes {
+  //   // var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
+  //   var _bytes_ptr = _static_alloc(12);
+  //   PtrDeref.write(_bytes_ptr, _arr_heap_ptr);
+  //   PtrDeref.write(_bytes_ptr + 4, _arr_heap_ptr);
+  //   PtrDeref.write(_bytes_ptr + 8, _len);
+  //   return changetype<Bytes>(_bytes_ptr);
+  // }
 
-  toRawarrPtr(): usize {
-    return PtrDeref.read(changetype<usize>(this));
-  }
+  // toRawarrPtr(): usize {
+  //   return PtrDeref.read(changetype<usize>(this));
+  // }
 
-  /**
-   * Try not to use this.
-   *
-   * It's a custom implementation to get the initial Hyper Oracle MVP.
-   */
-  fill(_val: u8 = 0): this {
-    for (var i: i32 = 0; i < this.length; i++) {
-      this[i] = _val;
-    }
-    return this;
-    // this.arr.fill(_val)
-  }
+  // /**
+  //  * Try not to use this.
+  //  *
+  //  * It's a custom implementation to get the initial Hyper Oracle MVP.
+  //  */
+  // fill(_val: u8 = 0): this {
+  //   for (var i: i32 = 0; i < this.length; i++) {
+  //     this[i] = _val;
+  //   }
+  //   return this;
+  //   // this.arr.fill(_val)
+  // }
 
-  /**
-   * Try not to use this.
-   *
-   * It's a custom implementation to get the initial Hyper Oracle MVP.
-   */
-  slice(start: i32, end: i32): Bytes {
-    if (
-      start < 0 ||
-      end < 0 ||
-      start > this.length ||
-      end > this.length ||
-      start >= end
-    ) {
-      return Bytes.new(0);
-      // throw new Error("Invalid slice parameters");
-    }
+  // /**
+  //  * Try not to use this.
+  //  *
+  //  * It's a custom implementation to get the initial Hyper Oracle MVP.
+  //  */
+  // slice(start: i32, end: i32): Bytes {
+  //   if (
+  //     start < 0 ||
+  //     end < 0 ||
+  //     start > this.length ||
+  //     end > this.length ||
+  //     start >= end
+  //   ) {
+  //     return Bytes.new(0);
+  //     // throw new Error("Invalid slice parameters");
+  //   }
 
-    const len = end - start;
-    var dst = Bytes.new(len);
-    for (let i: i32 = 0; i < len; i++) {
-      dst[i] = this[start + i];
-    }
+  //   const len = end - start;
+  //   var dst = Bytes.new(len);
+  //   for (let i: i32 = 0; i < len; i++) {
+  //     dst[i] = this[start + i];
+  //   }
 
-    return dst;
-  }
+  //   return dst;
+  // }
 
   // Disabled due to the existence of implementation of ByteArray
   // toU32(): u32 {
