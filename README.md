@@ -18,7 +18,8 @@ To keep the wasm output small (for shorter proof generation time), try not use k
 ## zkGraph Dev Tips
 
 1. Provable program needs to be compilable and runnable in normal execution runtime first.
-2. Look at WASM cost for each operation! Complexer logic (eg. anything with lots of `if` or `string`) usally means more instructions, which means longer proof generation time.
+2. Look at (approximate) WASM cost for each operation! Complexer logic (eg. anything with lots of `if` or `string`) usally means more instructions, which means longer proof generation time.
+3. You may need to use `BigEndian` version functions for Ethereum data structures.
 
 ## SDK Dev Tips
 
