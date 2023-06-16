@@ -47,16 +47,21 @@ function callWasm(eventSig, topic1, topic2, topic3, data) {
   return uint8array2str(output);
 }
 
-function generateProof(eventSig, topic1, topic2, topic3, data, output) {
-  let dataLength = data.length;
+function generateInput(eventSig, topic1, topic2, topic3, data, output) {
   if (data.startsWith("0x")) {
-    dataLength = dataLength - 2;
+    data = data.slice(2);
   }
-  dataLength = dataLength / 2;
-  let proof = `${eventSig}:bytes-packed ${topic1}:bytes-packed ${topic2}:bytes-packed ${topic3}:bytes-packed 0x${dataLength.toString(
+  let dataLength = data.length / 2;
+
+  if (output.startsWith("0x")) {
+    output = output.slice(2);
+  }
+  let outputLength = output.length / 2;
+
+  let pubInputs = `${eventSig}:bytes-packed ${topic1}:bytes-packed ${topic2}:bytes-packed ${topic3}:bytes-packed 0x${dataLength.toString(
     16
-  )}:i64 ${data}:bytes-packed ${output}:bytes-packed`;
-  return proof;
+  )}:i64 0x${data}:bytes-packed 0x${outputLength.toString(16)}:i64 0x${output}:bytes-packed`;
+  return pubInputs;
 }
 
 let log = await geLastLog(
@@ -76,5 +81,5 @@ let data = log.data || emptyValue;
 let output = callWasm(eventSig, topic1, topic2, topic3, data);
 console.log(output);
 
-let proof = generateProof(eventSig, topic1, topic2, topic3, data, output);
+let proof = generateInput(eventSig, topic1, topic2, topic3, data, output);
 console.log(proof);

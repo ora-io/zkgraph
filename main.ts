@@ -9,7 +9,7 @@ export function zkmain(): void {
     var topic3 = read_bytes_from_u64(32);
     var data = read_len_then_bytes()
 
-    var expected_output = read_bytes_from_u64(32);
+    var expected_output = read_len_then_bytes();
 
     var output = handleEvent(esig as Uint8Array, topic1 as Uint8Array, topic2 as Uint8Array, topic3 as Uint8Array, data as Uint8Array) as Bytes;
 
