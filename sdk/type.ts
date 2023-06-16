@@ -8,7 +8,8 @@ import {
   bigIntToString,
   bigIntToHex,
   stringToH160,
-} from "./conversion";
+} from "./utils/conversion";
+import * as bigInt from "./utils/bigInt";
 
 /**
  * dereference helper
@@ -671,7 +672,6 @@ export class BigInt extends Uint8Array {
   /**
    * `bytes` assumed to be little-endian. If your input is big-endian, call `.reverse()` first.
    */
-
   static fromSignedBytes(bytes: Bytes): BigInt {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const byteArray = <ByteArray>bytes;
@@ -685,7 +685,6 @@ export class BigInt extends Uint8Array {
   /**
    * `bytes` assumed to be little-endian. If your input is big-endian, call `.reverse()` first.
    */
-
   static fromUnsignedBytes(bytes: ByteArray): BigInt {
     const signedBytes = new BigInt(bytes.length + 1);
     for (let i = 0; i < bytes.length; i++) {
@@ -707,9 +706,9 @@ export class BigInt extends Uint8Array {
     return bigIntToString(this);
   }
 
-  // static fromString(s: string): BigInt {
-  //   return bigInt.fromString(s);
-  // }
+  static fromString(s: string): BigInt {
+    return bigInt.fromString(s);
+  }
 
   toI32(): i32 {
     const uint8Array = changetype<Uint8Array>(this);
@@ -735,9 +734,9 @@ export class BigInt extends Uint8Array {
     return byteArray.toU64();
   }
 
-  toBigDecimal(): BigDecimal {
-    return new BigDecimal(this);
-  }
+  // toBigDecimal(): BigDecimal {
+  //   return new BigDecimal(this);
+  // }
 
   isZero(): boolean {
     return this == BigInt.fromI32(0);
@@ -750,56 +749,56 @@ export class BigInt extends Uint8Array {
     );
   }
 
-  // abs(): BigInt {
-  //   return this < BigInt.fromI32(0) ? this.neg() : this;
-  // }
+  abs(): BigInt {
+    return this < BigInt.fromI32(0) ? this.neg() : this;
+  }
 
-  // sqrt(): BigInt {
-  //   const x: BigInt = this;
-  //   let z = x.plus(BigInt.fromI32(1)).div(BigInt.fromI32(2));
-  //   let y = x;
-  //   while (z < y) {
-  //     y = z;
-  //     z = x.div(z).plus(z).div(BigInt.fromI32(2));
-  //   }
+  sqrt(): BigInt {
+    const x: BigInt = this;
+    let z = x.plus(BigInt.fromI32(1)).div(BigInt.fromI32(2));
+    let y = x;
+    while (z < y) {
+      y = z;
+      z = x.div(z).plus(z).div(BigInt.fromI32(2));
+    }
 
-  //   return y;
-  // }
+    return y;
+  }
 
   // Operators
-  // @operator('+')
-  // plus(other: BigInt): BigInt {
-  //   assert(this !== null, "Failed to sum BigInts because left hand side is 'null'");
-  //   return bigInt.plus(this, other);
-  // }
+  @operator('+')
+  plus(other: BigInt): BigInt {
+    assert(this !== null, "Failed to sum BigInts because left hand side is 'null'");
+    return bigInt.plus(this, other);
+  }
 
-  // @operator('-')
-  // minus(other: BigInt): BigInt {
-  //   assert(this !== null, "Failed to subtract BigInts because left hand side is 'null'");
-  //   return bigInt.minus(this, other);
-  // }
+  @operator('-')
+  minus(other: BigInt): BigInt {
+    assert(this !== null, "Failed to subtract BigInts because left hand side is 'null'");
+    return bigInt.minus(this, other);
+  }
 
-  // @operator('*')
-  // times(other: BigInt): BigInt {
-  //   assert(this !== null, "Failed to multiply BigInts because left hand side is 'null'");
-  //   return bigInt.times(this, other);
-  // }
+  @operator('*')
+  times(other: BigInt): BigInt {
+    assert(this !== null, "Failed to multiply BigInts because left hand side is 'null'");
+    return bigInt.times(this, other);
+  }
 
-  // @operator('/')
-  // div(other: BigInt): BigInt {
-  //   assert(this !== null, "Failed to divide BigInts because left hand side is 'null'");
-  //   return bigInt.dividedBy(this, other);
-  // }
+  @operator('/')
+  div(other: BigInt): BigInt {
+    assert(this !== null, "Failed to divide BigInts because left hand side is 'null'");
+    return bigInt.dividedBy(this, other);
+  }
 
   // divDecimal(other: BigDecimal): BigDecimal {
   //   return bigInt.dividedByDecimal(this, other);
   // }
 
-  // @operator('%')
-  // mod(other: BigInt): BigInt {
-  //   assert(this !== null, "Failed to apply module to BigInt because left hand side is 'null'");
-  //   return bigInt.mod(this, other);
-  // }
+  @operator('%')
+  mod(other: BigInt): BigInt {
+    assert(this !== null, "Failed to apply module to BigInt because left hand side is 'null'");
+    return bigInt.mod(this, other);
+  }
 
   @operator("==")
   equals(other: BigInt): boolean {
@@ -831,35 +830,35 @@ export class BigInt extends Uint8Array {
     return !(this < other);
   }
 
-  // @operator.prefix('-')
-  // neg(): BigInt {
-  //   return BigInt.fromI32(0).minus(this);
-  // }
+  @operator.prefix('-')
+  neg(): BigInt {
+    return BigInt.fromI32(0).minus(this);
+  }
 
-  // @operator('|')
-  // bitOr(other: BigInt): BigInt {
-  //   return bigInt.bitOr(this, other);
-  // }
+  @operator('|')
+  bitOr(other: BigInt): BigInt {
+    return bigInt.bitOr(this, other);
+  }
 
-  // @operator('&')
-  // bitAnd(other: BigInt): BigInt {
-  //   return bigInt.bitAnd(this, other);
-  // }
+  @operator('&')
+  bitAnd(other: BigInt): BigInt {
+    return bigInt.bitAnd(this, other);
+  }
 
-  // @operator('<<')
-  // leftShift(bits: u8): BigInt {
-  //   return bigInt.leftShift(this, bits);
-  // }
+  @operator('<<')
+  leftShift(bits: u8): BigInt {
+    return bigInt.leftShift(this, bits);
+  }
 
-  // @operator('>>')
-  // rightShift(bits: u8): BigInt {
-  //   return bigInt.rightShift(this, bits);
-  // }
+  @operator('>>')
+  rightShift(bits: u8): BigInt {
+    return bigInt.rightShift(this, bits);
+  }
 
-  // /// Limited to a low exponent to discourage creating a huge BigInt.
-  // pow(exp: u8): BigInt {
-  //   return bigInt.pow(this, exp);
-  // }
+  /// Limited to a low exponent to discourage creating a huge BigInt.
+  pow(exp: u8): BigInt {
+    return bigInt.pow(this, exp);
+  }
 
   /**
    * Returns −1 if a < b, 1 if a > b, and 0 if A == B
@@ -921,109 +920,109 @@ export class BigInt extends Uint8Array {
   }
 }
 
-export class BigDecimal {
-  digits: BigInt;
-  exp: BigInt;
+// export class BigDecimal {
+//   digits: BigInt;
+//   exp: BigInt;
 
-  constructor(bigInt: BigInt) {
-    this.digits = bigInt;
-    this.exp = BigInt.fromI32(0);
-  }
+//   constructor(bigInt: BigInt) {
+//     this.digits = bigInt;
+//     this.exp = BigInt.fromI32(0);
+//   }
 
-  // static fromString(s: string): BigDecimal {
-  //   return bigDecimal.fromString(s);
-  // }
+//   static fromString(s: string): BigDecimal {
+//     return bigDecimal.fromString(s);
+//   }
 
-  static zero(): BigDecimal {
-    return new BigDecimal(BigInt.zero());
-  }
+//   static zero(): BigDecimal {
+//     return new BigDecimal(BigInt.zero());
+//   }
 
-  // toString(): string {
-  //   return bigDecimal.toString(this);
-  // }
+//   toString(): string {
+//     return bigDecimal.toString(this);
+//   }
 
-  // truncate(decimals: i32): BigDecimal {
-  //   const digitsRightOfZero = this.digits.toString().length + this.exp.toI32();
-  //   const newDigitLength = decimals + digitsRightOfZero;
-  //   const truncateLength = this.digits.toString().length - newDigitLength;
-  //   if (truncateLength < 0) {
-  //     return this;
-  //   }
-  //   for (let i = 0; i < truncateLength; i++) {
-  //     this.digits = this.digits.div(BigInt.fromI32(10));
-  //   }
-  //   this.exp = BigInt.fromI32(decimals * -1);
-  //   return this;
-  // }
+//   truncate(decimals: i32): BigDecimal {
+//     const digitsRightOfZero = this.digits.toString().length + this.exp.toI32();
+//     const newDigitLength = decimals + digitsRightOfZero;
+//     const truncateLength = this.digits.toString().length - newDigitLength;
+//     if (truncateLength < 0) {
+//       return this;
+//     }
+//     for (let i = 0; i < truncateLength; i++) {
+//       this.digits = this.digits.div(BigInt.fromI32(10));
+//     }
+//     this.exp = BigInt.fromI32(decimals * -1);
+//     return this;
+//   }
 
-  // @operator('+')
-  // plus(other: BigDecimal): BigDecimal {
-  //   assert(this !== null, "Failed to sum BigDecimals because left hand side is 'null'");
-  //   return bigDecimal.plus(this, other);
-  // }
+//   @operator('+')
+//   plus(other: BigDecimal): BigDecimal {
+//     assert(this !== null, "Failed to sum BigDecimals because left hand side is 'null'");
+//     return bigDecimal.plus(this, other);
+//   }
 
-  // @operator('-')
-  // minus(other: BigDecimal): BigDecimal {
-  //   assert(this !== null, "Failed to subtract BigDecimals because left hand side is 'null'");
-  //   return bigDecimal.minus(this, other);
-  // }
+//   @operator('-')
+//   minus(other: BigDecimal): BigDecimal {
+//     assert(this !== null, "Failed to subtract BigDecimals because left hand side is 'null'");
+//     return bigDecimal.minus(this, other);
+//   }
 
-  // @operator('*')
-  // times(other: BigDecimal): BigDecimal {
-  //   assert(this !== null, "Failed to multiply BigDecimals because left hand side is 'null'");
-  //   return bigDecimal.times(this, other);
-  // }
+//   @operator('*')
+//   times(other: BigDecimal): BigDecimal {
+//     assert(this !== null, "Failed to multiply BigDecimals because left hand side is 'null'");
+//     return bigDecimal.times(this, other);
+//   }
 
-  // @operator('/')
-  // div(other: BigDecimal): BigDecimal {
-  //   assert(this !== null, "Failed to divide BigDecimals because left hand side is 'null'");
-  //   return bigDecimal.dividedBy(this, other);
-  // }
+//   @operator('/')
+//   div(other: BigDecimal): BigDecimal {
+//     assert(this !== null, "Failed to divide BigDecimals because left hand side is 'null'");
+//     return bigDecimal.dividedBy(this, other);
+//   }
 
-  // @operator('==')
-  // equals(other: BigDecimal): boolean {
-  //   return BigDecimal.compare(this, other) == 0;
-  // }
+//   @operator('==')
+//   equals(other: BigDecimal): boolean {
+//     return BigDecimal.compare(this, other) == 0;
+//   }
 
-  @operator("!=")
-  notEqual(other: BigDecimal): boolean {
-    return !(this == other);
-  }
+//   @operator("!=")
+//   notEqual(other: BigDecimal): boolean {
+//     return !(this == other);
+//   }
 
-  // @operator('<')
-  // lt(other: BigDecimal): boolean {
-  //   return BigDecimal.compare(this, other) == -1;
-  // }
+//   @operator('<')
+//   lt(other: BigDecimal): boolean {
+//     return BigDecimal.compare(this, other) == -1;
+//   }
 
-  // @operator('>')
-  // gt(other: BigDecimal): boolean {
-  //   return BigDecimal.compare(this, other) == 1;
-  // }
+//   @operator('>')
+//   gt(other: BigDecimal): boolean {
+//     return BigDecimal.compare(this, other) == 1;
+//   }
 
-  @operator("<=")
-  le(other: BigDecimal): boolean {
-    return !(this > other);
-  }
+//   @operator("<=")
+//   le(other: BigDecimal): boolean {
+//     return !(this > other);
+//   }
 
-  @operator(">=")
-  ge(other: BigDecimal): boolean {
-    return !(this < other);
-  }
+//   @operator(">=")
+//   ge(other: BigDecimal): boolean {
+//     return !(this < other);
+//   }
 
-  // @operator.prefix('-')
-  // neg(): BigDecimal {
-  //   assert(this !== null, "Failed to negate BigDecimal because the value of it is 'null'");
-  //   return new BigDecimal(new BigInt(0)).minus(this);
-  // }
+//   @operator.prefix('-')
+//   neg(): BigDecimal {
+//     assert(this !== null, "Failed to negate BigDecimal because the value of it is 'null'");
+//     return new BigDecimal(new BigInt(0)).minus(this);
+//   }
 
-  // /**
-  //  * Returns −1 if a < b, 1 if a > b, and 0 if A == B
-  //  */
-  // static compare(a: BigDecimal, b: BigDecimal): i32 {
-  //   const diff = a.minus(b);
-  //   if (diff.digits.isZero()) {
-  //     return 0;
-  //   }
-  //   return diff.digits > BigInt.fromI32(0) ? 1 : -1;
-  // }
-}
+//   /**
+//    * Returns −1 if a < b, 1 if a > b, and 0 if A == B
+//    */
+//   static compare(a: BigDecimal, b: BigDecimal): i32 {
+//     const diff = a.minus(b);
+//     if (diff.digits.isZero()) {
+//       return 0;
+//     }
+//     return diff.digits > BigInt.fromI32(0) ? 1 : -1;
+//   }
+// }
