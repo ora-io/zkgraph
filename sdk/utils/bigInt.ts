@@ -49,8 +49,7 @@ export function times(x: BigInt, y: BigInt): BigInt {
     let carry = 0;
 
     for (let j = 0; j < y.length || carry; j++) {
-      const product =
-        (result[i + j] || 0) + (x[i] || 0) * (y[j] || 0) + carry;
+      const product = (result[i + j] || 0) + (x[i] || 0) * (y[j] || 0) + carry;
       result[i + j] = product & 0xff;
       carry = product >> 8;
     }
@@ -142,7 +141,7 @@ export function fromString(s: string): BigInt {
   let startIndex = isNegative ? 1 : 0;
 
   // Remove leading zeros
-  const chars = s.split('');
+  const chars = s.split("");
   while (chars[startIndex] === "0") {
     startIndex++;
   }
@@ -195,7 +194,7 @@ export function leftShift(x: BigInt, bits: u8): BigInt {
   let carry = 0;
 
   for (let i = 0; i < x.length; i++) {
-    const value = (x[i] || 0) << bitShift | carry;
+    const value = ((x[i] || 0) << bitShift) | carry;
     result[i + byteShift] = value & 0xff;
     carry = value >> 8;
   }
@@ -215,7 +214,7 @@ export function rightShift(x: BigInt, bits: u8): BigInt {
   let carry = 0;
 
   for (let i = x.length - 1; i >= byteShift; i--) {
-    const value = (x[i] || 0) >> bitShift | carry;
+    const value = ((x[i] || 0) >> bitShift) | carry;
     result[i - byteShift] = value & 0xff;
     carry = (x[i] || 0) << (8 - bitShift);
   }
@@ -239,7 +238,8 @@ export function compare(a: BigInt, b: BigInt): i32 {
 
   while (
     aRelevantBytes > 0 &&
-    ((!aIsNeg && a[aRelevantBytes - 1] == 0) || (aIsNeg && a[aRelevantBytes - 1] == 255))
+    ((!aIsNeg && a[aRelevantBytes - 1] == 0) ||
+      (aIsNeg && a[aRelevantBytes - 1] == 255))
   ) {
     aRelevantBytes -= 1;
   }
@@ -248,7 +248,8 @@ export function compare(a: BigInt, b: BigInt): i32 {
 
   while (
     bRelevantBytes > 0 &&
-    ((!bIsNeg && b[bRelevantBytes - 1] == 0) || (bIsNeg && b[bRelevantBytes - 1] == 255))
+    ((!bIsNeg && b[bRelevantBytes - 1] == 0) ||
+      (bIsNeg && b[bRelevantBytes - 1] == 255))
   ) {
     bRelevantBytes -= 1;
   }
