@@ -993,27 +993,39 @@ export class BigInt extends Uint8Array {
   }
 
   // Operators
-  @operator('+')
+  @operator("+")
   plus(other: BigInt): BigInt {
-    assert(this !== null, "Failed to sum BigInts because left hand side is 'null'");
+    assert(
+      this !== null,
+      "Failed to sum BigInts because left hand side is 'null'"
+    );
     return bigInt.plus(this, other);
   }
 
-  @operator('-')
+  @operator("-")
   minus(other: BigInt): BigInt {
-    assert(this !== null, "Failed to subtract BigInts because left hand side is 'null'");
+    assert(
+      this !== null,
+      "Failed to subtract BigInts because left hand side is 'null'"
+    );
     return bigInt.minus(this, other);
   }
 
-  @operator('*')
+  @operator("*")
   times(other: BigInt): BigInt {
-    assert(this !== null, "Failed to multiply BigInts because left hand side is 'null'");
+    assert(
+      this !== null,
+      "Failed to multiply BigInts because left hand side is 'null'"
+    );
     return bigInt.times(this, other);
   }
 
-  @operator('/')
+  @operator("/")
   div(other: BigInt): BigInt {
-    assert(this !== null, "Failed to divide BigInts because left hand side is 'null'");
+    assert(
+      this !== null,
+      "Failed to divide BigInts because left hand side is 'null'"
+    );
     return bigInt.dividedBy(this, other);
   }
 
@@ -1021,9 +1033,12 @@ export class BigInt extends Uint8Array {
   //   return bigInt.dividedByDecimal(this, other);
   // }
 
-  @operator('%')
+  @operator("%")
   mod(other: BigInt): BigInt {
-    assert(this !== null, "Failed to apply module to BigInt because left hand side is 'null'");
+    assert(
+      this !== null,
+      "Failed to apply module to BigInt because left hand side is 'null'"
+    );
     return bigInt.mod(this, other);
   }
 
@@ -1057,27 +1072,27 @@ export class BigInt extends Uint8Array {
     return !(this < other);
   }
 
-  @operator.prefix('-')
+  @operator.prefix("-")
   neg(): BigInt {
     return BigInt.fromI32(0).minus(this);
   }
 
-  @operator('|')
+  @operator("|")
   bitOr(other: BigInt): BigInt {
     return bigInt.bitOr(this, other);
   }
 
-  @operator('&')
+  @operator("&")
   bitAnd(other: BigInt): BigInt {
     return bigInt.bitAnd(this, other);
   }
 
-  @operator('<<')
+  @operator("<<")
   leftShift(bits: u8): BigInt {
     return bigInt.leftShift(this, bits);
   }
 
-  @operator('>>')
+  @operator(">>")
   rightShift(bits: u8): BigInt {
     return bigInt.rightShift(this, bits);
   }
