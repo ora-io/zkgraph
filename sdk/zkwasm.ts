@@ -46,7 +46,7 @@ export function read_bytes_from_u64_to_dst(dst: Bytes, byte_length: i32): Bytes 
 }
 
 export function read_bytes_from_u64(byte_length: i32): Bytes {
-    var dst = Bytes.new(byte_length);
+    var dst = new Bytes(byte_length);
     read_bytes_from_u64_to_dst(dst, byte_length);
     return dst;
 }
