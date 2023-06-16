@@ -43,7 +43,6 @@ export class ByteArray extends Uint8Array {
    * Returns bytes in little-endian order.
    *
    * Note: Ethereum uses big-endian order.
-   * If your input is big-endian, call `.reverse()` first.
    *
    * Provable on zkWASM.
    *
@@ -55,6 +54,22 @@ export class ByteArray extends Uint8Array {
     self[1] = (x >> 8) as u8;
     self[2] = (x >> 16) as u8;
     self[3] = (x >> 24) as u8;
+    return self;
+  }
+
+  /**
+   * Returns bytes in big-endian order.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 67 lines of wat.
+   */
+  static fromI32BigEndian(x: i32): ByteArray {
+    const self = new ByteArray(4);
+    self[3] = x as u8;
+    self[2] = (x >> 8) as u8;
+    self[1] = (x >> 16) as u8;
+    self[0] = (x >> 24) as u8;
     return self;
   }
 
@@ -74,6 +89,22 @@ export class ByteArray extends Uint8Array {
     self[1] = (x >> 8) as u8;
     self[2] = (x >> 16) as u8;
     self[3] = (x >> 24) as u8;
+    return self;
+  }
+
+  /**
+   * Returns bytes in big-endian order.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 67 lines of wat.
+   */
+  static fromU32BigEndian(x: u32): ByteArray {
+    const self = new ByteArray(4);
+    self[3] = x as u8;
+    self[2] = (x >> 8) as u8;
+    self[1] = (x >> 16) as u8;
+    self[0] = (x >> 24) as u8;
     return self;
   }
 
@@ -101,6 +132,26 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * Returns bytes in big-endian order.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 111 lines of wat.
+   */
+  static fromI64BigEndian(x: i64): ByteArray {
+    const self = new ByteArray(8);
+    self[7] = x as u8;
+    self[6] = (x >> 8) as u8;
+    self[5] = (x >> 16) as u8;
+    self[4] = (x >> 24) as u8;
+    self[3] = (x >> 32) as u8;
+    self[2] = (x >> 40) as u8;
+    self[1] = (x >> 48) as u8;
+    self[0] = (x >> 56) as u8;
+    return self;
+  }
+
+  /**
    * Returns bytes in little-endian order.
    *
    * Note: Ethereum uses big-endian order.
@@ -120,6 +171,26 @@ export class ByteArray extends Uint8Array {
     self[5] = (x >> 40) as u8;
     self[6] = (x >> 48) as u8;
     self[7] = (x >> 56) as u8;
+    return self;
+  }
+
+  /**
+   * Returns bytes in big-endian order.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 111 lines of wat.
+   */
+  static fromU64BigEndian(x: u64): ByteArray {
+    const self = new ByteArray(8);
+    self[7] = x as u8;
+    self[6] = (x >> 8) as u8;
+    self[5] = (x >> 16) as u8;
+    self[4] = (x >> 24) as u8;
+    self[3] = (x >> 32) as u8;
+    self[2] = (x >> 40) as u8;
+    self[1] = (x >> 48) as u8;
+    self[0] = (x >> 56) as u8;
     return self;
   }
 
@@ -220,7 +291,7 @@ export class ByteArray extends Uint8Array {
    *
    * Provable on zkWASM.
    *
-   * WASM cost: 3 lines of wat.
+   * WASM cost: 241 lines of wat.
    */
   toU32(): u32 {
     for (let i = 4; i < this.length; i++) {
@@ -247,12 +318,44 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * Interprets the byte array as a big-endian U32.
+   * Throws in case of overflow.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 198 lines of wat.
+   */
+  toU32BigEndian(): u32 {
+    for (let i = 0; i < this.length - 4; i++) {
+      if (this[i] != 0) {
+        assert(false, "overflow converting " + this.toHexString() + " to u32");
+      }
+    }
+    const paddedBytes = new Bytes(4);
+    paddedBytes[0] = 0;
+    paddedBytes[1] = 0;
+    paddedBytes[2] = 0;
+    paddedBytes[3] = 0;
+    const minLen =
+      paddedBytes.length < this.length ? paddedBytes.length : this.length;
+    for (let i = 0; i < minLen; i++) {
+      paddedBytes[i] = this[i];
+    }
+    let x: u32 = 0;
+    x = (x | paddedBytes[0]) << 8;
+    x = (x | paddedBytes[1]) << 8;
+    x = (x | paddedBytes[2]) << 8;
+    x = x | paddedBytes[3];
+    return x;
+  }
+
+  /**
    * Interprets the byte array as a little-endian I32.
    * Throws in case of overflow.
    *
    * Provable on zkWASM.
    *
-   * WASM cost: 207 lines of wat.
+   * WASM cost: 230 lines of wat.
    */
   toI32(): i32 {
     const isNeg = this.length > 0 && this[this.length - 1] >> 7 == 1;
@@ -277,6 +380,40 @@ export class ByteArray extends Uint8Array {
     x = (x | paddedBytes[2]) << 8;
     x = (x | paddedBytes[1]) << 8;
     x = x | paddedBytes[0];
+    return x;
+  }
+
+  /**
+   * Interprets the byte array as a big-endian I32.
+   * Throws in case of overflow.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 222 lines of wat.
+   */
+  toI32BigEndian(): i32 {
+    const isNeg = this.length > 0 && this[0] >> 7 == 1;
+    const padding = isNeg ? 255 : 0;
+    for (let i = 0; i < this.length - 4; i++) {
+      if (this[i] != padding) {
+        assert(false, "overflow converting " + this.toHexString() + " to i32");
+      }
+    }
+    const paddedBytes = new Bytes(4);
+    paddedBytes[0] = padding;
+    paddedBytes[1] = padding;
+    paddedBytes[2] = padding;
+    paddedBytes[3] = padding;
+    const minLen =
+      paddedBytes.length < this.length ? paddedBytes.length : this.length;
+    for (let i = 0; i < minLen; i++) {
+      paddedBytes[i] = this[i];
+    }
+    let x: i32 = 0;
+    x = (x | paddedBytes[0]) << 8;
+    x = (x | paddedBytes[1]) << 8;
+    x = (x | paddedBytes[2]) << 8;
+    x = x | paddedBytes[3];
     return x;
   }
 
@@ -311,7 +448,7 @@ export class ByteArray extends Uint8Array {
    *
    * Provable on zkWASM.
    *
-   * WASM cost: 302 lines of wat.
+   * WASM cost: 325 lines of wat.
    */
   toI64(): i64 {
     const isNeg = this.length > 0 && this[this.length - 1] >> 7 == 1;
@@ -348,12 +485,54 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * Interprets the byte array as a big-endian I64.
+   * Throws in case of overflow.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 317 lines of wat.
+   */
+  toI64BigEndian(): i64 {
+    const isNeg = this.length > 0 && this[0] >> 7 == 1;
+    const padding = isNeg ? 255 : 0;
+    for (let i = 0; i < this.length - 8; i++) {
+      if (this[i] != padding) {
+        assert(false, "overflow converting " + this.toHexString() + " to i64");
+      }
+    }
+    const paddedBytes = new Bytes(8);
+    paddedBytes[0] = padding;
+    paddedBytes[1] = padding;
+    paddedBytes[2] = padding;
+    paddedBytes[3] = padding;
+    paddedBytes[4] = padding;
+    paddedBytes[5] = padding;
+    paddedBytes[6] = padding;
+    paddedBytes[7] = padding;
+    const minLen =
+      paddedBytes.length < this.length ? paddedBytes.length : this.length;
+    for (let i = 0; i < minLen; i++) {
+      paddedBytes[i] = this[i];
+    }
+    let x: i64 = 0;
+    x = (x | paddedBytes[0]) << 8;
+    x = (x | paddedBytes[1]) << 8;
+    x = (x | paddedBytes[2]) << 8;
+    x = (x | paddedBytes[3]) << 8;
+    x = (x | paddedBytes[4]) << 8;
+    x = (x | paddedBytes[5]) << 8;
+    x = (x | paddedBytes[6]) << 8;
+    x = x | paddedBytes[7];
+    return x;
+  }
+
+  /**
    * Interprets the byte array as a little-endian U64.
    * Throws in case of overflow.
    *
    * Provable on zkWASM.
    *
-   * WASM cost: 270 lines of wat.
+   * WASM cost: 293 lines of wat.
    */
   toU64(): u64 {
     for (let i = 8; i < this.length; i++) {
@@ -384,6 +563,46 @@ export class ByteArray extends Uint8Array {
     x = (x | paddedBytes[2]) << 8;
     x = (x | paddedBytes[1]) << 8;
     x = x | paddedBytes[0];
+    return x;
+  }
+
+  /**
+   * Interprets the byte array as a big-endian U64.
+   * Throws in case of overflow.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 293 lines of wat.
+   */
+  toU64BigEndian(): u64 {
+    for (let i = 0; i < this.length - 8; i++) {
+      if (this[i] != 0) {
+        assert(false, "overflow converting " + this.toHexString() + " to u64");
+      }
+    }
+    const paddedBytes = new Bytes(8);
+    paddedBytes[0] = 0;
+    paddedBytes[1] = 0;
+    paddedBytes[2] = 0;
+    paddedBytes[3] = 0;
+    paddedBytes[4] = 0;
+    paddedBytes[5] = 0;
+    paddedBytes[6] = 0;
+    paddedBytes[7] = 0;
+    const minLen =
+      paddedBytes.length < this.length ? paddedBytes.length : this.length;
+    for (let i = 0; i < minLen; i++) {
+      paddedBytes[i] = this[i];
+    }
+    let x: u64 = 0;
+    x = (x | paddedBytes[0]) << 8;
+    x = (x | paddedBytes[1]) << 8;
+    x = (x | paddedBytes[2]) << 8;
+    x = (x | paddedBytes[3]) << 8;
+    x = (x | paddedBytes[4]) << 8;
+    x = (x | paddedBytes[5]) << 8;
+    x = (x | paddedBytes[6]) << 8;
+    x = x | paddedBytes[7];
     return x;
   }
 
@@ -429,102 +648,102 @@ export class Bytes extends ByteArray {
   //  *
   //  * It's a custom implementation to get the initial Hyper Oracle MVP.
   //  */
-  // static new(_len: i32): Bytes {
-  //   var _bytes_ptr = _static_alloc(12);
-  //   var _arr_data_ptr = _static_alloc(_len);
-  //   // write data ptr to the 0th, 1st fields of Array<u8>
-  //   PtrDeref.write(_bytes_ptr, _arr_data_ptr);
-  //   PtrDeref.write(_bytes_ptr + 4, _arr_data_ptr);
-  //   PtrDeref.write(_bytes_ptr + 8, _len);
-  //   // _available_ptr += (12+_len)
-  //   // _available_ptr += 2 // just for nop
-  //   var _bytes = changetype<Bytes>(_bytes_ptr);
-  //   // write data len to the 2nd, 3rd fields of Array<u8>, equivalent to .length=_len
-  //   return _bytes;
-  // }
+  static new(_len: i32): Bytes {
+    var _bytes_ptr = _static_alloc(12);
+    var _arr_data_ptr = _static_alloc(_len);
+    // write data ptr to the 0th, 1st fields of Array<u8>
+    PtrDeref.write(_bytes_ptr, _arr_data_ptr);
+    PtrDeref.write(_bytes_ptr + 4, _arr_data_ptr);
+    PtrDeref.write(_bytes_ptr + 8, _len);
+    // _available_ptr += (12+_len)
+    // _available_ptr += 2 // just for nop
+    var _bytes = changetype<Bytes>(_bytes_ptr);
+    // write data len to the 2nd, 3rd fields of Array<u8>, equivalent to .length=_len
+    return _bytes;
+  }
 
-  // /**
-  //  * Try not to use this.
-  //  *
-  //  * It's a custom implementation to get the initial Hyper Oracle MVP.
-  //  */
-  // static fromRawarrPtr(_arr_heap_ptr: usize, _len: i32): Bytes {
-  //   // var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
-  //   var _bytes_ptr = _static_alloc(12);
-  //   PtrDeref.write(_bytes_ptr, _arr_heap_ptr);
-  //   PtrDeref.write(_bytes_ptr + 4, _arr_heap_ptr);
-  //   PtrDeref.write(_bytes_ptr + 8, _len);
-  //   return changetype<Bytes>(_bytes_ptr);
-  // }
+  /**
+   * Try not to use this.
+   *
+   * It's a custom implementation to get the initial Hyper Oracle MVP.
+   */
+  static fromRawarrPtr(_arr_heap_ptr: usize, _len: i32): Bytes {
+    // var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
+    var _bytes_ptr = _static_alloc(12);
+    PtrDeref.write(_bytes_ptr, _arr_heap_ptr);
+    PtrDeref.write(_bytes_ptr + 4, _arr_heap_ptr);
+    PtrDeref.write(_bytes_ptr + 8, _len);
+    return changetype<Bytes>(_bytes_ptr);
+  }
 
-  // toRawarrPtr(): usize {
-  //   return PtrDeref.read(changetype<usize>(this));
-  // }
+  toRawarrPtr(): usize {
+    return PtrDeref.read(changetype<usize>(this));
+  }
 
-  // /**
-  //  * Try not to use this.
-  //  *
-  //  * It's a custom implementation to get the initial Hyper Oracle MVP.
-  //  */
-  // fill(_val: u8 = 0): this {
-  //   for (var i: i32 = 0; i < this.length; i++) {
-  //     this[i] = _val;
-  //   }
-  //   return this;
-  //   // this.arr.fill(_val)
-  // }
+  /**
+   * Try not to use this.
+   *
+   * It's a custom implementation to get the initial Hyper Oracle MVP.
+   */
+  fill(_val: u8 = 0): this {
+    for (var i: i32 = 0; i < this.length; i++) {
+      this[i] = _val;
+    }
+    return this;
+    // this.arr.fill(_val)
+  }
 
-  // /**
-  //  * Try not to use this.
-  //  *
-  //  * It's a custom implementation to get the initial Hyper Oracle MVP.
-  //  */
-  // slice(start: i32, end: i32): Bytes {
-  //   if (
-  //     start < 0 ||
-  //     end < 0 ||
-  //     start > this.length ||
-  //     end > this.length ||
-  //     start >= end
-  //   ) {
-  //     return Bytes.new(0);
-  //     // throw new Error("Invalid slice parameters");
-  //   }
+  /**
+   * Try not to use this.
+   *
+   * It's a custom implementation to get the initial Hyper Oracle MVP.
+   */
+  slice(start: i32, end: i32): Bytes {
+    if (
+      start < 0 ||
+      end < 0 ||
+      start > this.length ||
+      end > this.length ||
+      start >= end
+    ) {
+      return Bytes.new(0);
+      // throw new Error("Invalid slice parameters");
+    }
 
-  //   const len = end - start;
-  //   var dst = Bytes.new(len);
-  //   for (let i: i32 = 0; i < len; i++) {
-  //     dst[i] = this[start + i];
-  //   }
+    const len = end - start;
+    var dst = Bytes.new(len);
+    for (let i: i32 = 0; i < len; i++) {
+      dst[i] = this[start + i];
+    }
 
-  //   return dst;
-  // }
-
-  // Disabled due to the existence of implementation of ByteArray
-  // toU32(): u32 {
-  //   assert(this.length <= 4);
-  //   var rst: u32 = 0;
-  //   for (var i = 0; i < min(4, this.length); i++) {
-  //     rst = rst << 8;
-  //     rst += this[i];
-  //   }
-  //   return rst;
-  // }
+    return dst;
+  }
 
   // Disabled due to the existence of implementation of ByteArray
-  // @operator("==")
-  // __opeq(right: Bytes): bool {
-  //   if (this.length != right.length) {
-  //     // console.log(this.length.toString() + '---' + right.length.toString());
-  //     return false;
-  //   }
-  //   for (var i = 0; i < this.length; i++) {
-  //     if (this[i] != right[i]) {
-  //       return false;
-  //     }
-  //   }
-  //   return true;
-  // }
+  toU32(): u32 {
+    assert(this.length <= 4);
+    var rst: u32 = 0;
+    for (var i = 0; i < min(4, this.length); i++) {
+      rst = rst << 8;
+      rst += this[i];
+    }
+    return rst;
+  }
+
+  // Disabled due to the existence of implementation of ByteArray
+  @operator("==")
+  __opeq(right: Bytes): bool {
+    if (this.length != right.length) {
+      // console.log(this.length.toString() + '---' + right.length.toString());
+      return false;
+    }
+    for (var i = 0; i < this.length; i++) {
+      if (this[i] != right[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
   // --------------------------------------
 
   /**
@@ -678,6 +897,10 @@ export class BigInt extends Uint8Array {
     return BigInt.fromByteArray(byteArray);
   }
 
+  static fromSignedBytesBigEndian(bytes: Bytes): BigInt {
+    return BigInt.fromSignedBytes(bytes.reverse());
+  }
+
   static fromByteArray(byteArray: ByteArray): BigInt {
     return changetype<BigInt>(byteArray);
   }
@@ -692,6 +915,10 @@ export class BigInt extends Uint8Array {
     }
     signedBytes[bytes.length] = 0;
     return signedBytes;
+  }
+
+  static fromUnsignedBytesBigEndian(bytes: ByteArray): BigInt {
+    return BigInt.fromUnsignedBytes(bytes.reverse());
   }
 
   toHex(): string {
