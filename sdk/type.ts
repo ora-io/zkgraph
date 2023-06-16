@@ -1,4 +1,4 @@
-// zkWASM friendly and Subgraph compatible AssemblyScript API for zkGraph:
+// zkWASM friendly and Subgraph equivalent AssemblyScript API for zkGraph:
 // (https://thegraph.com/docs/en/developing/assemblyscript-api/)
 // Reference Implementation:
 // (https://github.com/graphprotocol/graph-tooling/tree/main/packages/ts)
@@ -12,6 +12,10 @@ import {
 
 /**
  * dereference helper
+ *
+ * Try not to use this.
+ *
+ * It's a custom implementation to get the initial Hyper Oracle MVP.
  */
 class PtrDeref {
   data: usize = 0;
@@ -35,27 +39,17 @@ function _static_alloc(_len: usize): usize {
  */
 export class ByteArray extends Uint8Array {
   /**
-   *
-   * WASM cost: 62 lines of wat.
-   */
-  // 29 lines of wat
-  static new(_len: i32): ByteArray {
-    var _bytes_ptr = _static_alloc(12);
-    var _arr_data_ptr = _static_alloc(_len);
-    PtrDeref.write(_bytes_ptr, _arr_data_ptr);
-    PtrDeref.write(_bytes_ptr + 4, _arr_data_ptr);
-    PtrDeref.write(_bytes_ptr + 8, _len);
-    var _bytes = changetype<ByteArray>(_bytes_ptr);
-    return _bytes;
-  }
-
-  /**
    * Returns bytes in little-endian order.
    *
-   * WASM cost: 62 lines of wat.
+   * Note: Ethereum uses big-endian order.
+   * If your input is big-endian, call `.reverse()` first.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 67 lines of wat.
    */
   static fromI32(x: i32): ByteArray {
-    const self = ByteArray.new(4);
+    const self = new ByteArray(4);
     self[0] = x as u8;
     self[1] = (x >> 8) as u8;
     self[2] = (x >> 16) as u8;
@@ -66,10 +60,15 @@ export class ByteArray extends Uint8Array {
   /**
    * Returns bytes in little-endian order.
    *
-   * WASM cost: 62 lines of wat.
+   * Note: Ethereum uses big-endian order.
+   * If your input is big-endian, call `.reverse()` first.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 67 lines of wat.
    */
   static fromU32(x: u32): ByteArray {
-    const self = ByteArray.new(4);
+    const self = new ByteArray(4);
     self[0] = x as u8;
     self[1] = (x >> 8) as u8;
     self[2] = (x >> 16) as u8;
@@ -80,10 +79,15 @@ export class ByteArray extends Uint8Array {
   /**
    * Returns bytes in little-endian order.
    *
-   * WASM cost: 113 lines of wat.
+   * Note: Ethereum uses big-endian order.
+   * If your input is big-endian, call `.reverse()` first.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 111 lines of wat.
    */
   static fromI64(x: i64): ByteArray {
-    const self = ByteArray.new(8);
+    const self = new ByteArray(8);
     self[0] = x as u8;
     self[1] = (x >> 8) as u8;
     self[2] = (x >> 16) as u8;
@@ -98,10 +102,15 @@ export class ByteArray extends Uint8Array {
   /**
    * Returns bytes in little-endian order.
    *
-   * WASM cost: 113 lines of wat.
+   * Note: Ethereum uses big-endian order.
+   * If your input is big-endian, call `.reverse()` first.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 111 lines of wat.
    */
   static fromU64(x: u64): ByteArray {
-    const self = ByteArray.new(8);
+    const self = new ByteArray(8);
     self[0] = x as u8;
     self[1] = (x >> 8) as u8;
     self[2] = (x >> 16) as u8;
@@ -116,7 +125,9 @@ export class ByteArray extends Uint8Array {
   /**
    * Returns empty ByteArray.
    *
-   * WASM cost: 62 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 67 lines of wat.
    */
   static empty(): ByteArray {
     return ByteArray.fromI32(0);
@@ -127,7 +138,9 @@ export class ByteArray extends Uint8Array {
    * hexadecimal digits to a `ByteArray`. The string `hex` can optionally
    * start with '0x'
    *
-   * WASM cost: 1524 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1396 lines of wat.
    */
   static fromHexString(hex: string): ByteArray {
     assert(hex.length % 2 == 0, "input " + hex + " has odd length");
@@ -135,15 +148,25 @@ export class ByteArray extends Uint8Array {
     if (hex.length >= 2 && hex.charAt(0) == "0" && hex.charAt(1) == "x") {
       hex = hex.substr(2);
     }
-    const output = Bytes.new(hex.length / 2);
+    const output = new Bytes(hex.length / 2);
     for (let i = 0; i < hex.length; i += 2) {
-      output[i / 2] = I8.parseInt(hex.substr(i, 2), 16);
+      // @deprecated — Converts a string to an integer of this type. Please use "i32.parse" method.
+      // The .wat diff is using I8.parseInt has an additional i32.extend8_s (Unknown opcode 192 (0xC0) in zkwasm).
+      // output[i / 2] = I8.parseInt(hex.substr(i, 2), 16);
+
+      // ERROR TS2339: Property 'parse' does not exist on type '~lib/builtins/i32'.
+      // output[i / 2] = i32.parse(hex.substr(i, 2), 16);
+
+      // @deprecated — Converts a string to an integer of this type. Please use "i32.parse" method.
+      output[i / 2] = I32.parseInt(hex.substr(i, 2), 16);
     }
     return output;
   }
 
   /**
-   * WASM cost: 388 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 275 lines of wat.
    */
   static fromUTF8(str: string): ByteArray {
     const utf8 = String.UTF8.encode(str);
@@ -151,6 +174,8 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * Provable on zkWASM.
+   *
    * WASM cost: 0 lines of wat.
    */
   static fromBigInt(bigInt: BigInt): ByteArray {
@@ -158,21 +183,27 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
-   * WASM cost: 1230 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1121 lines of wat.
    */
   toHex(): string {
     return bytesToHex(this);
   }
 
   /**
-   * WASM cost: 1230 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1121 lines of wat.
    */
   toHexString(): string {
     return bytesToHex(this);
   }
 
   /**
-   * WASM cost: 1061 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 951 lines of wat.
    */
   toString(): string {
     return bytesToString(this);
@@ -186,7 +217,9 @@ export class ByteArray extends Uint8Array {
    * Interprets the byte array as a little-endian U32.
    * Throws in case of overflow.
    *
-   * WASM cost: 233 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 3 lines of wat.
    */
   toU32(): u32 {
     for (let i = 4; i < this.length; i++) {
@@ -194,7 +227,7 @@ export class ByteArray extends Uint8Array {
         assert(false, "overflow converting " + this.toHexString() + " to u32");
       }
     }
-    const paddedBytes = Bytes.new(4);
+    const paddedBytes = new Bytes(4);
     paddedBytes[0] = 0;
     paddedBytes[1] = 0;
     paddedBytes[2] = 0;
@@ -216,7 +249,9 @@ export class ByteArray extends Uint8Array {
    * Interprets the byte array as a little-endian I32.
    * Throws in case of overflow.
    *
-   * WASM cost: 224 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 207 lines of wat.
    */
   toI32(): i32 {
     const isNeg = this.length > 0 && this[this.length - 1] >> 7 == 1;
@@ -226,7 +261,7 @@ export class ByteArray extends Uint8Array {
         assert(false, "overflow converting " + this.toHexString() + " to i32");
       }
     }
-    const paddedBytes = Bytes.new(4);
+    const paddedBytes = new Bytes(4);
     paddedBytes[0] = padding;
     paddedBytes[1] = padding;
     paddedBytes[2] = padding;
@@ -247,10 +282,12 @@ export class ByteArray extends Uint8Array {
   /** Create a new `ByteArray` that consist of `this` directly followed by
    * the bytes from `other`
    *
-   * WASM cost: 933 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 917 lines of wat.
    */
   concat(other: ByteArray): ByteArray {
-    const newArray = ByteArray.new(this.length + other.length);
+    const newArray = new ByteArray(this.length + other.length);
     newArray.set(this, 0);
     newArray.set(other, this.length);
     return newArray;
@@ -259,7 +296,9 @@ export class ByteArray extends Uint8Array {
   /** Create a new `ByteArray` that consists of `this` directly followed by
    * the representation of `other` as bytes
    *
-   * WASM cost: 951 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 928 lines of wat.
    */
   concatI32(other: i32): ByteArray {
     return this.concat(ByteArray.fromI32(other));
@@ -269,7 +308,9 @@ export class ByteArray extends Uint8Array {
    * Interprets the byte array as a little-endian I64.
    * Throws in case of overflow.
    *
-   * WASM cost: 319 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 302 lines of wat.
    */
   toI64(): i64 {
     const isNeg = this.length > 0 && this[this.length - 1] >> 7 == 1;
@@ -279,7 +320,7 @@ export class ByteArray extends Uint8Array {
         assert(false, "overflow converting " + this.toHexString() + " to i64");
       }
     }
-    const paddedBytes = Bytes.new(8);
+    const paddedBytes = new Bytes(8);
     paddedBytes[0] = padding;
     paddedBytes[1] = padding;
     paddedBytes[2] = padding;
@@ -309,7 +350,9 @@ export class ByteArray extends Uint8Array {
    * Interprets the byte array as a little-endian U64.
    * Throws in case of overflow.
    *
-   * WASM cost: 287 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 270 lines of wat.
    */
   toU64(): u64 {
     for (let i = 8; i < this.length; i++) {
@@ -317,7 +360,7 @@ export class ByteArray extends Uint8Array {
         assert(false, "overflow converting " + this.toHexString() + " to u64");
       }
     }
-    const paddedBytes = Bytes.new(8);
+    const paddedBytes = new Bytes(8);
     paddedBytes[0] = 0;
     paddedBytes[1] = 0;
     paddedBytes[2] = 0;
@@ -344,7 +387,9 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
-   * WASM cost: 50 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 52 lines of wat.
    */
   @operator("==")
   equals(other: ByteArray): boolean {
@@ -360,7 +405,9 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
-   * WASM cost: 50 lines of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 52 lines of wat.
    */
   @operator("!=")
   notEqual(other: ByteArray): boolean {
@@ -374,11 +421,12 @@ export class ByteArray extends Uint8Array {
  */
 export class Bytes extends ByteArray {
   // Functions from initial implementations
-  // --------------------------------------
+  // Custom implementations to get the initial Hyper Oracle MVP.
+  // -----------------------------------------------------------
   /**
-   * WASM cost: 19 lines of wat.
+   * Try not to use this.
    *
-   * Not removed for backward compatibility
+   * It's a custom implementation to get the initial Hyper Oracle MVP.
    */
   static new(_len: i32): Bytes {
     var _bytes_ptr = _static_alloc(12);
@@ -394,6 +442,11 @@ export class Bytes extends ByteArray {
     return _bytes;
   }
 
+  /**
+   * Try not to use this.
+   *
+   * It's a custom implementation to get the initial Hyper Oracle MVP.
+   */
   static fromRawarrPtr(_arr_heap_ptr: usize, _len: i32): Bytes {
     // var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
     var _bytes_ptr = _static_alloc(12);
@@ -407,6 +460,11 @@ export class Bytes extends ByteArray {
     return PtrDeref.read(changetype<usize>(this));
   }
 
+  /**
+   * Try not to use this.
+   *
+   * It's a custom implementation to get the initial Hyper Oracle MVP.
+   */
   fill(_val: u8 = 0): this {
     for (var i: i32 = 0; i < this.length; i++) {
       this[i] = _val;
@@ -415,6 +473,11 @@ export class Bytes extends ByteArray {
     // this.arr.fill(_val)
   }
 
+  /**
+   * Try not to use this.
+   *
+   * It's a custom implementation to get the initial Hyper Oracle MVP.
+   */
   slice(start: i32, end: i32): Bytes {
     if (
       start < 0 ||
@@ -436,18 +499,16 @@ export class Bytes extends ByteArray {
     return dst;
   }
 
-  /**
-   * WASM cost: 40 lines of wat.
-   */
-  toU32(): u32 {
-    assert(this.length <= 4);
-    var rst: u32 = 0;
-    for (var i = 0; i < min(4, this.length); i++) {
-      rst = rst << 8;
-      rst += this[i];
-    }
-    return rst;
-  }
+  // Disabled due to the existence of implementation of ByteArray
+  // toU32(): u32 {
+  //   assert(this.length <= 4);
+  //   var rst: u32 = 0;
+  //   for (var i = 0; i < min(4, this.length); i++) {
+  //     rst = rst << 8;
+  //     rst += this[i];
+  //   }
+  //   return rst;
+  // }
 
   // Disabled due to the existence of implementation of ByteArray
   // @operator("==")
@@ -466,6 +527,9 @@ export class Bytes extends ByteArray {
   // --------------------------------------
 
   /**
+   *
+   * Provable on zkWASM.
+   *
    * WASM cost: 0 line of wat.
    */
   static fromByteArray(byteArray: ByteArray): Bytes {
@@ -473,6 +537,9 @@ export class Bytes extends ByteArray {
   }
 
   /**
+   *
+   * Provable on zkWASM.
+   *
    * WASM cost: 0 line of wat.
    */
   static fromUint8Array(uint8Array: Uint8Array): Bytes {
@@ -484,28 +551,36 @@ export class Bytes extends ByteArray {
    * hexadecimal digits to a `ByteArray`. The string `hex` can optionally
    * start with '0x'
    *
-   * WASM cost: 1524 line of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1396 line of wat.
    */
   static fromHexString(str: string): Bytes {
     return changetype<Bytes>(ByteArray.fromHexString(str));
   }
 
   /**
-   * WASM cost: 392 line of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 279 line of wat.
    */
   static fromUTF8(str: string): Bytes {
     return Bytes.fromByteArray(ByteArray.fromUTF8(str));
   }
 
   /**
-   * WASM cost: 62 line of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 67 line of wat.
    */
   static fromI32(i: i32): Bytes {
     return changetype<Bytes>(ByteArray.fromI32(i));
   }
 
   /**
-   * WASM cost: 62 line of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 67 line of wat.
    */
   static empty(): Bytes {
     return changetype<Bytes>(ByteArray.empty());
@@ -525,7 +600,9 @@ export class Bytes extends ByteArray {
 /** An Ethereum address (20 bytes). */
 export class Address extends Bytes {
   /**
-   * WASM cost: 360 line of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 126 line of wat.
    */
   static fromString(s: string): Address {
     return changetype<Address>(stringToH160(s));
@@ -534,22 +611,28 @@ export class Address extends Bytes {
   /** Convert `Bytes` that must be exactly 20 bytes long to an address.
    * Passing in a value with fewer or more bytes will result in an error
    *
-   * WASM cost: 1342 line of wat.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 9 line of wat.
    */
   static fromBytes(b: Bytes): Address {
     if (b.length != 20) {
       throw new Error(
-        `Bytes of length ${b.length} can not be converted to 20 byte addresses`
+        // `Bytes of length ${b.length} can not be converted to 20 byte addresses`
+        // Don't use ${} in error message for better performance in zkWASM
+        `Bytes of length of (not 20) can not be converted to 20 byte addresses`
       );
     }
     return changetype<Address>(b);
   }
 
   /**
+   * Provable on zkWASM.
+   *
    * WASM cost: 44 line of wat.
    */
   static zero(): Address {
-    const self = ByteArray.new(20);
+    const self = new ByteArray(20);
 
     for (let i = 0; i < 20; i++) {
       self[i] = 0;
