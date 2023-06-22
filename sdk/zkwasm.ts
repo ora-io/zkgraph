@@ -9,7 +9,7 @@ declare function wasm_input(x: i32): i64
 
 // @ts-ignore
 @external("env", "require")
-export declare function require(x: i32): void
+export declare function require(x: i32): i64
 
 export function wasm_private_input(): i64
 {
