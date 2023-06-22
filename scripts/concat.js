@@ -10,31 +10,32 @@
  *
  * Note: Make sure to replace <folderA> and <fileB> with the actual paths to the respective folders and files.
  */
-import { readdirSync, readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { readdirSync, readFileSync, writeFileSync } from "fs";
+import { join } from "path";
 
 // Get the command line arguments
 const [, , folderA, fileB] = process.argv;
 
 // Check if all required arguments are provided
 if (!folderA || !fileB) {
-  console.error('Usage: node concatenate.js <folderA> <fileB>');
+  console.error("Usage: node concatenate.js <folderA> <fileB>");
   process.exit(1);
 }
 
 // Read the contents of all files in folderA
 const fileNames = readdirSync(folderA);
-const contents = fileNames
-  .map(fileName => readFileSync(join(folderA, fileName), 'utf8'));
+const contents = fileNames.map((fileName) =>
+  readFileSync(join(folderA, fileName), "utf8")
+);
 
 // Concatenate the contents of all files
-const concatenatedContent = contents.join('\n');
+const concatenatedContent = contents.join("\n");
 
 // Read the contents of file B
-const contentB = readFileSync(fileB, 'utf8');
+const contentB = readFileSync(fileB, "utf8");
 
 // Concatenate the contents of folderA and file B
-const finalContent = concatenatedContent + '\n' + contentB;
+const finalContent = concatenatedContent + "\n" + contentB;
 
 // Write the concatenated content to file B
-writeFileSync(fileB, finalContent, 'utf8');
+writeFileSync(fileB, finalContent, "utf8");
