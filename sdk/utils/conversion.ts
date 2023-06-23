@@ -5,7 +5,7 @@
 // Need optimization for zkWASM
 // For this implementation, we use the `as-bigint` lib by Polywrap
 // (https://github.com/polywrap/as-bigint)
-import { BigInt } from "../type";
+import { BigInt, ByteArray } from "../type";
 // TODO: Remove third-party dependency
 import { BigInt as ASBigInt } from "../lib/asBigInt";
 
@@ -31,21 +31,62 @@ export function bigIntToString(bigInt: Uint8Array): string {
 }
 
 export function bigIntToHex(bigInt: Uint8Array): string {
-  return "0x" + bigIntToASBigInt(changetype<BigInt>(bigInt)).toString();
+  return bigIntToASBigInt(changetype<BigInt>(bigInt)).toString(16);
 }
 
 export function stringToH160(s: string): Uint8Array {
-  const bytes = new Uint8Array(20);
-  for (let i = 0; i < 20; i++) {
-    bytes[i] = s.charCodeAt(i);
-  }
-  return bytes;
+  assert(s.length == 40 || s.length == 42, "address has wrong length");
+  return ByteArray.fromHexString(s);
 }
 
+// For this implementation, we are referring to the `as-base58` lib by near
+// (https://github.com/near/as-base58)
 export function bytesToBase58(n: Uint8Array): string {
-  // Implementation for converting bytes to Base58
-  // ...
-  return ""; // Placeholder, replace with actual implementation
+  const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  const BASE = 58;
+  const LEADER = ALPHABET.charAt(0);
+  const FACTOR_NUM = 406;
+  const FACTOR_DEN = 554;
+
+  const INV_FACTOR_NUM = FACTOR_DEN;
+  const INV_FACTOR_DEN = FACTOR_NUM - 1;
+
+  // Skip & count leading zeroes.
+  let pend = n.length;
+  let pbegin = 0;
+  while (pbegin != pend && n[pbegin] == 0) ++pbegin;
+  let zeroes = pbegin;
+
+  // Allocate enough space in big-endian base58 representation.
+  let size = (pend - pbegin) * INV_FACTOR_NUM / INV_FACTOR_DEN + 1
+  let b58 = new Uint8Array(size);
+  let length = 0;
+
+  // Process the bytes.
+  while (pbegin != pend) {
+    let carry = u32(n[pbegin])
+    // Apply "b58 = b58 * 256 + ch".
+    let i = 0
+    for (let it = size - 1; it != -1 && (carry != 0 || i < length); --it, ++i) {
+      carry += u32(b58[it]) << 8;
+      b58[it] = carry % BASE;
+      carry = carry / BASE;
+    }
+    if (ASC_OPTIMIZE_LEVEL == 0) {
+      assert(!carry, 'Non-zero carry');
+    }
+    length = i;
+    pbegin++;
+  }
+
+  // Skip leading zeroes in base58 result.
+  let it = size - length;
+  while (it != size && b58[it] == 0) ++it;
+
+  // Translate the result into a string.
+  let str = LEADER.repeat(zeroes);
+  for (; it < size; ++it) str += ALPHABET.charAt(b58[it]);
+  return str;
 }
 
 /**
