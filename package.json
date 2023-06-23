@@ -2,7 +2,7 @@
   "name": "zkgraph",
   "scripts": {
     "test": "asc demo-uniswap-v2-idx-zkgraph/mapping.ts -o build/mapping.wasm --bindings esm && node src/test.js",
-    "compile": "asc main.ts --lib ./demo-uniswap-v2-idx-zkgraph -t build/main.wat -O --noAssert -o build/main.wasm --bindings esm --disable bulk-memory --use abort=sdk/zkwasm/abort --target release --runtime stub && wc -l build/main.wat && node scripts/concat.js sdk/syntax build/main.js",
+    "compile": "asc main.ts --lib ./demo-uniswap-v2-idx-zkgraph -t build/main.wat -O --noAssert -o build/main.wasm --bindings esm --disable bulk-memory --use abort=sdk/zkwasm/abort --target release --runtime stub && wc -l build/main.wat",
     "format": "prettier --write -c **/*.{js,ts,md}",
     "lint": "prettier -c **/*.{js,ts,md}",
     "test-sdk": "asc sdk/test/test.ts -o build/sdk/test.wasm --bindings esm && node sdk/test/test.js"
