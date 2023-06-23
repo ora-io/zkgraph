@@ -11,8 +11,12 @@ export function testUtils(): void {
   assert(byteArray.toBase58() == "2p", "ByteArray.toBase58()");
 
   // Address Utils Test
-  let addressFromString = Address.fromString("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045");
-  let addressFromBytes = Address.fromBytes(Bytes.fromHexString("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"));
+  let addressFromString = Address.fromString(
+    "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+  );
+  let addressFromBytes = Address.fromBytes(
+    Bytes.fromHexString("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045")
+  );
 
   assert(addressFromString == addressFromBytes, "Address.fromString()");
 
