@@ -275,9 +275,13 @@ export class ByteArray extends Uint8Array {
     return typeConversion.bytesToString(this);
   }
 
-  // toBase58(): string {
-  //   return bytesToBase58(this);
-  // }
+  /**
+   * Provable on zkWASM.
+   * WASM cost: 421 lines of wat.
+   */
+  toBase58(): string {
+    return typeConversion.bytesToBase58(this);
+  }
 
   /**
    * Interprets the byte array as a little-endian U32.
@@ -637,11 +641,11 @@ export class Bytes extends ByteArray {
   // Functions from initial implementations
   // Custom implementations to get the initial Hyper Oracle MVP.
   // -----------------------------------------------------------
-  // /**
-  //  * Try not to use this.
-  //  *
-  //  * It's a custom implementation to get the initial Hyper Oracle MVP.
-  //  */
+  /**
+   * Try not to use this.
+   *
+   * It's a custom implementation to get the initial Hyper Oracle MVP.
+   */
   static new(_len: i32): Bytes {
     var _bytes_ptr = _static_alloc(12);
     var _arr_data_ptr = _static_alloc(_len);
@@ -915,12 +919,20 @@ export class BigInt extends Uint8Array {
     return BigInt.fromUnsignedBytes(bytes.reverse());
   }
 
+  /**
+   * Lowercase hex string without 0x prefix.
+   */
   toHex(): string {
     return typeConversion.bigIntToHex(this);
   }
 
+  /**
+   * Lowercase hex string with 0x prefix.
+   * Notice: The Original AssemblySciprt API of The Graph is without 0x prefix.
+   */
   toHexString(): string {
-    return typeConversion.bigIntToHex(this);
+    // return typeConversion.bigIntToHex(this);
+    return "0x" + typeConversion.bigIntToHex(this);
   }
 
   toString(): string {
