@@ -44,11 +44,15 @@ export function fromString(s: string): BigInt {
 }
 
 export function bitOr(x: BigInt, y: BigInt): BigInt {
-  return BigInt.fromI64(bigIntToASBigInt(x).bitwiseOr(bigIntToASBigInt(y)).toInt64());
+  return BigInt.fromI64(
+    bigIntToASBigInt(x).bitwiseOr(bigIntToASBigInt(y)).toInt64()
+  );
 }
 
 export function bitAnd(x: BigInt, y: BigInt): BigInt {
-  return BigInt.fromI64(bigIntToASBigInt(x).bitwiseAnd(bigIntToASBigInt(y)).toInt64());
+  return BigInt.fromI64(
+    bigIntToASBigInt(x).bitwiseAnd(bigIntToASBigInt(y)).toInt64()
+  );
 }
 
 export function leftShift(x: BigInt, bits: u8): BigInt {
