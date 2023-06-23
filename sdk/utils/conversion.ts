@@ -42,7 +42,7 @@ export function stringToH160(s: string): Uint8Array {
 // For this implementation, we are referring to the `as-base58` lib by near
 // (https://github.com/near/as-base58)
 export function bytesToBase58(n: Uint8Array): string {
-  const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
   const BASE = 58;
   const LEADER = ALPHABET.charAt(0);
   const FACTOR_NUM = 406;
@@ -58,22 +58,22 @@ export function bytesToBase58(n: Uint8Array): string {
   let zeroes = pbegin;
 
   // Allocate enough space in big-endian base58 representation.
-  let size = (pend - pbegin) * INV_FACTOR_NUM / INV_FACTOR_DEN + 1
+  let size = ((pend - pbegin) * INV_FACTOR_NUM) / INV_FACTOR_DEN + 1;
   let b58 = new Uint8Array(size);
   let length = 0;
 
   // Process the bytes.
   while (pbegin != pend) {
-    let carry = u32(n[pbegin])
+    let carry = u32(n[pbegin]);
     // Apply "b58 = b58 * 256 + ch".
-    let i = 0
+    let i = 0;
     for (let it = size - 1; it != -1 && (carry != 0 || i < length); --it, ++i) {
       carry += u32(b58[it]) << 8;
       b58[it] = carry % BASE;
       carry = carry / BASE;
     }
     if (ASC_OPTIMIZE_LEVEL == 0) {
-      assert(!carry, 'Non-zero carry');
+      assert(!carry, "Non-zero carry");
     }
     length = i;
     pbegin++;
