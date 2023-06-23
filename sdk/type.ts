@@ -2,13 +2,7 @@
 // (https://thegraph.com/docs/en/developing/assemblyscript-api/)
 // Reference Implementation:
 // (https://github.com/graphprotocol/graph-tooling/tree/main/packages/ts)
-import {
-  bytesToString,
-  bytesToHex,
-  bigIntToString,
-  bigIntToHex,
-  stringToH160,
-} from "./utils/conversion";
+import * as typeConversion from "./utils/conversion";
 import * as bigInt from "./utils/bigInt";
 
 /**
@@ -260,7 +254,7 @@ export class ByteArray extends Uint8Array {
    * WASM cost: 1121 lines of wat.
    */
   toHex(): string {
-    return bytesToHex(this);
+    return typeConversion.bytesToHex(this);
   }
 
   /**
@@ -269,7 +263,7 @@ export class ByteArray extends Uint8Array {
    * WASM cost: 1121 lines of wat.
    */
   toHexString(): string {
-    return bytesToHex(this);
+    return typeConversion.bytesToHex(this);
   }
 
   /**
@@ -278,7 +272,7 @@ export class ByteArray extends Uint8Array {
    * WASM cost: 951 lines of wat.
    */
   toString(): string {
-    return bytesToString(this);
+    return typeConversion.bytesToString(this);
   }
 
   // toBase58(): string {
@@ -825,7 +819,7 @@ export class Address extends Bytes {
    * WASM cost: 126 line of wat.
    */
   static fromString(s: string): Address {
-    return changetype<Address>(stringToH160(s));
+    return changetype<Address>(typeConversion.stringToH160(s));
   }
 
   /** Convert `Bytes` that must be exactly 20 bytes long to an address.
@@ -922,15 +916,15 @@ export class BigInt extends Uint8Array {
   }
 
   toHex(): string {
-    return bigIntToHex(this);
+    return typeConversion.bigIntToHex(this);
   }
 
   toHexString(): string {
-    return bigIntToHex(this);
+    return typeConversion.bigIntToHex(this);
   }
 
   toString(): string {
-    return bigIntToString(this);
+    return typeConversion.bigIntToString(this);
   }
 
   static fromString(s: string): BigInt {
@@ -995,37 +989,38 @@ export class BigInt extends Uint8Array {
   // Operators
   @operator("+")
   plus(other: BigInt): BigInt {
-    assert(
-      this !== null,
-      "Failed to sum BigInts because left hand side is 'null'"
-    );
+    // ERROR TS2322: Type 'sdk/type/BigInt | null' is not assignable to type 'sdk/type/BigInt'.
+    // assert(
+    //   this !== null,
+    //   "Failed to sum BigInts because left hand side is 'null'"
+    // );
     return bigInt.plus(this, other);
   }
 
   @operator("-")
   minus(other: BigInt): BigInt {
-    assert(
-      this !== null,
-      "Failed to subtract BigInts because left hand side is 'null'"
-    );
+    // assert(
+    //   this !== null,
+    //   "Failed to subtract BigInts because left hand side is 'null'"
+    // );
     return bigInt.minus(this, other);
   }
 
   @operator("*")
   times(other: BigInt): BigInt {
-    assert(
-      this !== null,
-      "Failed to multiply BigInts because left hand side is 'null'"
-    );
+    // assert(
+    //   this !== null,
+    //   "Failed to multiply BigInts because left hand side is 'null'"
+    // );
     return bigInt.times(this, other);
   }
 
   @operator("/")
   div(other: BigInt): BigInt {
-    assert(
-      this !== null,
-      "Failed to divide BigInts because left hand side is 'null'"
-    );
+    // assert(
+    //   this !== null,
+    //   "Failed to divide BigInts because left hand side is 'null'"
+    // );
     return bigInt.dividedBy(this, other);
   }
 
@@ -1035,10 +1030,10 @@ export class BigInt extends Uint8Array {
 
   @operator("%")
   mod(other: BigInt): BigInt {
-    assert(
-      this !== null,
-      "Failed to apply module to BigInt because left hand side is 'null'"
-    );
+    // assert(
+    //   this !== null,
+    //   "Failed to apply module to BigInt because left hand side is 'null'"
+    // );
     return bigInt.mod(this, other);
   }
 
