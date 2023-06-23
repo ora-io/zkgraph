@@ -3,6 +3,12 @@
 // For The Graph, they appear to be implemented in the node
 // (https://github.com/graphprotocol/graph-node/blob/39094b1144b37f6614ca070c02ace2a0fd321391/runtime/wasm/src/module/mod.rs)
 // Need optimization for zkWASM
+// For this implementation, we use the `as-bigint` lib by Polywrap
+// (https://github.com/polywrap/as-bigint)
+import { BigInt } from "../type";
+// TODO: Remove third-party dependency
+import { BigInt as ASBigInt } from "../lib/asBigInt";
+
 export function bytesToString(bytes: Uint8Array): string {
   let str = "";
   for (let i = 0; i < bytes.length; i++) {
@@ -21,11 +27,11 @@ export function bytesToHex(bytes: Uint8Array): string {
 }
 
 export function bigIntToString(bigInt: Uint8Array): string {
-  return bytesToString(bigInt);
+  return bigIntToASBigInt(changetype<BigInt>(bigInt)).toString();
 }
 
 export function bigIntToHex(bigInt: Uint8Array): string {
-  return bytesToHex(bigInt);
+  return "0x" + bigIntToASBigInt(changetype<BigInt>(bigInt)).toString();
 }
 
 export function stringToH160(s: string): Uint8Array {
@@ -40,4 +46,11 @@ export function bytesToBase58(n: Uint8Array): string {
   // Implementation for converting bytes to Base58
   // ...
   return ""; // Placeholder, replace with actual implementation
+}
+
+/**
+ * Helper function to convert a BigInt to an ASBigInt for using `as-bigint` lib.
+ */
+export function bigIntToASBigInt(bigInt: BigInt): ASBigInt {
+  return ASBigInt.fromInt64(bigInt.toI64());
 }

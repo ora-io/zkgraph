@@ -55,7 +55,7 @@ function generateProof(eventSig, topic1, topic2, topic3, data, output) {
   dataLength = dataLength / 2;
   let proof = `${eventSig}:bytes-packed ${topic1}:bytes-packed ${topic2}:bytes-packed ${topic3}:bytes-packed 0x${dataLength.toString(
     16
-  )}:i64 ${data}:bytes-packed ${output}:bytes-packed`;
+  )}:i64 ${data}:bytes-packed 0x${output}:bytes-packed`;
   return proof;
 }
 

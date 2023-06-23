@@ -1,7 +1,7 @@
 import { Bytes, ByteArray } from "../type";
 
 export function testBytesWithByteArray(): void {
-  const longArray = ByteArray.new(5);
+  const longArray = new ByteArray(5);
   longArray[0] = 251;
   longArray[1] = 255;
   longArray[2] = 251;
