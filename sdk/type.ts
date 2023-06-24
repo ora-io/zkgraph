@@ -209,7 +209,7 @@ export class ByteArray extends Uint8Array {
    * WASM cost: 1396 lines of wat.
    */
   static fromHexString(hex: string): ByteArray {
-    assert(hex.length % 2 == 0, "input " + hex + " has odd length");
+    assert(hex.length % 2 == 0, "input has odd length");
     // Skip possible `0x` prefix.
     if (hex.length >= 2 && hex.charAt(0) == "0" && hex.charAt(1) == "x") {
       hex = hex.substr(2);
@@ -294,7 +294,7 @@ export class ByteArray extends Uint8Array {
   toU32(): u32 {
     for (let i = 4; i < this.length; i++) {
       if (this[i] != 0) {
-        assert(false, "overflow converting " + this.toHexString() + " to u32");
+        assert(false, "overflow converting this to u32");
       }
     }
     const paddedBytes = new Bytes(4);
@@ -326,7 +326,7 @@ export class ByteArray extends Uint8Array {
   toU32BigEndian(): u32 {
     for (let i = 0; i < this.length - 4; i++) {
       if (this[i] != 0) {
-        assert(false, "overflow converting " + this.toHexString() + " to u32");
+        assert(false, "overflow converting this to u32");
       }
     }
     const paddedBytes = new Bytes(4);
@@ -360,7 +360,7 @@ export class ByteArray extends Uint8Array {
     const padding = isNeg ? 255 : 0;
     for (let i = 4; i < this.length; i++) {
       if (this[i] != padding) {
-        assert(false, "overflow converting " + this.toHexString() + " to i32");
+        assert(false, "overflow converting this to i32");
       }
     }
     const paddedBytes = new Bytes(4);
@@ -394,7 +394,7 @@ export class ByteArray extends Uint8Array {
     const padding = isNeg ? 255 : 0;
     for (let i = 0; i < this.length - 4; i++) {
       if (this[i] != padding) {
-        assert(false, "overflow converting " + this.toHexString() + " to i32");
+        assert(false, "overflow converting to this i32");
       }
     }
     const paddedBytes = new Bytes(4);
@@ -453,7 +453,7 @@ export class ByteArray extends Uint8Array {
     const padding = isNeg ? 255 : 0;
     for (let i = 8; i < this.length; i++) {
       if (this[i] != padding) {
-        assert(false, "overflow converting " + this.toHexString() + " to i64");
+        assert(false, "overflow converting to this i64");
       }
     }
     const paddedBytes = new Bytes(8);
@@ -495,7 +495,7 @@ export class ByteArray extends Uint8Array {
     const padding = isNeg ? 255 : 0;
     for (let i = 0; i < this.length - 8; i++) {
       if (this[i] != padding) {
-        assert(false, "overflow converting " + this.toHexString() + " to i64");
+        assert(false, "overflow converting this to i64");
       }
     }
     const paddedBytes = new Bytes(8);
@@ -535,7 +535,7 @@ export class ByteArray extends Uint8Array {
   toU64(): u64 {
     for (let i = 8; i < this.length; i++) {
       if (this[i] != 0) {
-        assert(false, "overflow converting " + this.toHexString() + " to u64");
+        assert(false, "overflow converting this to u64");
       }
     }
     const paddedBytes = new Bytes(8);
@@ -575,7 +575,7 @@ export class ByteArray extends Uint8Array {
   toU64BigEndian(): u64 {
     for (let i = 0; i < this.length - 8; i++) {
       if (this[i] != 0) {
-        assert(false, "overflow converting " + this.toHexString() + " to u64");
+        assert(false, "overflow converting this to u64");
       }
     }
     const paddedBytes = new Bytes(8);
