@@ -1,4 +1,4 @@
-import { BigInt } from "../type";
+import { BigInt } from "../../lib/common/type";
 
 export function testBigIntMath(): void {
   // plus()

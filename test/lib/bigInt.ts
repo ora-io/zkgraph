@@ -1,4 +1,4 @@
-import { BigInt, ByteArray, Bytes } from "../type";
+import { BigInt, ByteArray, Bytes } from "../../lib/common/type";
 
 // Test some BigInt methods.
 export function testBigInt(): void {
