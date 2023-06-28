@@ -5,9 +5,9 @@
 // Need optimization for zkWASM
 // For this implementation, we use the `as-bigint` lib by Polywrap
 // (https://github.com/polywrap/as-bigint)
-import { BigInt, ByteArray } from "../type";
+import { BigInt, ByteArray } from "../common/type";
 // TODO: Remove third-party dependency
-import { BigInt as ASBigInt } from "../lib/asBigInt";
+import { BigInt as ASBigInt } from "../extlib/asBigInt";
 
 export function bytesToString(bytes: Uint8Array): string {
   let str = "";

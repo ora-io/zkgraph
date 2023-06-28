@@ -2,8 +2,25 @@
 // (https://thegraph.com/docs/en/developing/assemblyscript-api/)
 // Reference Implementation:
 // (https://github.com/graphprotocol/graph-tooling/tree/main/packages/ts)
-import * as typeConversion from "./utils/conversion";
-import * as bigInt from "./utils/bigInt";
+import * as typeConversion from "../utils/conversion";
+import * as bigInt from "../utils/bigInt";
+
+
+export class Event{
+    esig: Uint8Array;
+    topic1: Uint8Array;
+    topic2: Uint8Array;
+    topic3: Uint8Array;
+    data: Uint8Array;
+    
+    constructor(esig: Uint8Array, topic1: Uint8Array, topic2: Uint8Array, topic3: Uint8Array, data: Uint8Array){
+        this.esig = esig;
+        this.topic1 = topic1;
+        this.topic2 = topic2;
+        this.topic3 = topic3;
+        this.data = data;
+    }
+}
 
 /**
  * dereference helper
@@ -12,7 +29,7 @@ import * as bigInt from "./utils/bigInt";
  *
  * It's a custom implementation to get the initial Hyper Oracle MVP.
  */
-class PtrDeref {
+export class PtrDeref {
   data: usize = 0;
   static read(ptr: usize): usize {
     return changetype<PtrDeref>(ptr).data;
@@ -22,7 +39,10 @@ class PtrDeref {
   }
 }
 
-let _available_ptr: usize = 10000; // in js local: max mem size == 65535 (guess)
+/**
+ * Caution! use only if you know what you want to do, otherwise it will introduce weird bug (bus error, runtime err etc.)
+ */
+let _available_ptr: usize = 60000; // in js local: max mem size == 65535 (guess)
 function _static_alloc(_len: usize): usize {
   var _pre_ptr = _available_ptr;
   _available_ptr += _len;
@@ -667,7 +687,9 @@ export class Bytes extends ByteArray {
    */
   static fromRawarrPtr(_arr_heap_ptr: usize, _len: i32): Bytes {
     // var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
-    var _bytes_ptr = _static_alloc(12);
+    var _tmpu8a = new Uint8Array(0);
+    // var _bytes_ptr = _static_alloc(12);
+    var _bytes_ptr = _tmpu8a.dataStart;
     PtrDeref.write(_bytes_ptr, _arr_heap_ptr);
     PtrDeref.write(_bytes_ptr + 4, _arr_heap_ptr);
     PtrDeref.write(_bytes_ptr + 8, _len);
@@ -691,12 +713,18 @@ export class Bytes extends ByteArray {
     // this.arr.fill(_val)
   }
 
+
+  slice(start: i32, end: i32 = -1): Bytes {
+    end = (end == -1) ? this.length : end
+    return Bytes.fromUint8Array((this as Uint8Array).slice(start, end));
+  }
+
   /**
    * Try not to use this.
    *
    * It's a custom implementation to get the initial Hyper Oracle MVP.
    */
-  slice(start: i32, end: i32): Bytes {
+  _slice(start: i32, end: i32): Bytes {
     if (
       start < 0 ||
       end < 0 ||
@@ -704,12 +732,12 @@ export class Bytes extends ByteArray {
       end > this.length ||
       start >= end
     ) {
-      return Bytes.new(0);
+      return new Bytes(0);
       // throw new Error("Invalid slice parameters");
     }
 
     const len = end - start;
-    var dst = Bytes.new(len);
+    var dst = new Bytes(len);
     for (let i: i32 = 0; i < len; i++) {
       dst[i] = this[start + i];
     }
