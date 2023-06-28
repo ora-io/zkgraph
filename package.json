@@ -7,7 +7,7 @@
     "compile-zk": "asc lib/zkmain.ts --lib ./graphs/$ZKG -t build/$ZKG.wat -O --noAssert -o build/$ZKG.wasm --disable bulk-memory --use abort=lib/zkmain/abort --target release --bindings esm --runtime stub && wc -l build/$ZKG.wat",
     "format": "prettier --write -c **/*.{js,ts,md}",
     "lint": "prettier -c **/*.{js,ts,md}",
-    "test-sdk": "asc test/lib/test.ts -o build/lib/test.wasm --bindings esm && node test/lib/test.js"
+    "test-lib": "asc test/lib/test.ts -o build/lib/test.wasm --bindings esm && node test/lib/test.js"
   },
   "type": "module",
   "dependencies": {
