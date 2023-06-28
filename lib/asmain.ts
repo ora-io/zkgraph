@@ -1,9 +1,5 @@
-import { handleEvents } from "mapping";
-import { PtrDeref } from "./common/type";
 import { receiveMatchedEvents } from "./common/matchedevents";
 
-// used in asc to rm env.abort
-function abort(a:usize, b:usize, c:u32, d:u32):void{}
 // @ts-ignore
 // @external("env", "require")
 // export declare function require(x: i32): void

@@ -2,7 +2,8 @@
   "name": "zkgraph",
   "scripts": {
     "test": "asc graphs/demo-uniswap-v2-idx-zkgraph/mapping.ts -o build/mapping.wasm --bindings esm && node src/test.js",
-    "compile": "asc lib/asmain.ts --lib ./graphs/$ZKG -t build/$ZKG.wat -O --noAssert -o build/$ZKG.wasm --disable bulk-memory --use abort=lib/asmain/abort --target release --bindings esm --runtime stub && wc -l build/$ZKG.wat",
+    "compile": "asc lib/asmain.ts --lib ./graphs/$ZKG -t build/$ZKG.wat -O --noAssert -o build/$ZKG.wasm --disable bulk-memory --use abort=lib/common/type/abort --target release --bindings esm --runtime stub && wc -l build/$ZKG.wat",
+    "compile-inner-c": "asc lib/common/matchedEvents.ts --lib ./graphs/$ZKG  -o build/inner_pre_pre.wasm -t build/inner_pre_pre.wat --runtime stub --disable bulk-memory --use abort=lib/common/type/abort --runtime stub --disable mutable-globals && wasm-opt -Oz build/inner_pre_pre.wasm -o build/inner_pre.wasm --disable-bulk-memory --disable-mutable-globals && wasm2wat build/inner_pre.wasm -o build/inner_pre.wat --inline-exports --generate-names --disable-bulk-memory --disable-mutable-globals && wat2wasm build/inner_pre.wat -r -o build/inner.wasm",
     "compile-zk": "asc lib/zkmain.ts --lib ./graphs/$ZKG -t build/$ZKG.wat -O --noAssert -o build/$ZKG.wasm --disable bulk-memory --use abort=lib/zkmain/abort --target release --bindings esm --runtime stub && wc -l build/$ZKG.wat",
     "format": "prettier --write -c **/*.{js,ts,md}",
     "lint": "prettier -c **/*.{js,ts,md}",
@@ -14,6 +15,9 @@
   },
   "devDependencies": {
     "assemblyscript": "^0.27.0",
-    "prettier": "2.8.8"
+    "prettier": "2.8.8",
+    "wasm-opt": "^1.4.0",
+    "wasm2wat": "^1.1.1",
+    "wat2wasm": "^3.0.0"
   }
 }

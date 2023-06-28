@@ -1,3 +1,4 @@
+import { handleEvents } from "mapping";
 import { Event, Bytes, PtrDeref } from "./type";
 // TODO: test this
 export function receiveMatchedEvents(

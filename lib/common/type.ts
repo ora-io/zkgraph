@@ -5,6 +5,8 @@
 import * as typeConversion from "../utils/conversion";
 import * as bigInt from "../utils/bigInt";
 
+// used in asc to rm env.abort
+function abort(a:usize, b:usize, c:u32, d:u32):void{}
 
 export class Event{
     esig: Uint8Array;
