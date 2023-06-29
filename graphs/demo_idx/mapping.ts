@@ -1,7 +1,7 @@
-import { Bytes, Event } from "../../lib/common/type";
+import { Bytes, Event } from "../lib/common/type";
 
 //TODO: events[]
-export function handleEvent(
+export function handleEvents(
     events: Event[]
 ): Uint8Array {
   var source = changetype<Bytes>(events[1].data);
