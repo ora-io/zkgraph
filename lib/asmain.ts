@@ -1,4 +1,4 @@
-import { receiveMatchedEvents } from "./common/matchedevents";
+import { receiveMatchedEvents } from "./common/receive";
 
 // @ts-ignore
 // @external("env", "require")
