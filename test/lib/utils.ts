@@ -1,4 +1,4 @@
-import { ByteArray, Address, Bytes, BigInt } from "../type";
+import { ByteArray, Address, Bytes, BigInt } from "../../lib/common/type";
 
 export function testUtils(): void {
   // ByteArray Utils Test
