@@ -47,15 +47,15 @@ function callWasm(eventSig, topic1, topic2, topic3, data) {
   return uint8array2str(output);
 }
 
-function generateProof(eventSig, topic1, topic2, topic3, data, output) {
+function generateProof(eventSig, topic1, topic2, topic3, data, output, separator=" ") {
   let dataLength = data.length;
   if (data.startsWith("0x")) {
     dataLength = dataLength - 2;
   }
   dataLength = dataLength / 2;
-  let proof = `${eventSig}:bytes-packed ${topic1}:bytes-packed ${topic2}:bytes-packed ${topic3}:bytes-packed 0x${dataLength.toString(
+  let proof = `${eventSig}:bytes-packed${separator}${topic1}:bytes-packed${separator}${topic2}:bytes-packed${separator}${topic3}:bytes-packed${separator}0x${dataLength.toString(
     16
-  )}:i64 ${data}:bytes-packed 0x${output}:bytes-packed`;
+  )}:i64${separator}${data}:bytes-packed${separator}0x${output}:bytes-packed`;
   return proof;
 }
 
@@ -73,8 +73,14 @@ let data = log.data || emptyValue;
 // let data =
 //   "0x000000000000000000000000000000000000000000000000000000000000001c000000000000000000000000000000000000000000000000000000000000001c";
 
+console.log("OUTPUT:");
 let output = callWasm(eventSig, topic1, topic2, topic3, data);
-console.log(output);
+console.log(output, '\n');
 
-let proof = generateProof(eventSig, topic1, topic2, topic3, data, output);
-console.log(proof);
+console.log("INPUT FOR ZKWASM EXPLORER (divided by space):");
+let proof_zkwasm_explorer = generateProof(eventSig, topic1, topic2, topic3, data, output);
+console.log(proof_zkwasm_explorer, '\n');
+
+console.log("INPUT FOR LOCAL ZKWASM (divided by comma):");
+let proof_zkwasm_local = generateProof(eventSig, topic1, topic2, topic3, data, output, ",");
+console.log(proof_zkwasm_local);
