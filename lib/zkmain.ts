@@ -1,7 +1,7 @@
 // WIP
 
 import { Bytes } from "./common/type";
-import { handleEvents } from "mapping";
+import { handleEvents } from "../src/mapping";
 
 // used in asc to rm env.abort
 function abort(a:usize, b:usize, c:u32, d:u32):void{}
