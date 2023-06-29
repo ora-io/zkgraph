@@ -1,13 +1,13 @@
 {
   "name": "zkgraph",
   "scripts": {
-    "test": "asc graphs/demo_idx/mapping.ts -o build/mapping.wasm --bindings esm && node bundle/test.js",
+    "test": "asc example_zkgraphs/mvp_test/mapping.ts -o build/mapping.wasm --bindings esm && node bundle/test.js",
     "compile": "asc lib/asmain.ts -t build/zkgraph.wat -O --noAssert -o build/zkgraph.wasm --disable bulk-memory --use abort=lib/common/type/abort --target release --bindings esm --runtime stub && wc -l build/zkgraph.wat",
     "compile-zk": "asc lib/zkmain.ts -t build/zkgraph.wat -O --noAssert -o build/zkgraph.wasm --disable bulk-memory --use abort=lib/zkmain/abort --target release --bindings esm --runtime stub && wc -l build/zkgraph.wat",
     "format": "prettier --write -c **/*.{js,ts,md}",
     "lint": "prettier -c **/*.{js,ts,md}",
     "test-lib": "asc test/lib/test.ts -o build/lib/test.wasm --bindings esm && node test/lib/test.js",
-    "compile-inner-c": "asc lib/common/receive.ts -o build/inner_pre_pre.wasm -t build/inner_pre_pre.wat --runtime stub --disable bulk-memory --use abort=lib/common/type/abort --runtime stub --disable mutable-globals && wasm-opt -Oz build/inner_pre_pre.wasm -o build/inner_pre.wasm --disable-bulk-memory --disable-mutable-globals && wasm2wat build/inner_pre.wasm -o build/inner_pre.wat --inline-exports --generate-names --disable-bulk-memory --disable-mutable-globals && wat2wasm build/inner_pre.wat -r -o build/inner.wasm"
+    "compile-inner-c": "asc lib/common/receive.ts -o build/inner_pre_pre.wasm -t build/inner_pre_pre.wat --runtime stub --disable bulk-memory --use abort=lib/common/type/abort --runtime stub --disable mutable-globals && wasm-opt -Oz build/inner_pre_pre.wasm -o build/inner_pre.wasm --disable-bulk-memory --disable-mutable-globals && wasm2wat build/inner_pre.wasm -o build/inner_pre.wat --inline-exports --generate-names --disable-bulk-memory --disable-mutable-globals && wat2wasm build/inner_pre.wat -r -o build/inner.wasm  && wc -l build/zkgraph.wat"
   },
   "type": "module",
   "dependencies": {
