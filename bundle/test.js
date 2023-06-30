@@ -77,10 +77,6 @@ console.log("OUTPUT:");
 let output = callWasm(eventSig, topic1, topic2, topic3, data);
 console.log(output, '\n');
 
-console.log("INPUT FOR ZKWASM EXPLORER (divided by space):");
-let proof_zkwasm_explorer = generateProof(eventSig, topic1, topic2, topic3, data, output);
-console.log(proof_zkwasm_explorer, '\n');
-
-console.log("INPUT FOR LOCAL ZKWASM (divided by comma):");
-let proof_zkwasm_local = generateProof(eventSig, topic1, topic2, topic3, data, output, ",");
-console.log(proof_zkwasm_local);
+console.log("INPUT FOR ZKWASM:");
+let proof = generateProof(eventSig, topic1, topic2, topic3, data, output);
+console.log(proof, '\n');
