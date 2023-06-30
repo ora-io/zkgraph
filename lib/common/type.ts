@@ -9,12 +9,12 @@ import * as bigInt from "../utils/bigInt";
 function abort(a:usize, b:usize, c:u32, d:u32):void{}
 export class Event{
     constructor(
-        public address: Uint8Array,
-        public esig: Uint8Array,
-        public topic1: Uint8Array,
-        public topic2: Uint8Array,
-        public topic3: Uint8Array,
-        public data: Uint8Array
+        public address: Bytes,
+        public esig: Bytes,
+        public topic1: Bytes,
+        public topic2: Bytes,
+        public topic3: Bytes,
+        public data: Bytes
     ){}
 }
 

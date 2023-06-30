@@ -26,9 +26,9 @@ export function receiveMatchedEvents(
         const topic3 = topic3Offset == 0 ? new Bytes(0): Bytes.fromRawarrPtr(raw_receipt_ptr + topic3Offset, topicLength);
 
         const data = Bytes.fromRawarrPtr(raw_receipt_ptr + PtrDeref.read(event_base_ptr+5*4), PtrDeref.read(event_base_ptr+6*4) as i32);
-        events.push(new Event(address as Uint8Array, esig as Uint8Array, topic1 as Uint8Array, topic2 as Uint8Array, topic3 as Uint8Array, data as Uint8Array));
+        events.push(new Event(address, esig, topic1, topic2, topic3, data));
     }
     
     var state = handleEvents(events);
-    return state;
+    return state as Uint8Array;
 }

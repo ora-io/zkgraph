@@ -2,7 +2,7 @@
   "name": "zkgraph",
   "scripts": {
     "test": "asc example_zkgraphs/mvp_test/mapping.ts -o build/mapping.wasm --bindings esm && node bundle/test.js",
-    "compile": "asc lib/asmain.ts -t build/zkgraph.wat -O --noAssert -o build/zkgraph.wasm --disable bulk-memory --use abort=lib/common/type/abort --target release --bindings esm --runtime stub && wc -l build/zkgraph.wat",
+    "compile-as": "asc lib/asmain.ts -t build/zkgraph.wat -O --noAssert -o build/zkgraph.wasm --disable bulk-memory --use abort=lib/common/type/abort --target release --bindings esm --runtime stub && wc -l build/zkgraph.wat",
     "compile-zk": "asc lib/zkmain.ts -t build/zkgraph.wat -O --noAssert -o build/zkgraph.wasm --disable bulk-memory --use abort=lib/zkmain/abort --target release --bindings esm --runtime stub && wc -l build/zkgraph.wat",
     "format": "prettier --write -c **/*.{js,ts,md}",
     "lint": "prettier -c **/*.{js,ts,md}",
