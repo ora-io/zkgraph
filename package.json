@@ -6,7 +6,7 @@
     "exec-test": "npm run compile-test && node test/local/exec.js",
     "prove-test": "",
     "deploy-test": "",
-    "compile": "asc lib/zkmain.ts -t build/zkgraph.wat -O --noAssert -o build/zkgraph.wasm --disable bulk-memory --use abort=lib/zkmain/abort --target release --bindings esm --runtime stub && wc -l build/zkgraph.wat",
+    "compile": "",
     "execute": "",
     "prove": "",
     "deploy": "",
