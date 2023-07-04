@@ -6,16 +6,16 @@ import * as typeConversion from "../utils/conversion";
 import * as bigInt from "../utils/bigInt";
 
 // used in asc to rm env.abort
-function abort(a:usize, b:usize, c:u32, d:u32):void{}
-export class Event{
-    constructor(
-        public address: Bytes,
-        public esig: Bytes,
-        public topic1: Bytes,
-        public topic2: Bytes,
-        public topic3: Bytes,
-        public data: Bytes
-    ){}
+function abort(a: usize, b: usize, c: u32, d: u32): void {}
+export class Event {
+  constructor(
+    public address: Bytes,
+    public esig: Bytes,
+    public topic1: Bytes,
+    public topic2: Bytes,
+    public topic3: Bytes,
+    public data: Bytes
+  ) {}
 }
 
 /**
@@ -709,9 +709,8 @@ export class Bytes extends ByteArray {
     // this.arr.fill(_val)
   }
 
-
   slice(start: i32, end: i32 = -1): Bytes {
-    end = (end == -1) ? this.length : end
+    end = end == -1 ? this.length : end;
     return Bytes.fromUint8Array((this as Uint8Array).slice(start, end));
   }
 

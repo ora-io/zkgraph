@@ -47,7 +47,15 @@ function callWasm(eventSig, topic1, topic2, topic3, data) {
   return uint8array2str(output);
 }
 
-function generateProof(eventSig, topic1, topic2, topic3, data, output, separator=" ") {
+function generateProof(
+  eventSig,
+  topic1,
+  topic2,
+  topic3,
+  data,
+  output,
+  separator = " "
+) {
   let dataLength = data.length;
   if (data.startsWith("0x")) {
     dataLength = dataLength - 2;
@@ -75,8 +83,8 @@ let data = log.data || emptyValue;
 
 console.log("OUTPUT:");
 let output = callWasm(eventSig, topic1, topic2, topic3, data);
-console.log(output, '\n');
+console.log(output, "\n");
 
 console.log("INPUT FOR ZKWASM:");
 let proof = generateProof(eventSig, topic1, topic2, topic3, data, output);
-console.log(proof, '\n');
+console.log(proof, "\n");
