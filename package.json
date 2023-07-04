@@ -7,7 +7,7 @@
     "prove-test": "",
     "deploy-test": "",
     "compile": "",
-    "execute": "",
+    "exec": "",
     "prove": "",
     "deploy": "",
     "verify": "",
