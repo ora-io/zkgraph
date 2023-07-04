@@ -23,7 +23,7 @@ const formatVarLenInput = (ins) => {
   ins.map((input) => {
     formatted += `0x${Math.ceil(
       input.length / 2
-    )}:i64 0x${input}:bytes-packed `;
+    ).toString(16)}:i64 0x${input}:bytes-packed `;
   });
   return formatted;
 };
