@@ -1,6 +1,6 @@
 import { receiveMatchedEvents } from "./common/receive";
 import { Bytes } from "./common/type";
-import { read_len_then_bytes, require } from "./common/zkwasm";
+import { read_public_len_then_bytes, read_private_len_then_bytes, require } from "./common/zkwasm";
 
 // @ts-ignore
 // @external("env", "require")
@@ -19,9 +19,9 @@ export function asmain(
 }
 
 export function zkmain(): void {
-      var rawreceipts: Bytes = read_len_then_bytes();
-      var matched_event_offset = changetype<Uint32Array>(read_len_then_bytes());
-      var expected_state = read_len_then_bytes();
+      var rawreceipts: Bytes = read_private_len_then_bytes();
+      var matched_event_offset = changetype<Uint32Array>(read_private_len_then_bytes());
+      var expected_state = read_public_len_then_bytes();
       var state: Bytes = receiveMatchedEvents(
         rawreceipts.dataStart,
         matched_event_offset.length / 7,
