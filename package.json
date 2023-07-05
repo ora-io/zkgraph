@@ -3,11 +3,12 @@
   "scripts": {
     "test": "asc example_zkgraphs/mvp_test/mapping.ts -o build/mapping.wasm --bindings esm && node bundle/test.js",
     "compile-test": "asc lib/main_local.ts -t build/zkgraph_local.wat -O --noAssert -o build/zkgraph_local.wasm --disable bulk-memory --use abort=lib/common/type/abort --target release --bindings esm --runtime stub && wc -l build/zkgraph_local.wat",
-    "exec-test": "npm run compile-test && node test/local/exec.js",
+    "exec-test": "npm run compile-test && node bundle-js/api-local/exec.js",
+    "exec-test-zkmain": "npm run compile-test && node bundle-js/api-local/exec_zkmain.js",
     "prove-test": "",
     "deploy-test": "",
     "compile": "",
-    "execute": "",
+    "exec": "",
     "prove": "",
     "deploy": "",
     "verify": "",
@@ -18,6 +19,7 @@
   },
   "type": "module",
   "dependencies": {
+    "commander": "^11.0.0",
     "ethers": "^5.7.2"
   },
   "devDependencies": {
