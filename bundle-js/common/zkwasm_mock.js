@@ -1,6 +1,6 @@
 import { fromHexString, toHexString } from "./utils.js";
 export class HostMemory {
-    constructor(max_size = 100000000){
+    constructor(max_size){
         this.mem = new Uint8Array(max_size);
         this.writecur = 0;
         this.readcur = 0;
@@ -41,37 +41,51 @@ export class HostMemory {
 
     }
   }
-  print(){
-    var rst = ''
-    console.log(this.writecur)
-    for (var i =0;i<20; i++){
-        rst += this.mem[i].toString(16)
-    }
-    console.log(rst)
-    // console.log(toHexString(this.mem.slice(0, this.writecur)))
+  print(title=''){
+    console.log('---------------' + title + '---------------')
+    console.log('>> total length: '+this.writecur)
+    console.log('>> data: ')
+    console.log(toHexString(this.mem.slice(0, this.writecur)))
+    console.log('------------------------------' + '-'.repeat(title.length))
   }
   read_i64() {
     this.readcur += 8;
     return(this.view.getBigUint64(this.readcur - 8, true))
-    var tmp = this.view.getBigUint64(0, false)
-    // console.log(tmp+1)
-    console.log(this.view.getBigUint64(8, false))
-    // console.log(view.getUint32(8, false))
-    // var data = this.mem.slice(this.readcur-8, this.readcur);
-    // return changetype<BigUint64Array>(data)[0];
   }
 }
 
-function require(a) {
-  console.log("require1");
-}
-function wasm_input(a) {
-  return true;
-}
-
-// var mem = new HostMemory()
+// var mem = new HostMemory(100000000)
 // mem.write_from_input('0x43d:i64 0x43d:i64 0x121212121212:bytes-packed')
 // mem.print()
 // console.log(mem.read_i64().toString(16))
 // console.log(mem.read_i64().toString(16))
 // console.log(mem.read_i64().toString(16))
+
+export class ZKWASMMock{
+    constructor(max_pri_size = 100000000, max_pub_size = 1000){
+        this.privateMem = new HostMemory(max_pri_size)
+        this.publicMem = new HostMemory(max_pub_size)
+    }
+
+    set_private_input(str) {
+        this.privateMem.write_from_input(str)
+    }
+
+    set_public_input(str) {
+        this.publicMem.write_from_input(str)
+    }
+
+    require(a) {
+      if (!a) {
+        console.log("[-] zkwasm require condition is false");
+        throw Error("Abort execution");
+        //TODO: change to graceful kill rather than throw Error?
+      }
+    }
+
+    wasm_input(a) {
+        if (a==0) return this.privateMem.read_i64()
+        else if (a==1) return this.publicMem.read_i64()
+        else throw Error("zkwasm mock: wasm_input is invalid: ", a)
+    }
+}

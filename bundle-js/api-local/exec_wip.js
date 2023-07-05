@@ -1,10 +1,10 @@
-import { asmain } from "../../bundle/js/bundle_local.js";
+import { asmain } from "../common/bundle_local.js";
 // import { asmain } from "../build/demo_idx.js";
 
 import { providers, utils } from "ethers";
-import { getRawReceipts } from "../../bundle/js/ethers_helper.js";
-import { TxReceipt, concatRawRlpList } from "../../bundle/js/txreceipt.js";
-import { fromHexString } from "../../bundle/js/utils.js";
+import { getRawReceipts } from "../common/ethers_helper.js";
+import { TxReceipt, concatRawRlpList } from "../common/txreceipt.js";
+import { fromHexString } from "../common/utils.js";
 // usage: node exec.js <blocknum/blockhash>
 //TODO: read args from input
 //TODO: read blocknum/blockhash from one another
