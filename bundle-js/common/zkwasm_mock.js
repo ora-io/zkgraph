@@ -75,7 +75,7 @@ export class ZKWASMMock{
         this.publicMem.write_from_input(str)
     }
 
-    require(a) {
+    static require(a) {
       if (!a) {
         console.log("[-] zkwasm require condition is false");
         throw Error("Abort execution");

@@ -1,3 +1,4 @@
+import { ZKWASMMock } from "./zkwasm_mock.js";
 var zkwasmmock = ''
 
 export function setupZKWasmMock(mock){
@@ -14,7 +15,7 @@ async function instantiate(module, imports = {}) {
       },
       require(x) {
         // sdk/zkwasm/require1(i32) => i64
-        zkwasmmock.require(x);
+        ZKWASMMock.require(x);
       },
       wasm_input(x) {
         // lib/common/zkwasm/wasm_input(i32) => i64
