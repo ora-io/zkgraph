@@ -24,10 +24,19 @@ export function asmain(
 
 export function zkmain(): void {
   var rawreceipts: Bytes = read_private_len_then_bytes();
+  var _offsets = read_private_len_then_bytes()
+  console.log(_offsets.toHexString())
+  console.log('aaa '+ _offsets[0].toString())
+  console.log('aaa '+ _offsets[1].toString())
+  console.log('aaa '+ _offsets[2].toString())
   var matched_event_offset = changetype<Uint32Array>(
-    read_private_len_then_bytes()
+    _offsets
   );
+  console.log('ttt '+ matched_event_offset[0].toString())
+  console.log('ttt '+ matched_event_offset[1].toString())
+  console.log('ttt '+ matched_event_offset[2].toString())
   var expected_state = read_public_len_then_bytes();
+//   console.log("test3 "+expected_state.toHexString());
   var state: Bytes = receiveMatchedEvents(
     rawreceipts.dataStart,
     matched_event_offset.length / 7,

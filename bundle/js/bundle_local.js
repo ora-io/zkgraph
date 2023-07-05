@@ -1,3 +1,9 @@
+var hostMem = ''
+
+export function setupHostMem(mem){
+    hostMem = mem
+}
+
 function require(a) {
   if (!a) {
     console.log("[-] zkwasm require condition is false");
@@ -6,7 +12,7 @@ function require(a) {
   }
 }
 function wasm_input(a) {
-  return true;
+  return hostMem.read_i64();
 }
 
 async function instantiate(module, imports = {}) {
