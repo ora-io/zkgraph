@@ -1,5 +1,6 @@
-import { Bytes, Event } from "../lib/common/type";
+//@ts-ignore
 import { require } from "../lib/common/zkwasm";
+import { Bytes, Event } from "../lib/common/type";
 
 //TODO: events[]
 export function handleEvents(events: Event[]): Bytes {
@@ -13,6 +14,7 @@ export function handleEvents(events: Event[]): Bytes {
 //   console.log(events[0].address.toHexString())
 //   console.log(events[0].esig.toHexString())
   let state = events[0].address;
-  require(true);
+  // `require(true)` will trigger compiler warning.
+  require(true ? 1 : 0);
   return state;
 }
