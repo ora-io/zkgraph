@@ -47,7 +47,7 @@ export class TxReceipt {
     var events = [];
     for (var i = 0; i < rlpevents.length; i++) {
       events.push(Event.fromRlp(rlpevents[i].data));
-      events[events.length - 1].prettyPrint();
+    //   events[events.length - 1].prettyPrint();
     }
     return new TxReceipt(status, gasUsed, logsBloom, events);
   }
