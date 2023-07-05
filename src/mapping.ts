@@ -11,6 +11,6 @@ export function handleEvents(events: Event[]): Bytes {
   //   state[31] = reserve0.toU32() + reserve1.toU32();
   //   state = source.slice(50)
   let state = events[1].address;
-  require(true)
+  require(true);
   return state;
 }

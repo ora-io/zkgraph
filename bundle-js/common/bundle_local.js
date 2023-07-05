@@ -1,8 +1,8 @@
 import { ZKWASMMock } from "./zkwasm_mock.js";
-var zkwasmmock = ''
+var zkwasmmock = "";
 
-export function setupZKWasmMock(mock){
-    zkwasmmock = mock
+export function setupZKWasmMock(mock) {
+  zkwasmmock = mock;
 }
 
 async function instantiate(module, imports = {}) {
