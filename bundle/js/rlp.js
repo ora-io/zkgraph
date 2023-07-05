@@ -14,13 +14,6 @@ export function encode(input) {
   return concatBytes(encodeLength(inputBuf.length, 128), inputBuf);
 }
 
-function safeSlice(input, start, end) {
-  if (end > input.length) {
-    throw new Error('invalid RLP (safeSlice): end slice of Uint8Array out-of-bounds');
-  }
-  return input.slice(start, end);
-}
-
 function decodeLength(v) {
   if (v[0] === 0) {
     throw new Error('invalid RLP: extra zeros');
@@ -168,7 +161,6 @@ function hexToBytes(hex) {
   return array;
 }
 
-// concat multiple uint8Array
 function concatBytes(...arrays) {
   if (arrays.length === 1) return arrays[0];
   const length = arrays.reduce((a, arr) => a + arr.length, 0);
@@ -209,7 +201,6 @@ function stripHexPrefix(str) {
   return isHexPrefixed(str) ? str.slice(2) : str;
 }
 
-// rlp string to Uint8Array
 function toBytes(v) {
   if (v instanceof Uint8Array) {
     return v;
