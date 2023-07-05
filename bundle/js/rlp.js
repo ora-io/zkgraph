@@ -14,7 +14,6 @@ export function encode(input) {
   return concatBytes(encodeLength(inputBuf.length, 128), inputBuf);
 }
 
-// giving start and end, return start to end - 1
 function safeSlice(input, start, end) {
   if (end > input.length) {
     throw new Error('invalid RLP (safeSlice): end slice of Uint8Array out-of-bounds');
@@ -50,27 +49,22 @@ export function decode(input, stream = false) {
   if (stream) {
     return decoded;
   }
-  if (decoded.remainder.length !== 0) {
-    throw new Error('invalid RLP: remainder must be zero');
-  }
 
   return decoded.data;
 }
 
 function _decode(input, start) {
-  let length, llength, data, innerRemainder, d;
+  let length, llength, data;
   const firstByte = input[start];
 
   if (firstByte <= 0x7f) { // SINGLE_CHAR
     return {
       data: input.slice(start, start + 1),
       dataIndexes: [start, start],
-      remainder: input.slice(start + 1),
       isList: false,
     };
   } else if (firstByte <= 0xb7) { // SHORT_STRING
-    length = firstByte - 0x7f;
-
+    length = firstByte - 0x80;
     if (firstByte === 0x80) {
       data = Uint8Array.from([]); // empty string
     } else {
@@ -84,11 +78,10 @@ function _decode(input, start) {
     return {
       data: data,
       dataIndexes: [start + 1, start + length],
-      remainder: input.slice(start + length + 1),
       isList: false,
     };
   } else if (firstByte <= 0xbf) { // LONG_STRING
-    llength = firstByte - 0xb6;
+    llength = firstByte - 0xb7;
     if (input.length - start - 1 < llength) {
       throw new Error('invalid RLP: not enough bytes for string length');
     }
@@ -101,19 +94,17 @@ function _decode(input, start) {
     return {
       data: data,
       dataIndexes: [start + 1 + llength, start + length + llength],
-      remainder: input.slice(start + length + llength + 1),
       isList: false,
     };
   } else if (firstByte <= 0xf7) { // SHORT_LIST
-    length = firstByte - 0xbf;
+    length = firstByte - 0xc0;
     return {
       data: _decodeList(input, start + 1, start + length),
       dataIndexes: [start + 1, start + length],
-      remainder: input.slice(start + length + 1),
       isList: true,
     };
   } else { // LONG_LIST
-    llength = firstByte - 0xf6;
+    llength = firstByte - 0xf7;
     length = decodeLength(input.slice(start + 1, start + 1 + llength));
     if (length < 56) {
       throw new Error('invalid RLP: encoded list too short');
@@ -126,19 +117,18 @@ function _decode(input, start) {
     return {
       data: _decodeList(input, start + llength + 1, start + length + llength),
       dataIndexes: [start + llength + 1, start + totalLength],
-      remainder: input.slice(start + totalLength + 1),
       isList: true,
     };
   }
 }
 
 function _decodeList(input, start, end) {
-  startIdx = start;
+  var startIdx = start;
   const decoded = [];
   while(startIdx <= end) {
-    d = _decode(input, start);
+    var d = _decode(input, startIdx);
     decoded.push(d);
-    index = d.dataIndexes[1] + 1;
+    startIdx = d.dataIndexes[1] + 1;
   }
   if (startIdx != end + 1) {
     throw new Error('invalid RLP: decode list input invalid');
