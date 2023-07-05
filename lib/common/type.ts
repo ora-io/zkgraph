@@ -1007,12 +1007,16 @@ export class BigInt extends Uint8Array {
    *
    * WASM cost: 0 line of wat.
    *
-   * Lowercase hex string with 0x prefix.
+   * Converts `BigInt` to a hexadecimal string representation, with an optional
+   * prefix (for example, '0x').
+   *
    * Notice: The Original AssemblySciprt API of The Graph is without 0x prefix.
    */
-  toHexString(): string {
-    // return typeConversion.bigIntToHex(this);
-    return "0x" + typeConversion.bigIntToHex(this);
+  toHexString(prefix: string = ''): string {
+    if (prefix !== '') {
+      return prefix + typeConversion.bigIntToHex(this)
+    }
+    return typeConversion.bigIntToHex(this);
   }
 
   /**

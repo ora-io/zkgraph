@@ -25,9 +25,11 @@ export function testUtils(): void {
 
   assert(bigInt.toString() == "1234567890", "BigInt.toString()");
 
-  assert(bigInt.toHex() == "499602d2", "BigInt.toHexString()");
+  assert(bigInt.toHex() == "499602d2", "BigInt.toHex()");
 
-  assert(bigInt.toHexString() == "0x499602d2", "BigInt.toBytes()");
+  assert(bigInt.toHexString() == "499602d2", "BigInt.toHexString()");
+
+  assert(bigInt.toHexString('0x') == "0x499602d2", "BigInt.toHexString()");
 
   console.log("✅ Test Utils");
 }
