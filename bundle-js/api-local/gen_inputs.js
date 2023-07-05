@@ -1,15 +1,6 @@
 import { asmain } from "../common/bundle_local.js";
 import { fromHexString, toHexString } from "../common/utils.js";
 
-// convert Uint32Array to hex string for Matched Event Offsets
-const toHexStringOffsets = (arr) => {
-  let hexString = "";
-  for (let i = 0; i < arr.length; i++) {
-    hexString += arr[i].toString(16).padStart(8, "0");
-  }
-  return hexString;
-};
-
 // Format inputs with length and input value
 const formatVarLenInput = (inputs) => {
   var formatted = "";

@@ -28,6 +28,8 @@ export class HostMemory {
         this.push_align(data, false)
     } else if (type == 'bytes-packed'){
         this.push_align(data, true)
+    } else {
+        throw Error("zkwasm mock: data type (", type, ") not supported, please file an issue if you think it should be supported.")
     }
   }
   write_from_input(str){
