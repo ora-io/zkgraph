@@ -41,13 +41,13 @@ export class TxReceipt {
     var gasUsed = rlpdata[1].data;
     var logsBloom = rlpdata[2].data;
 
-    console.log(rlpdata[1])
+    console.log(rlpdata[1]);
     var rlpevents = rlpdata[3].data;
     // console.log(rlpevents)
     var events = [];
     for (var i = 0; i < rlpevents.length; i++) {
       events.push(Event.fromRlp(rlpevents[i].data));
-      events[events.length-1].prettyPrint()
+      events[events.length - 1].prettyPrint();
     }
     return new TxReceipt(status, gasUsed, logsBloom, events);
   }
@@ -57,10 +57,11 @@ export class TxReceipt {
   }
 
   toValidEvents() {
-    if (this.status != 0x1) { // tx failed
+    if (this.status != 0x1) {
+      // tx failed
       return [];
-    }else{
-        return this.events;
+    } else {
+      return this.events;
     }
   }
 

@@ -5,9 +5,9 @@ import { fromHexString, toHexString } from "../common/utils.js";
 const formatVarLenInput = (inputs) => {
   var formatted = "";
   inputs.map((input) => {
-    formatted += `0x${Math.ceil(
-      input.length / 2
-    ).toString(16)}:i64 0x${input}:bytes-packed `;
+    formatted += `0x${Math.ceil(input.length / 2).toString(
+      16
+    )}:i64 0x${input}:bytes-packed `;
   });
   return formatted;
 };
