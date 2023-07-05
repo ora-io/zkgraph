@@ -17,9 +17,9 @@ export class Event{
 
 
     static fromRlp(rlpdata){
-        var address = rlpdata[0];
-        var topics = rlpdata[1]
-        var data = rlpdata[2]
+        var address = rlpdata[0].data;
+        var topics = rlpdata[1].data;
+        var data = rlpdata[2].data;
         return new Event(address, topics, data);
     }
 }
