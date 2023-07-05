@@ -10,7 +10,9 @@ export function handleEvents(events: Event[]): Bytes {
   //   let state = new Bytes(32);
   //   state[31] = reserve0.toU32() + reserve1.toU32();
   //   state = source.slice(50)
-  let state = events[1].address;
-  require(true)
+//   console.log(events[0].address.toHexString())
+//   console.log(events[0].esig.toHexString())
+  let state = events[0].address;
+  require(true);
   return state;
 }
