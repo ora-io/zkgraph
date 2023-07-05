@@ -4,23 +4,26 @@ import { Event } from "./event.js";
 // import RLP from 'rlp'
 import RLP from "./rlp.js";
 
-export function concatRawRlpList(rawrlplist) {
-  var str = "";
-  for (var i in rawrlplist) {
-    var r = rawrlplist[i];
-    if (r.startsWith("0x02")) {
-      str += r.slice(4);
-    } else if (r.startsWith("0x")) {
-      str += r.slice(2);
-    } else {
-      console.log("---->", r);
-    }
-    if (i >= 2) {
-      break;
-    }
-  }
-  return fromHexString(str);
-}
+// export function concatRawRlpList(rawrlplist) {
+//   var str = "";
+//   for (var i in rawrlplist) {
+//     var r = rawrlplist[i];
+//     r = trimPrefix(r, '0x')
+//     r = trimPrefix(r, '02')
+//     str += r
+//     // if (r.startsWith("0x02")) {
+//     //   str += r.slice(4);
+//     // } else if (r.startsWith("0x")) {
+//     //   str += r.slice(2);
+//     // } else {
+//     //   console.log("---->", r);
+//     // }
+//     if (i >= 2) {
+//       break;
+//     }
+//   }
+//   return fromHexString(str);
+// }
 
 export class TxReceipt {
   constructor(status, gasUsed, logsBloom, events) {
@@ -41,7 +44,6 @@ export class TxReceipt {
     var gasUsed = rlpdata[1].data;
     var logsBloom = rlpdata[2].data;
 
-    console.log(rlpdata[1]);
     var rlpevents = rlpdata[3].data;
     // console.log(rlpevents)
     var events = [];
