@@ -23,7 +23,7 @@ export class Event {
       toHexString(this.address),
       withoffsets ? this.address_offset : "",
     );
-    for (var j = 0; j < this.topics.length; j++) {
+    for (let j = 0; j < this.topics.length; j++) {
       console.log(
         prefix,
         "|--arg#",
@@ -43,18 +43,19 @@ export class Event {
   }
 
   static fromRlp(rlpdata) {
-    var address = rlpdata[0].data;
-    var address_offset = rlpdata[0].dataIndexes;
+    const address = rlpdata[0].data;
+    const address_offset = rlpdata[0].dataIndexes;
 
-    var topics = [];
-    var topics_offset = [];
-    for (var i = 0; i < rlpdata[1].data.length; i++) {
+    const topics = [];
+    const topics_offset = [];
+    for (let i = 0; i < rlpdata[1].data.length; i++) {
       topics.push(rlpdata[1].data[i].data);
       topics_offset.push(rlpdata[1].data[i].dataIndexes);
     }
 
-    var data = rlpdata[2].data;
-    var data_offset = rlpdata[2].dataIndexes;
+    const data = rlpdata[2].data;
+    const data_offset = rlpdata[2].dataIndexes;
+
     return new Event(
       address,
       topics,
@@ -65,6 +66,3 @@ export class Event {
     );
   }
 }
-
-// var e = new Event(Uint8Array.from([0xa,0xb]),[Uint8Array.from([0xa,0xb]),Uint8Array.from([0xa,0xb])],Uint8Array.from([0xbe,0xef]))
-// e.prettyPrint()

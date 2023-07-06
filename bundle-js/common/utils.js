@@ -4,11 +4,16 @@ export function fromHexString(hexString) {
   return Uint8Array.from(Buffer.from(hexString, "hex"));
 }
 
-export const toHexString = (bytes) => Buffer.from(bytes).toString("hex");
+export function toHexString(bytes) {
+  return Buffer.from(bytes).toString("hex");
+}
 
-export const areEqualArrays = (first, second) =>
-  first.length === second.length &&
-  first.every((value, index) => value === second[index]);
+export function areEqualArrays(first, second) {
+  return (
+    first.length === second.length &&
+    first.every((value, index) => value === second[index])
+  );
+}
 
 export function trimPrefix(str, prefix) {
   if (str.startsWith(prefix)) {
