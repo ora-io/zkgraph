@@ -12,6 +12,7 @@ import { rlpDecodeAndEventFilter } from "../common/api_helper.js";
 import { fromHexString, toHexString, trimPrefix, logDivider } from "../common/utils.js";
 import { zkmain, setupZKWasmMock } from "../common/bundle_local.js";
 import { ZKWASMMock } from "../common/zkwasm_mock.js";
+import { constants } from "../../constants.js";
 
 program.version("1.0.0");
 
@@ -35,7 +36,7 @@ expectedStateStr = trimPrefix(expectedStateStr, "0x");
 const [source_address, source_esigs] = loadConfig("src/zkgraph.yaml");
 
 const provider = new providers.JsonRpcProvider(
-  "https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7",
+  constants.JsonRpcProviderUrl
 );
 
 // Fetch raw receipts
