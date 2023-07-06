@@ -1,3 +1,8 @@
+# Test script for zkGraph
+
+# Update `constants.js` with your own parameters first!
+# Then run `sh test.sh`
+
 npm install
 npm run compile-local
 npm run exec-local -- 17633573
