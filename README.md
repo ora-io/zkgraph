@@ -9,6 +9,12 @@ npm install
 npm run compile
 ```
 
+## Usage Example
+Local Execution:
+```bash
+npm run exec-test -- -b 17633573
+```
+
 ## Notice
 
 To running on zkwasm, do not use io syscalls like `console` etc.

@@ -12,7 +12,11 @@ export function handleEvents(events: Event[]): Bytes {
   //   state = source.slice(50)
 //   console.log(events[0].address.toHexString())
 //   console.log(events[0].esig.toHexString())
-  let state = events[0].address;
+let state = new Bytes(2)
+    if (events.length > 0){
+
+        state = events[0].address;
+    }
   require(true);
   return state;
 }

@@ -17,7 +17,6 @@ export class Event {
   }
 
   prettyPrint(prefix = "", withoffsets = true) {
-    console.log(">>");
     console.log(
       prefix,
       "|--addr:",
@@ -40,6 +39,7 @@ export class Event {
       toHexString(this.data),
       withoffsets ? this.data_offset : ""
     );
+    console.log("");
   }
 
   static fromRlp(rlpdata) {

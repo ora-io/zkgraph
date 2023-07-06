@@ -6,7 +6,6 @@ dataSources:
     network: mainnet
     source:
       address: '0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc'
-      startBlock: 16317568
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.1
@@ -14,4 +13,6 @@ dataSources:
       file: ./mapping.ts
       eventHandlers:
         - event: Sync(uint112,uint112)
-          handler: handleEvent
+          handler: handleEvents
+        - event: Sync(uint112,uint112)
+          handler: handleEvents
