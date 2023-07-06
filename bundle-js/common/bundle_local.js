@@ -1,12 +1,8 @@
-function require(a) {
-  if (!a) {
-    console.log("[-] zkwasm require condition is false");
-    throw Error("Abort execution");
-    //TODO: change to graceful kill rather than throw Error?
-  }
-}
-function wasm_input(a) {
-  return true;
+import { ZKWASMMock } from "./zkwasm_mock.js";
+var zkwasmmock = "";
+
+export function setupZKWasmMock(mock) {
+  zkwasmmock = mock;
 }
 
 async function instantiate(module, imports = {}) {
@@ -19,11 +15,11 @@ async function instantiate(module, imports = {}) {
       },
       require(x) {
         // sdk/zkwasm/require1(i32) => i64
-        require(x);
+        ZKWASMMock.require(x);
       },
       wasm_input(x) {
         // lib/common/zkwasm/wasm_input(i32) => i64
-        return wasm_input(x) || 0n;
+        return zkwasmmock.wasm_input(x) || 0n;
       },
     }),
   };

@@ -1,6 +1,14 @@
 import { handleEvents } from "../../src/mapping";
 import { Event, Bytes, PtrDeref } from "./type";
 // TODO: test this
+
+/**
+ *
+ * @param raw_receipts_ptr
+ * @param match_event_cnt
+ * @param matched_event_offsets_ptr int Uint32Array format, note that each item is read as little endian to align with PtrDeref.read and remain minimum wasmbin size
+ * @returns
+ */
 export function receiveMatchedEvents(
   raw_receipts_ptr: usize,
   match_event_cnt: i32,
@@ -9,6 +17,7 @@ export function receiveMatchedEvents(
   var events = new Array<Event>(0);
   const addressLength = 20;
   const topicLength = 32;
+
   for (var i = 0; i < match_event_cnt; i++) {
     const event_base_ptr = matched_event_offsets_ptr + i * 28;
     // c_log(lastLogStart)

@@ -58,10 +58,10 @@ export function read_public_bytes_from_u64(byte_length: i32): Bytes {
 
 export function read_private_len_then_bytes(): Bytes {
     var blen = wasm_private_input() as i32;
+    // console.log(blen.toString()+'|')
     var bytes = read_private_bytes_from_u64(blen);
     return bytes;
 }
-
 
 export function read_public_len_then_bytes(): Bytes {
     var blen = wasm_public_input() as i32;

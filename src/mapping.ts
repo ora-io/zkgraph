@@ -1,4 +1,5 @@
 import { Bytes, Event } from "../lib/common/type";
+import { require } from "../lib/common/zkwasm";
 
 //TODO: events[]
 export function handleEvents(events: Event[]): Bytes {
@@ -9,6 +10,13 @@ export function handleEvents(events: Event[]): Bytes {
   //   let state = new Bytes(32);
   //   state[31] = reserve0.toU32() + reserve1.toU32();
   //   state = source.slice(50)
-  let state = events[1].address;
+//   console.log(events[0].address.toHexString())
+//   console.log(events[0].esig.toHexString())
+let state = new Bytes(2)
+    if (events.length > 0){
+
+        state = events[0].address;
+    }
+  require(true);
   return state;
 }

@@ -9,6 +9,17 @@ npm install
 npm run compile
 ```
 
+## Usage Example
+Local Execution:
+```bash
+npm run exec-test -- 17633573
+```
+Local Prove (pre-test / input generation)
+```bash
+npm run prove-test -- --inputgen 0x10d1125 0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc
+npm run prove-test -- --pretest 0x10d1125 0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc
+```
+
 ## Notice
 
 To running on zkwasm, do not use io syscalls like `console` etc.
