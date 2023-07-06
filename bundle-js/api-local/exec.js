@@ -51,6 +51,7 @@ var eventList = rlpDecodeAndEventFilter(
 
 // Gen Offsets
 var [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(rawreceiptList, eventList)
+matchedEventOffsets = Uint32Array.from(matchedEventOffsets)
 
 // Log
 console.log('[*] fetched', rawreceiptList.length, 'receipts, from block', blockid)

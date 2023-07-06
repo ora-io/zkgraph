@@ -12,7 +12,12 @@ npm run compile
 ## Usage Example
 Local Execution:
 ```bash
-npm run exec-test -- -b 17633573
+npm run exec-test -- --block 17633573
+```
+
+```bash
+npm run prove-test -- --pretest --block 17633573
+npm run prove-test -- --inputgen --block 17633573
 ```
 
 ## Notice

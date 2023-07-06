@@ -1,4 +1,5 @@
 // usage: node prove.js [--inputgen/pretest] <blocknum/blockhash> <state> -> wasm input
+//TODO: add -o --outfile <file> under inputgen mode
 import  { program } from "commander";
 import { formatVarLenInput, genStreamAndMatchedEventOffsets } from "../common/apihelper.js";
 import { loadConfig } from "../common/config.js";
@@ -6,9 +7,8 @@ import { providers } from "ethers";
 import { getRawReceipts } from "../common/ethers_helper.js";
 import { rlpDecodeAndEventFilter } from "../common/apihelper.js";
 import { fromHexString, toHexString } from "../common/utils.js";
-import { asmain } from "../common/bundle_local.js";
+import { asmain, zkmain, setupZKWasmMock } from "../common/bundle_local.js";
 
-console.log('test')
 program.version("1.0.0");
 
 program.requiredOption("-b, --block <blockid>", "Block number (or block hash) as runtime context")
@@ -40,6 +40,7 @@ const provider = new providers.JsonRpcProvider(
 
 // Fetch raw receipts
 var rawreceiptList = await getRawReceipts(provider, blockid);
+var rawreceiptList = rawreceiptList.slice(25, 26)
 
 // RLP Decode and Filter
 var eventList = rlpDecodeAndEventFilter(
@@ -50,7 +51,7 @@ var eventList = rlpDecodeAndEventFilter(
 
 // Gen Offsets
 var [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(rawreceiptList, eventList)
-
+matchedEventOffsets = Uint32Array.from(matchedEventOffsets)
 // Log
 console.log('[*] fetched', rawreceiptList.length, 'receipts, from block', blockid)
 console.log('[*] matched', matchedEventOffsets.length / 7, 'events')
@@ -61,27 +62,48 @@ for (var i in eventList){
     }
 }
 
+// Inputs:
+const expectedState = asmain(rawReceipts, matchedEventOffsets);
+const expectedStateStr = toHexString(expectedState)
+const privateInputStr = 
+formatVarLenInput([
+  toHexString(rawReceipts),
+  toHexString(new Uint8Array(matchedEventOffsets.buffer)),
+])
+
+const publicInputStr = formatVarLenInput([toHexString(expectedState)])
+
 if (options.inputgen) {
     console.log("Input generation mode");
 //   console.log(`Port number: ${options.port}`);
-    // Expected State
-    const expectedState = asmain(rawReceipts, matchedEventOffsets);
 
-    // Print state and inputs for zkwasm
-    console.log("ZKGRAPH OUTPUT:");
-    console.log(toHexString(expectedState), "\n");
+    // Print expected state and inputs for zkwasm
+    console.log("ZKGRAPH STATE OUTPUT:");
+    console.log(expectedStateStr, "\n");
 
     // Print inputs for zkwasm
     console.log("PRIVATE INPUT FOR ZKWASM:");
-    console.log(
-      formatVarLenInput([
-        toHexString(rawReceipts),
-        toHexString(new Uint8Array(matchedEventOffsets.buffer)),
-      ]),
-      "\n"
-    );
+    console.log(privateInputStr, "\n");
 
     console.log("PUBLIC INPUT FOR ZKWASM:");
-    console.log(formatVarLenInput([toHexString(expectedState)]), "\n");
+    console.log(publicInputStr, "\n");
+    process.exit(0)
+
+}
+
+import { ZKWASMMock } from "../common/zkwasm_mock.js";
+
+if (options.pretest) {
+    var mock = new ZKWASMMock();
+    mock.set_private_input(privateInputStr);
+    mock.set_public_input(publicInputStr);
+    // mock.privateMem.print('private input cache')
+    setupZKWasmMock(mock);
+
+    // console.log(rawreceipts)
+    // console.log(matched_event_offset, matched_event_offset.length)
+    zkmain();
+
+    console.log("[+] zkwasm mock execution success");
 
 }
