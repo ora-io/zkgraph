@@ -41,7 +41,7 @@ function callWasm(eventSig, topic1, topic2, topic3, data) {
     hexToUint8Array(topic1),
     hexToUint8Array(topic2),
     hexToUint8Array(topic3),
-    hexToUint8Array(data)
+    hexToUint8Array(data),
   );
 
   return uint8array2str(output);
@@ -54,7 +54,7 @@ function generateProof(
   topic3,
   data,
   output,
-  separator = " "
+  separator = " ",
 ) {
   let dataLength = data.length;
   if (data.startsWith("0x")) {
@@ -62,7 +62,7 @@ function generateProof(
   }
   dataLength = dataLength / 2;
   let proof = `${eventSig}:bytes-packed${separator}${topic1}:bytes-packed${separator}${topic2}:bytes-packed${separator}${topic3}:bytes-packed${separator}0x${dataLength.toString(
-    16
+    16,
   )}:i64${separator}${data}:bytes-packed${separator}0x${output}:bytes-packed`;
   return proof;
 }
@@ -71,7 +71,7 @@ let log = await geLastLog(
   provider,
   "0x8c09571bc1932fEb1367853bA26e1f5Dc9e1249b",
   "0x9825d7590e5c31b6cd3fd4e12a4afff309b64d6a9aedead86ae80997ac6aaea6",
-  "Sync(uint112,uint112)"
+  "Sync(uint112,uint112)",
 );
 
 let emptyValue = "0x" + "0".repeat(64);

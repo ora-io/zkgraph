@@ -12,7 +12,7 @@ import { Event, Bytes, PtrDeref } from "./type";
 export function receiveMatchedEvents(
   raw_receipts_ptr: usize,
   match_event_cnt: i32,
-  matched_event_offsets_ptr: usize
+  matched_event_offsets_ptr: usize,
 ): Uint8Array {
   var events = new Array<Event>(0);
   const addressLength = 20;
@@ -23,11 +23,11 @@ export function receiveMatchedEvents(
     // c_log(lastLogStart)
     const address = Bytes.fromRawarrPtr(
       raw_receipts_ptr + PtrDeref.read(event_base_ptr),
-      addressLength
+      addressLength,
     );
     const esig = Bytes.fromRawarrPtr(
       raw_receipts_ptr + PtrDeref.read(event_base_ptr + 1 * 4),
-      topicLength
+      topicLength,
     );
 
     const topic1Offset = PtrDeref.read(event_base_ptr + 2 * 4);
@@ -50,7 +50,7 @@ export function receiveMatchedEvents(
 
     const data = Bytes.fromRawarrPtr(
       raw_receipts_ptr + PtrDeref.read(event_base_ptr + 5 * 4),
-      PtrDeref.read(event_base_ptr + 6 * 4) as i32
+      PtrDeref.read(event_base_ptr + 6 * 4) as i32,
     );
     events.push(new Event(address, esig, topic1, topic2, topic3, data));
   }

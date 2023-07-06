@@ -12,12 +12,12 @@ import {
 
 export function asmain(
   rawreceipts: Uint8Array,
-  matched_event_offsets: Uint32Array
+  matched_event_offsets: Uint32Array,
 ): Uint8Array {
   var state = receiveMatchedEvents(
     rawreceipts.dataStart,
     matched_event_offsets.length / 7,
-    matched_event_offsets.dataStart
+    matched_event_offsets.dataStart,
   );
   return state;
 }
@@ -31,7 +31,7 @@ export function zkmain(): void {
   var state: Bytes = receiveMatchedEvents(
     rawreceipts.dataStart,
     matched_event_offset.length / 7,
-    matched_event_offset.dataStart
+    matched_event_offset.dataStart,
   ) as Bytes;
 
   require(state == expected_state);

@@ -59,7 +59,7 @@ export function testBigIntMath(): void {
   result = a.times(b);
   assert(
     result.toString() === BigInt.fromString("50").toString(),
-    "Failed: times()"
+    "Failed: times()",
   );
 
   a = BigInt.fromString("-5");
@@ -67,7 +67,7 @@ export function testBigIntMath(): void {
   result = a.times(b);
   assert(
     result.toString() === BigInt.fromString("-50").toString(),
-    "Failed: times()"
+    "Failed: times()",
   );
 
   a = BigInt.fromString("-5");
@@ -75,7 +75,7 @@ export function testBigIntMath(): void {
   result = a.times(b);
   assert(
     result.toString() === BigInt.fromString("50").toString(),
-    "Failed: times()"
+    "Failed: times()",
   );
 
   a = BigInt.fromString("1");
@@ -83,7 +83,7 @@ export function testBigIntMath(): void {
   result = a.times(b);
   assert(
     result.toString() === BigInt.fromString("999999").toString(),
-    "Failed: times()"
+    "Failed: times()",
   );
 
   a = BigInt.fromString("999999");
@@ -91,7 +91,7 @@ export function testBigIntMath(): void {
   result = a.times(b);
   assert(
     result.toString() === BigInt.fromString("999999").toString(),
-    "Failed: times()"
+    "Failed: times()",
   );
 
   // div()
@@ -100,7 +100,7 @@ export function testBigIntMath(): void {
   result = a.div(b);
   assert(
     result.toString() === BigInt.fromString("20").toString(),
-    "Failed: div()"
+    "Failed: div()",
   );
 
   a = BigInt.fromString("-100");
@@ -108,7 +108,7 @@ export function testBigIntMath(): void {
   result = a.div(b);
   assert(
     result.toString() === BigInt.fromString("-14").toString(),
-    "Failed: div()"
+    "Failed: div()",
   );
 
   a = BigInt.fromString("100");
@@ -116,7 +116,7 @@ export function testBigIntMath(): void {
   result = a.div(b);
   assert(
     result.toString() === BigInt.fromString("-14").toString(),
-    "Failed: div()"
+    "Failed: div()",
   );
 
   a = BigInt.fromString("-100");
@@ -124,7 +124,7 @@ export function testBigIntMath(): void {
   result = a.div(b);
   assert(
     result.toString() === BigInt.fromString("14").toString(),
-    "Failed: div()"
+    "Failed: div()",
   );
 
   a = BigInt.fromString("999999");
@@ -132,7 +132,7 @@ export function testBigIntMath(): void {
   result = a.div(b);
   assert(
     result.toString() === BigInt.fromString("999999").toString(),
-    "Failed: div()"
+    "Failed: div()",
   );
 
   a = BigInt.fromString("1");
@@ -140,7 +140,7 @@ export function testBigIntMath(): void {
   result = a.div(b);
   assert(
     result.toString() === BigInt.fromString("0").toString(),
-    "Failed: div()"
+    "Failed: div()",
   );
 
   // mod()
@@ -149,7 +149,7 @@ export function testBigIntMath(): void {
   result = a.mod(b);
   assert(
     result.toString() === BigInt.fromString("2").toString(),
-    "Failed: mod()"
+    "Failed: mod()",
   );
 
   a = BigInt.fromString("-100");
@@ -157,7 +157,7 @@ export function testBigIntMath(): void {
   result = a.mod(b);
   assert(
     result.toString() === BigInt.fromString("-2").toString(),
-    "Failed: mod()"
+    "Failed: mod()",
   );
 
   a = BigInt.fromString("100");
@@ -165,7 +165,7 @@ export function testBigIntMath(): void {
   result = a.mod(b);
   assert(
     result.toString() === BigInt.fromString("2").toString(),
-    "Failed: mod()"
+    "Failed: mod()",
   );
 
   a = BigInt.fromString("-100");
@@ -173,7 +173,7 @@ export function testBigIntMath(): void {
   result = a.mod(b);
   assert(
     result.toString() === BigInt.fromString("-2").toString(),
-    "Failed: mod()"
+    "Failed: mod()",
   );
 
   a = BigInt.fromString("999999");
@@ -181,7 +181,7 @@ export function testBigIntMath(): void {
   result = a.mod(b);
   assert(
     result.toString() === BigInt.fromString("0").toString(),
-    "Failed: mod()"
+    "Failed: mod()",
   );
 
   a = BigInt.fromString("1");
@@ -189,7 +189,7 @@ export function testBigIntMath(): void {
   result = a.mod(b);
   assert(
     result.toString() === BigInt.fromString("1").toString(),
-    "Failed: mod()"
+    "Failed: mod()",
   );
 
   // equals()
@@ -215,21 +215,21 @@ export function testBigIntMath(): void {
   result = a.neg();
   assert(
     result.toString() === BigInt.fromString("-5").toString(),
-    "Failed: neg()"
+    "Failed: neg()",
   );
 
   a = BigInt.fromString("-5");
   result = a.neg();
   assert(
     result.toString() === BigInt.fromString("5").toString(),
-    "Failed: neg()"
+    "Failed: neg()",
   );
 
   a = BigInt.fromString("0");
   result = a.neg();
   assert(
     result.toString() === BigInt.fromString("0").toString(),
-    "Failed: neg()"
+    "Failed: neg()",
   );
 
   // bitOr()

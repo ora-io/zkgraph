@@ -30,7 +30,7 @@ async function instantiate(module, imports = {}) {
       asmain(rawreceipts, matched_event_offsets) {
         // lib/main_local/asmain(~lib/typedarray/Uint8Array, ~lib/typedarray/Uint32Array) => ~lib/typedarray/Uint8Array
         rawreceipts = __retain(
-          __lowerTypedArray(Uint8Array, 4, 0, rawreceipts) || __notnull()
+          __lowerTypedArray(Uint8Array, 4, 0, rawreceipts) || __notnull(),
         );
         matched_event_offsets =
           __lowerTypedArray(Uint32Array, 5, 2, matched_event_offsets) ||
@@ -38,14 +38,14 @@ async function instantiate(module, imports = {}) {
         try {
           return __liftTypedArray(
             Uint8Array,
-            exports.asmain(rawreceipts, matched_event_offsets) >>> 0
+            exports.asmain(rawreceipts, matched_event_offsets) >>> 0,
           );
         } finally {
           __release(rawreceipts);
         }
       },
     },
-    exports
+    exports,
   );
   function __liftString(pointer) {
     if (!pointer) return null;
@@ -56,7 +56,7 @@ async function instantiate(module, imports = {}) {
       string = "";
     while (end - start > 1024)
       string += String.fromCharCode(
-        ...memoryU16.subarray(start, (start += 1024))
+        ...memoryU16.subarray(start, (start += 1024)),
       );
     return string + String.fromCharCode(...memoryU16.subarray(start, end));
   }
@@ -65,7 +65,7 @@ async function instantiate(module, imports = {}) {
     return new constructor(
       memory.buffer,
       __getU32(pointer + 4),
-      __dataview.getUint32(pointer + 8, true) / constructor.BYTES_PER_ELEMENT
+      __dataview.getUint32(pointer + 8, true) / constructor.BYTES_PER_ELEMENT,
     ).slice();
   }
   function __lowerTypedArray(constructor, id, align, values) {
@@ -96,7 +96,7 @@ async function instantiate(module, imports = {}) {
       else if (refcount) refcounts.set(pointer, refcount - 1);
       else
         throw Error(
-          `invalid refcount '${refcount}' for reference '${pointer}'`
+          `invalid refcount '${refcount}' for reference '${pointer}'`,
         );
     }
   }
@@ -127,13 +127,13 @@ export const { memory, asmain, zkmain } = await (async (url) =>
     await (async () => {
       try {
         return await globalThis.WebAssembly.compileStreaming(
-          globalThis.fetch(url)
+          globalThis.fetch(url),
         );
       } catch {
         return globalThis.WebAssembly.compile(
-          await (await import("node:fs/promises")).readFile(url)
+          await (await import("node:fs/promises")).readFile(url),
         );
       }
     })(),
-    {}
+    {},
   ))(new URL("../../build/zkgraph_local.wasm", import.meta.url));

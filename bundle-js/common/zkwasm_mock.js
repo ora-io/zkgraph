@@ -32,7 +32,7 @@ export class HostMemory {
       throw Error(
         "zkwasm mock: data type (",
         type,
-        ") not supported, please file an issue if you think it should be supported."
+        ") not supported, please file an issue if you think it should be supported.",
       );
     }
   }
