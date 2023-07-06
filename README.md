@@ -14,7 +14,7 @@ Local Execution:
 ```bash
 npm run exec-test -- --block 17633573
 ```
-
+Local Prove (pre-test / input generation)
 ```bash
 npm run prove-test -- --pretest --block 17633573
 npm run prove-test -- --inputgen --block 17633573
