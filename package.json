@@ -1,10 +1,9 @@
 {
   "name": "zkgraph",
   "scripts": {
-    "compile-local": "asc lib/main_local.ts -t build/zkgraph_local.wat -O --noAssert -o build/zkgraph_local.wasm --disable bulk-memory --use abort=lib/common/type/abort --target release --bindings esm --runtime stub && wc -l build/zkgraph_local.wat",
-    "exec-local": "npm run compile-local && node bundle-js/api-local/exec.js",
-    "exec-local-zkmain": "npm run compile-local && node bundle-js/api-local/exec_zkmain.js",
-    "prove-local": "npm run compile-local && node bundle-js/api-local/prove.js",
+    "compile-local": "node bundle-js/api-local/compile.js",
+    "exec-local": "node bundle-js/api-local/exec.js",
+    "prove-local": "node bundle-js/api-local/prove.js",
     "deploy-local": "",
     "compile": "",
     "exec": "",

@@ -21,3 +21,8 @@ export function trimPrefix(str, prefix) {
   }
   return str;
 }
+
+export function logDivider() {
+  const line = '='.repeat(process.stdout.columns);
+  console.log(line);
+}

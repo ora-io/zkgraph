@@ -1,5 +1,5 @@
 // usage: node prove.js [--inputgen/pretest] <blocknum/blockhash> <state> -> wasm input
-//TODO: add -o --outfile <file> under inputgen mode
+// TODO: add -o --outfile <file> under inputgen mode
 import { program } from "commander";
 import {
   formatVarLenInput,
@@ -9,8 +9,9 @@ import { loadConfig } from "../common/config.js";
 import { providers } from "ethers";
 import { getRawReceipts } from "../common/ethers_helper.js";
 import { rlpDecodeAndEventFilter } from "../common/api_helper.js";
-import { fromHexString, toHexString, trimPrefix } from "../common/utils.js";
+import { fromHexString, toHexString, trimPrefix, logDivider } from "../common/utils.js";
 import { zkmain, setupZKWasmMock } from "../common/bundle_local.js";
+import { ZKWASMMock } from "../common/zkwasm_mock.js";
 
 program.version("1.0.0");
 
@@ -32,8 +33,6 @@ expectedStateStr = trimPrefix(expectedStateStr, "0x");
 
 // Load config
 const [source_address, source_esigs] = loadConfig("src/zkgraph.yaml");
-console.log("[*] source contract address:", source_address);
-console.log("[*] source events signatures:", source_esigs);
 
 const provider = new providers.JsonRpcProvider(
   "https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7",
@@ -56,19 +55,6 @@ let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
   eventList,
 );
 matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
-// Log
-console.log(
-  "[*] fetched",
-  rawreceiptList.length,
-  "receipts, from block",
-  blockid,
-);
-console.log("[*] matched", matchedEventOffsets.length / 7, "events");
-for (let i in eventList) {
-  for (let j in eventList[i]) {
-    eventList[i][j].prettyPrint("    Tx[" + i + "]Ev[" + j + "]", false);
-  }
-}
 
 const privateInputStr = formatVarLenInput([
   toHexString(rawReceipts),
@@ -77,31 +63,29 @@ const privateInputStr = formatVarLenInput([
 
 const publicInputStr = formatVarLenInput([expectedStateStr]);
 
-if (options.inputgen) {
-  console.log("Input generation mode");
+switch (options.inputgen || options.pretest) {
+  // Input generation mode
+  case options.inputgen:
+  // Log script name
+    console.log(">> PROVE: INPUT GENERATION MODE", "\n");
+    console.log("[+] ZKGRAPH STATE OUTPUT:", expectedStateStr, "\n");
+    console.log("[+] PRIVATE INPUT FOR ZKWASM:", "\n" + privateInputStr, "\n");
+    console.log("[+] PUBLIC INPUT FOR ZKWASM:", "\n" + publicInputStr, "\n");
+    break;
 
-  console.log("ZKGRAPH STATE OUTPUT:");
-  console.log(expectedStateStr, "\n");
-
-  console.log("PRIVATE INPUT FOR ZKWASM:");
-  console.log(privateInputStr, "\n");
-
-  console.log("PUBLIC INPUT FOR ZKWASM:");
-  console.log(publicInputStr, "\n");
-  process.exit(0);
+  // Pretest mode
+  case options.pretest:
+    // Log script name
+    console.log(">> PROVE: PRETEST MODE", "\n");
+    const mock = new ZKWASMMock();
+    mock.set_private_input(privateInputStr);
+    mock.set_public_input(publicInputStr);
+    setupZKWasmMock(mock);
+    zkmain();
+    console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
+    break;
 }
 
-import { ZKWASMMock } from "../common/zkwasm_mock.js";
+logDivider();
 
-if (options.pretest) {
-  const mock = new ZKWASMMock();
-
-  mock.set_private_input(privateInputStr);
-  mock.set_public_input(publicInputStr);
-
-  setupZKWasmMock(mock);
-
-  zkmain();
-
-  console.log("[+] zkwasm mock execution success");
-}
+process.exit(0);

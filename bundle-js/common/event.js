@@ -6,7 +6,7 @@ export class Event {
     data,
     address_offset,
     topics_offset,
-    data_offset,
+    data_offset
   ) {
     this.address = address;
     this.topics = topics;
@@ -19,25 +19,22 @@ export class Event {
   prettyPrint(prefix = "", withoffsets = true) {
     console.log(
       prefix,
-      "|--addr:",
+      "|--addr :",
       toHexString(this.address),
-      withoffsets ? this.address_offset : "",
+      withoffsets ? this.address_offset : ""
     );
     for (let j = 0; j < this.topics.length; j++) {
       console.log(
         prefix,
-        "|--arg#",
-        j.toString(),
-        ": ",
-        toHexString(this.topics[j]),
-        withoffsets ? this.topics_offset[j] : "",
+        "|--arg#" + j.toString() + ": " + toHexString(this.topics[j]),
+        withoffsets ? this.topics_offset[j] : ""
       );
     }
     console.log(
       prefix,
-      "|--data:",
+      "|--data :",
       toHexString(this.data),
-      withoffsets ? this.data_offset : "",
+      withoffsets ? this.data_offset : ""
     );
     console.log("");
   }
@@ -62,7 +59,7 @@ export class Event {
       data,
       address_offset,
       topics_offset,
-      data_offset,
+      data_offset
     );
   }
 }
