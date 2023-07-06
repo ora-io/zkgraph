@@ -1,1 +1,1 @@
-npm run exec-test -- -b 17633573
+npm run exec-local -- -b 17633573
