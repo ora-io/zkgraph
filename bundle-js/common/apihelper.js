@@ -89,3 +89,14 @@ export function genStreamAndMatchedEventOffsets(rawreceiptList, eventList){
 
     return [fromHexString(rawreceipts), matched_offset_list]
 }
+
+// Format inputs with length and input value
+export const formatVarLenInput = (inputs) => {
+    var formatted = "";
+    inputs.map((input) => {
+      formatted += `0x${Math.ceil(input.length / 2).toString(
+        16
+      )}:i64 0x${input}:bytes-packed `;
+    });
+    return formatted;
+  };
