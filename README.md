@@ -8,7 +8,20 @@
 npm install
 ```
 
-### TODOs
+## Usage Example
+
+Local Execution:
+
+```bash
+npm run exec-local -- 17633573
+```
+
+Local Prove (pre-test / input generation)
+
+```bash
+npm run prove-local -- --inputgen 0x10d1125 0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc
+npm run prove-local -- --pretest 0x10d1125 0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc
+```
 
 ## zkGraph Dev Tips
 

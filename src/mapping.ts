@@ -11,10 +11,12 @@ export function handleEvents(events: Event[]): Bytes {
   //   let state = new Bytes(32);
   //   state[31] = reserve0.toU32() + reserve1.toU32();
   //   state = source.slice(50)
-//   console.log(events[0].address.toHexString())
-//   console.log(events[0].esig.toHexString())
-  let state = events[0].address;
-  // `require(true)` will trigger compiler warning.
+  //   console.log(events[0].address.toHexString())
+  //   console.log(events[0].esig.toHexString())
+  let state = new Bytes(2);
+  if (events.length > 0) {
+    state = events[0].address;
+  }
   require(true ? 1 : 0);
   return state;
 }

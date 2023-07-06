@@ -10,10 +10,9 @@ export const areEqualArrays = (first, second) =>
   first.length === second.length &&
   first.every((value, index) => value === second[index]);
 
-
-export function trimPrefix(str, prefix){
-    if (str.startsWith(prefix)) {
-        str = str.substring(prefix.length);
-    }
-    return str
+export function trimPrefix(str, prefix) {
+  if (str.startsWith(prefix)) {
+    str = str.substring(prefix.length);
+  }
+  return str;
 }

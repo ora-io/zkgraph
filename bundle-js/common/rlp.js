@@ -68,7 +68,7 @@ function _decode(input, start) {
 
     if (length === 2 && data[start] < 0x80) {
       throw new Error(
-        "invalid RLP encoding: invalid prefix, single byte < 0x80 are not prefixed"
+        "invalid RLP encoding: invalid prefix, single byte < 0x80 are not prefixed",
       );
     }
 
@@ -86,7 +86,7 @@ function _decode(input, start) {
     length = decodeLength(input.slice(start + 1, start + 1 + llength));
     if (length <= 55) {
       throw new Error(
-        "invalid RLP: expected string length to be greater than 55"
+        "invalid RLP: expected string length to be greater than 55",
       );
     }
     data = input.slice(start + 1 + llength, start + 1 + length + llength);

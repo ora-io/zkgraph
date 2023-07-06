@@ -14,7 +14,7 @@ export class Event {
     public topic1: Bytes,
     public topic2: Bytes,
     public topic3: Bytes,
-    public data: Bytes
+    public data: Bytes,
   ) {}
 }
 
@@ -862,7 +862,7 @@ export class Address extends Bytes {
       throw new Error(
         // `Bytes of length ${b.length} can not be converted to 20 byte addresses`
         // Don't use ${} in error message for better performance in zkWASM
-        `Bytes of length of (not 20) can not be converted to 20 byte addresses`
+        `Bytes of length of (not 20) can not be converted to 20 byte addresses`,
       );
     }
     return changetype<Address>(b);

@@ -29,7 +29,7 @@ export class BigInt {
 
   private constructor(
     size: i32 = BigInt.precision,
-    isNegative: boolean = false
+    isNegative: boolean = false,
   ) {
     this.d = new Uint32Array(size);
     this.isNeg = isNegative;
@@ -100,7 +100,7 @@ export class BigInt {
           "Character " +
             bigInteger.charAt(i) +
             " is not supported for radix " +
-            radix.toString()
+            radix.toString(),
         );
       }
       res = res.inplaceMulInt(radixU).add(BigInt.fromUInt16(val));
@@ -183,7 +183,7 @@ export class BigInt {
     digits: Uint32Array,
     isNegative: boolean = false,
     n: i32 = digits.length,
-    minSize: i32 = digits.length
+    minSize: i32 = digits.length,
   ): BigInt {
     let size = minSize;
     if (size < digits.length) {
@@ -219,7 +219,7 @@ export class BigInt {
   private static getEmptyResultContainer(
     minSize: i32,
     isNegative: boolean,
-    n: i32
+    n: i32,
   ): BigInt {
     const size: i32 = minSize + BigInt.precision - (minSize % BigInt.precision);
     const res: BigInt = new BigInt(size, isNegative);
@@ -284,7 +284,7 @@ export class BigInt {
     const bitCount: i32 = this.countBits();
     if (bitCount > 32) {
       throw new Error(
-        `Integer overflow: cannot output i32 from an integer that uses ${bitCount} bits`
+        `Integer overflow: cannot output i32 from an integer that uses ${bitCount} bits`,
       );
     }
     const biString: string = this.toString();
@@ -302,7 +302,7 @@ export class BigInt {
     const bitCount: i32 = this.countBits();
     if (bitCount > 64) {
       throw new Error(
-        `Integer overflow: cannot output i64 from an integer that uses ${bitCount} bits`
+        `Integer overflow: cannot output i64 from an integer that uses ${bitCount} bits`,
       );
     }
     const biString: string = this.toString();
@@ -323,7 +323,7 @@ export class BigInt {
     const bitCount: i32 = this.countBits();
     if (bitCount > 32) {
       throw new Error(
-        `Integer overflow: cannot output u32 from an integer that uses ${bitCount} bits`
+        `Integer overflow: cannot output u32 from an integer that uses ${bitCount} bits`,
       );
     }
     return U32.parseInt(this.toString());
@@ -339,7 +339,7 @@ export class BigInt {
     const bitCount: i32 = this.countBits();
     if (bitCount > 64) {
       throw new Error(
-        `Integer overflow: cannot output u64 from an integer that uses ${bitCount} bits`
+        `Integer overflow: cannot output u64 from an integer that uses ${bitCount} bits`,
       );
     }
     return U64.parseInt(this.toString());
@@ -441,7 +441,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       max + 1,
       resultIsNegative,
-      max
+      max,
     );
     // add
     let carry: u32 = 0;
@@ -473,7 +473,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       max,
       resultIsNegative,
-      max
+      max,
     );
     // subtract
     let carry: u32 = 0;
@@ -500,7 +500,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       this.n + 1,
       resultIsNegative,
-      this.n
+      this.n,
     );
     let carry = 1;
     for (let i = 0; i < this.n; i++) {
@@ -521,7 +521,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       this.n,
       resultIsNegative,
-      this.n
+      this.n,
     );
     let carry = 1;
     for (let i = 0; i < this.n; i++) {
@@ -538,7 +538,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       this.n + 1,
       this.isNeg,
-      this.n
+      this.n,
     );
     let r: u32 = 0;
     for (let i = 0; i < this.n; i++) {
@@ -557,7 +557,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       this.n,
       this.isNeg,
-      this.n
+      this.n,
     );
     let r: u32 = 0;
     for (let i = this.n - 1; i >= 0; i--) {
@@ -1399,7 +1399,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       numPairs,
       false,
-      numPairs
+      numPairs,
     );
 
     let i = 0;
@@ -1438,7 +1438,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       resLength,
       false,
-      resLength
+      resLength,
     );
 
     let i = 0;
@@ -1468,7 +1468,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       resLength,
       false,
-      resLength
+      resLength,
     );
 
     let i = 0;
