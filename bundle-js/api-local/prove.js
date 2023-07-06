@@ -6,25 +6,30 @@ import { loadConfig } from "../common/config.js";
 import { providers } from "ethers";
 import { getRawReceipts } from "../common/ethers_helper.js";
 import { rlpDecodeAndEventFilter } from "../common/apihelper.js";
-import { fromHexString, toHexString } from "../common/utils.js";
+import { fromHexString, toHexString, trimPrefix } from "../common/utils.js";
 import { asmain, zkmain, setupZKWasmMock } from "../common/bundle_local.js";
 
 program.version("1.0.0");
 
-program.requiredOption("-b, --block <blockid>", "Block number (or block hash) as runtime context")
+program.argument("<block id>", "Block number (or block hash) as runtime context")
+    .argument("<expected state>", "State output of the zkgraph execution")
     .option("-i, --inputgen", "Generate input")
     .option('-p, --pretest', 'Run in pretest Mode');
   
 program.parse(process.argv);
 
+const args = program.args;
 const options = program.opts();
 
 // Read block id
-var blockid = 0; //17633573
-if (options.block) {
-    blockid = Number.isFinite(options.block) ? options.block : parseInt(options.block)
-//   console.log(`Port number: ${options.port}`);
-}
+var blockid = args[0].length >= 64 ? args[0] : parseInt(args[0]); //17633573
+var expectedStateStr = args[1]
+var expectedStateStr = trimPrefix(expectedStateStr, '0x')
+
+// if (options.block) {
+//     blockid = Number.isFinite(options.block) ? options.block : parseInt(options.block)
+// //   console.log(`Port number: ${options.port}`);
+// }
 
 // Load config
 var [source_address, source_esigs] = loadConfig('src/zkgraph.yaml')
@@ -63,15 +68,17 @@ for (var i in eventList){
 }
 
 // Inputs:
-const expectedState = asmain(rawReceipts, matchedEventOffsets);
-const expectedStateStr = toHexString(expectedState)
+// const expectedState = asmain(rawReceipts, matchedEventOffsets);
+// const expectedStateStr = toHexString(expectedState)
+
+// console.log('expectedStateStr:',expectedStateStr)
 const privateInputStr = 
 formatVarLenInput([
   toHexString(rawReceipts),
   toHexString(new Uint8Array(matchedEventOffsets.buffer)),
 ])
 
-const publicInputStr = formatVarLenInput([toHexString(expectedState)])
+const publicInputStr = formatVarLenInput([expectedStateStr])
 
 if (options.inputgen) {
     console.log("Input generation mode");

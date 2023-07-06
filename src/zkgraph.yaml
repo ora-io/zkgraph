@@ -14,5 +14,3 @@ dataSources:
       eventHandlers:
         - event: Sync(uint112,uint112)
           handler: handleEvents
-        - event: Sync(uint112,uint112)
-          handler: handleEvents

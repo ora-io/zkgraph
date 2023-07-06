@@ -12,15 +12,13 @@ import  { program } from "commander";
 
 // Parse args
 program.version("1.0.0");
-program.requiredOption("-b, --block <blockid>", "Block number (or block hash) as runtime context")
+program.argument("<block id>", "Block number (or block hash) as runtime context")
 program.parse(process.argv);
-const options = program.opts();
+const args = program.args;
 
-var blockid = 0; //17633573
-if (options.block) {
-    blockid = Number.isFinite(options.block) ? options.block : parseInt(options.block)
+//17633573
+var blockid = args[0].length >= 64 ? args[0] : parseInt(args[0]); //17633573
 //   console.log(`Port number: ${options.port}`);
-}
 
 // Load config
 var [source_address, source_esigs] = loadConfig('src/zkgraph.yaml')
