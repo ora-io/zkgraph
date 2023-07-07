@@ -19,7 +19,7 @@ console.log(">> EXECUTE", "\n");
 program.version("1.0.0");
 program.argument(
   "<block id>",
-  "Block number (or block hash) as runtime context"
+  "Block number (or block hash) as runtime context",
 );
 program.parse(process.argv);
 const args = program.args;
@@ -31,9 +31,7 @@ const [source_address, source_esigs] = loadConfig("src/zkgraph.yaml");
 console.log("[*] Source contract address:", source_address);
 console.log("[*] Source events signatures:", source_esigs, "\n");
 
-const provider = new providers.JsonRpcProvider(
-  config.JsonRpcProviderUrl
-);
+const provider = new providers.JsonRpcProvider(constants.JsonRpcProviderUrl);
 
 // Fetch raw receipts
 const rawreceiptList = await getRawReceipts(provider, blockid);
@@ -42,13 +40,13 @@ const rawreceiptList = await getRawReceipts(provider, blockid);
 const eventList = rlpDecodeAndEventFilter(
   rawreceiptList,
   fromHexString(source_address),
-  source_esigs.map((esig) => fromHexString(esig))
+  source_esigs.map((esig) => fromHexString(esig)),
 );
 
 // Gen Offsets
 let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
   rawreceiptList,
-  eventList
+  eventList,
 );
 matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 
@@ -56,13 +54,15 @@ matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 console.log(
   "[*]",
   rawreceiptList.length,
-  rawreceiptList.length > 1 ? "receipts fetched from block" : "receipt fetched from block",
-  blockid
+  rawreceiptList.length > 1
+    ? "receipts fetched from block"
+    : "receipt fetched from block",
+  blockid,
 );
 console.log(
   "[*]",
   matchedEventOffsets.length / 7,
-  matchedEventOffsets.length / 7 > 1 ? "events matched" : "event matched"
+  matchedEventOffsets.length / 7 > 1 ? "events matched" : "event matched",
 );
 for (let i in eventList) {
   for (let j in eventList[i]) {

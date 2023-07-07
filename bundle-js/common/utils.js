@@ -23,6 +23,6 @@ export function trimPrefix(str, prefix) {
 }
 
 export function logDivider() {
-  const line = '='.repeat(process.stdout.columns);
+  const line = "=".repeat(process.stdout.columns);
   console.log(line);
 }

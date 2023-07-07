@@ -29,7 +29,7 @@ export function testUtils(): void {
 
   assert(bigInt.toHexString() == "499602d2", "BigInt.toHexString()");
 
-  assert(bigInt.toHexString('0x') == "0x499602d2", "BigInt.toHexString()");
+  assert(bigInt.toHexString("0x") == "0x499602d2", "BigInt.toHexString()");
 
   console.log("✅ Test Utils");
 }
