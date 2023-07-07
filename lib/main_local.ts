@@ -24,7 +24,7 @@ export function zkmain(): void {
   const _offsets = read_private_len_then_bytes();
   const matched_event_offset = changetype<Uint32Array>(_offsets);
   const expected_state = read_public_len_then_bytes();
-  //   console.log("test3 "+expected_state.toHexString());
+  
   const state: Bytes = receiveMatchedEvents(
     rawreceipts.dataStart,
     matched_event_offset.length / 7,

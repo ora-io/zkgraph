@@ -2,7 +2,6 @@
 import { require } from "../lib/common/zkwasm";
 import { Bytes, Event } from "../lib/common/type";
 
-//TODO: events[]
 export function handleEvents(events: Event[]): Bytes {
   //   var source = changetype<Bytes>(events[1].data);
   //   let reserve0 = source.slice(31, 32);
@@ -13,10 +12,10 @@ export function handleEvents(events: Event[]): Bytes {
   //   state = source.slice(50)
   //   console.log(events[0].address.toHexString())
   //   console.log(events[0].esig.toHexString())
-  let state = new Bytes(2);
+  let state = new Bytes(0);
   if (events.length > 0) {
     state = events[0].address;
   }
-  require(true ? 1 : 0);
+  require(state.length == 20 ? 1 : 0);
   return state;
 }
