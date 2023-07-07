@@ -1,23 +1,27 @@
 # zkGraph SDK and Library
 
-## Develop zkGraph
+## Getting Started
 
-### Getting Started
+To create your zkGraph project based on this template, click `Use this template`, and `Creating a new repository`.
 
-First, fork this repo, and clone your forked repo. Then, run:
+After clone your project, run:
 
 ```bash
 git update-index --skip-worktree config.js
 npm install
 ```
 
-To test the whole flow of the library locally, update `config.js` file with your data, then run:
+To test the whole flow of the library, update `config.js` file with your data, then run:
 
 ```bash
 sh test.sh
 ```
 
-## Usage Example
+## Commands
+
+The workflow of local zkGraph development is: `Develop` (code in /src) -> `Compile` (to get compiled wasm image) -> `Execute` (to get expected output) -> `Prove` (to generate input and pre-test for actual proving) -> `Deploy`.
+
+If you encounter any problem, please refer to the [test.sh](./test.sh) for the example usage of the commands.
 
 ### Compile Locally
 
@@ -37,6 +41,44 @@ npm run exec-local -- {block_id}
 npm run prove-local -- --inputgen {block_id} {expected_state}
 npm run prove-local -- --pretest {block_id} {expected_state}
 ```
+
+## Develop
+
+### `config.js`
+
+The configuration (such as blockchain json rpc provider url) for the local development API.
+
+### `src/zkgraph.yaml`
+
+The configuration for the zkGraph.
+
+It specifies information including:
+- data source
+- target blockchain network
+- target smart contract address
+- target event
+- event handler
+
+### `src/mapping.ts`
+
+The logic of the event handler in AssemblyScript.
+
+It specifies how to handle the event data and generate the output state.
+
+```typescript
+export function handleEvents(events: Event[]): Bytes {
+  let state = new Bytes(2);
+  if (events.length > 0) {
+    state = events[0].address;
+  }
+  require(true ? 1 : 0);
+  return state;
+}
+```
+
+## Resources
+
+More info and API reference can be found in [Hyper Oracle zkGraph docs](https://docs.hyperoracle.io/zkgraph-standards/zkgraph).
 
 ## zkGraph Dev Tips
 
