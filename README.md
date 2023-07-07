@@ -104,6 +104,15 @@ More info and API reference can be found in [Hyper Oracle zkGraph docs](https://
 
 References: [WebAssembly Opcodes](https://pengowray.github.io/wasm-ops/).
 
+## Structure
+
+This repo has the following folders relevant to zkGraph development:
+
+- `bundle-js`: APIs (the scripts in `package.json`) for compile, execute, prove, and deploy zkGraph for testing locally.
+- `example`: Example zkGraphs.
+- `lib`: AssemblyScript library for zkGraph development, with data structure such as Bytes, ByteArray and BigInt.
+- `src`: Where your actual zkGraph should be in. Contains `mapping.ts` and `zkgraph.yaml`.
+
 ## Thanks
 
 - zkWasm Project: [DelphinusLab/zkWasm](https://github.com/DelphinusLab/zkWasm)
