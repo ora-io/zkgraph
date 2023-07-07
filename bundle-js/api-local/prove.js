@@ -40,7 +40,7 @@ expectedStateStr = trimPrefix(expectedStateStr, "0x");
 // Load config
 const [source_address, source_esigs] = loadConfig("src/zkgraph.yaml");
 
-const provider = new providers.JsonRpcProvider(constants.JsonRpcProviderUrl);
+const provider = new providers.JsonRpcProvider(config.JsonRpcProviderUrl);
 
 // Fetch raw receipts
 let rawreceiptList = await getRawReceipts(provider, blockid);
