@@ -8,7 +8,7 @@ import {
 } from "../common/api_helper.js";
 import { loadConfig } from "../common/config.js";
 import { program } from "commander";
-import { constants } from "../../constants.js";
+import { config } from "../../config.js";
 // usage: node exec.js -b <blocknum/blockhash>
 // TODO: update handler func name by yaml config
 
@@ -32,7 +32,7 @@ console.log("[*] Source contract address:", source_address);
 console.log("[*] Source events signatures:", source_esigs, "\n");
 
 const provider = new providers.JsonRpcProvider(
-  constants.JsonRpcProviderUrl
+  config.JsonRpcProviderUrl
 );
 
 // Fetch raw receipts

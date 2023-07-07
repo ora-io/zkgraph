@@ -7,11 +7,11 @@
 First, fork this repo, and clone your forked repo. Then, run:
 
 ```bash
-git update-index --skip-worktree constants.js
+git update-index --skip-worktree config.js
 npm install
 ```
 
-To test the whole flow of the library locally, update `constants.js` file with your data, then run:
+To test the whole flow of the library locally, update `config.js` file with your data, then run:
 
 ```bash
 sh test.sh
