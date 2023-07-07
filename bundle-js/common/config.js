@@ -36,4 +36,4 @@ export function loadConfig(fname) {
   return [source_address, source_esigs];
 }
 
-export function applyConfig(configObj) {}
+export function applyConfig(configObj) {} //placeholder

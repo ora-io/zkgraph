@@ -26,9 +26,8 @@ export function rlpDecodeAndEventFilter(rawreceiptList, srcAddr, srcEsigs) {
   const eventsList = [];
 
   for (let i in rawreceiptList) {
-    // concat matched_offset_list
     const es = TxReceipt.fromRawStr(rawreceiptList[i]).filter(srcAddr, srcEsigs);
-
+    
     eventsList.push(es);
   }
   return eventsList;
@@ -47,10 +46,6 @@ export function genStreamAndMatchedEventOffsets(rawreceiptList, eventList) {
       ...es.map((e) => eventTo7Offsets(e, accumulateReceiptLength))
     );
 
-    // concat rawreceipts
-    // var r = ;
-    // r = trimPrefix(r, '0x')
-    // r = trimPrefix(r, '02')
     var r = cleanReceipt(rawreceiptList[rcpid]);
     rawreceipts += r;
 
