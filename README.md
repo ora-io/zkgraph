@@ -4,14 +4,13 @@
 
 To create your zkGraph project based on this template, click `Use this template`, and `Creating a new repository`.
 
-After clone your project, run:
+After clone your project, create `config.js` file at root folder based on `config-example.js`, and run:
 
 ```bash
-git update-index --skip-worktree config.js
 npm install
 ```
 
-To test the whole flow of the library, update `config.js` file with your data, then run:
+To test the whole flow of the library, then run:
 
 ```bash
 sh test.sh
@@ -67,11 +66,11 @@ It specifies how to handle the event data and generate the output state.
 
 ```typescript
 export function handleEvents(events: Event[]): Bytes {
-  let state = new Bytes(2);
+  let state = new Bytes(0);
   if (events.length > 0) {
     state = events[0].address;
   }
-  require(true ? 1 : 0);
+  require(state.length == 20 ? 1 : 0);
   return state;
 }
 ```
