@@ -1,6 +1,5 @@
 import { handleEvents } from "../../src/mapping";
 import { Event, Bytes, PtrDeref } from "./type";
-// TODO: test this
 
 /**
  *
