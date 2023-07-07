@@ -14,10 +14,10 @@ function loadYaml(fname) {
 }
 
 export function loadConfig(fname) {
-  var config = loadYaml(fname);
-  var source_address = config.dataSources[0].source.address;
+  const config = loadYaml(fname);
+  const source_address = config.dataSources[0].source.address;
 
-  for (var i in config.dataSources[0].mapping.eventHandlers) {
+  for (let i in config.dataSources[0].mapping.eventHandlers) {
     if (
       config.dataSources[0].mapping.eventHandlers[i].handler != "handleEvents"
     ) {
@@ -36,10 +36,4 @@ export function loadConfig(fname) {
   return [source_address, source_esigs];
 }
 
-export function applyConfig(configObj) {}
-
-// var config = loadConfig('src/zkgraph.yaml')
-// console.log(config.dataSources[0].mapping.eventHandlers)
-// console.log(config.dataSources[0].mapping.eventHandlers[0].source)
-// console.log(config.dataSources[0].mapping.eventHandlers[0])
-// console.log(config.dataSources[0].mapping.eventHandlers[0].handler)
+export function applyConfig(configObj) {} //placeholder

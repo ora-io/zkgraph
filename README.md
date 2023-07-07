@@ -4,23 +4,38 @@
 
 ### Getting Started
 
+First, fork this repo, and clone your forked repo. Then, run:
+
 ```bash
+git update-index --skip-worktree constants.js
 npm install
+```
+
+To test the whole flow of the library locally, update `constants.js` file with your data, then run:
+
+```bash
+sh test.sh
 ```
 
 ## Usage Example
 
-Local Execution:
+### Compile Locally
 
 ```bash
-npm run exec-local -- 17633573
+npm run compile-local
 ```
 
-Local Prove (pre-test / input generation)
+### Execute Locally
 
 ```bash
-npm run prove-local -- --inputgen 0x10d1125 0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc
-npm run prove-local -- --pretest 0x10d1125 0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc
+npm run exec-local -- {block_id}
+```
+
+### Prove Local (input generation / pre-test)
+
+```bash
+npm run prove-local -- --inputgen {block_id} {expected_state}
+npm run prove-local -- --pretest {block_id} {expected_state}
 ```
 
 ## zkGraph Dev Tips

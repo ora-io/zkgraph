@@ -1012,9 +1012,9 @@ export class BigInt extends Uint8Array {
    *
    * Notice: The Original AssemblySciprt API of The Graph is without 0x prefix.
    */
-  toHexString(prefix: string = ''): string {
-    if (prefix !== '') {
-      return prefix + typeConversion.bigIntToHex(this)
+  toHexString(prefix: string = ""): string {
+    if (prefix !== "") {
+      return prefix + typeConversion.bigIntToHex(this);
     }
     return typeConversion.bigIntToHex(this);
   }

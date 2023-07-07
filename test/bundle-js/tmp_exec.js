@@ -6,7 +6,7 @@ import { getRawReceipts } from "../../bundle-js/common/ethers_helper.js";
 import {
   TxReceipt,
   concatRawRlpList,
-} from "../../bundle-js/common/txreceipt.js";
+} from "../../bundle-js/common/tx_receipt.js";
 import { fromHexString, toHexString } from "../../bundle-js/common/utils.js";
 // usage: node exec.js <blocknum/blockhash>
 //TODO: read args from input

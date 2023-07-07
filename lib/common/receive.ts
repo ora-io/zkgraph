@@ -20,7 +20,7 @@ export function receiveMatchedEvents(
 
   for (var i = 0; i < match_event_cnt; i++) {
     const event_base_ptr = matched_event_offsets_ptr + i * 28;
-    // c_log(lastLogStart)
+
     const address = Bytes.fromRawarrPtr(
       raw_receipts_ptr + PtrDeref.read(event_base_ptr),
       addressLength,

@@ -8,18 +8,18 @@ export class HostMemory {
   }
   push(data, little_endian = true) {
     if (little_endian) {
-      for (var i = 0; i < data.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         this.mem[this.writecur + i] = data[i];
       }
     } else {
-      for (var i = 0; i < data.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         this.mem[this.writecur + data.length - 1 - i] = data[i];
       }
     }
     this.writecur += data.length;
   }
   push_align(data, little_endian = true) {
-    var padlen = Math.ceil(data.length / 8) * 8 - data.length;
+    const padlen = Math.ceil(data.length / 8) * 8 - data.length;
     this.push(data, little_endian);
     this.push(new Uint8Array(padlen));
   }
@@ -37,12 +37,12 @@ export class HostMemory {
     }
   }
   write_from_input(str) {
-    var args = str.split(" ");
-    for (var i in args) {
+    const args = str.split(" ");
+    for (let i in args) {
       if (args[i].length == 0) continue;
-      var _arg = args[i].split(":");
+      const _arg = args[i].split(":");
       if (_arg.length > 2) throw Error("multiple ':' in \"" + args[i] + '"');
-      var [d, t] = [_arg[0], _arg[1]];
+      const [d, t] = [_arg[0], _arg[1]];
       this.write_once(fromHexString(d), t);
     }
   }
@@ -58,13 +58,6 @@ export class HostMemory {
     return this.view.getBigUint64(this.readcur - 8, true);
   }
 }
-
-// var mem = new HostMemory(100000000)
-// mem.write_from_input('0x43d:i64 0x43d:i64 0x121212121212:bytes-packed')
-// mem.print()
-// console.log(mem.read_i64().toString(16))
-// console.log(mem.read_i64().toString(16))
-// console.log(mem.read_i64().toString(16))
 
 export class ZKWASMMock {
   constructor(max_pri_size = 100000000, max_pub_size = 1000) {

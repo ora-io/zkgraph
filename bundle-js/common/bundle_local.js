@@ -1,5 +1,6 @@
 import { ZKWASMMock } from "./zkwasm_mock.js";
-var zkwasmmock = "";
+
+let zkwasmmock = "";
 
 export function setupZKWasmMock(mock) {
   zkwasmmock = mock;
