@@ -9,7 +9,12 @@ import { loadConfig } from "../common/config.js";
 import { providers } from "ethers";
 import { getRawReceipts } from "../common/ethers_helper.js";
 import { rlpDecodeAndEventFilter } from "../common/api_helper.js";
-import { fromHexString, toHexString, trimPrefix, logDivider } from "../common/utils.js";
+import {
+  fromHexString,
+  toHexString,
+  trimPrefix,
+  logDivider,
+} from "../common/utils.js";
 import { zkmain, setupZKWasmMock } from "../common/bundle_local.js";
 import { ZKWASMMock } from "../common/zkwasm_mock.js";
 import { constants } from "../../constants.js";
@@ -35,9 +40,7 @@ expectedStateStr = trimPrefix(expectedStateStr, "0x");
 // Load config
 const [source_address, source_esigs] = loadConfig("src/zkgraph.yaml");
 
-const provider = new providers.JsonRpcProvider(
-  constants.JsonRpcProviderUrl
-);
+const provider = new providers.JsonRpcProvider(constants.JsonRpcProviderUrl);
 
 // Fetch raw receipts
 let rawreceiptList = await getRawReceipts(provider, blockid);
@@ -67,7 +70,7 @@ const publicInputStr = formatVarLenInput([expectedStateStr]);
 switch (options.inputgen || options.pretest) {
   // Input generation mode
   case options.inputgen:
-  // Log script name
+    // Log script name
     console.log(">> PROVE: INPUT GENERATION MODE", "\n");
     console.log("[+] ZKGRAPH STATE OUTPUT:", expectedStateStr, "\n");
     console.log("[+] PRIVATE INPUT FOR ZKWASM:", "\n" + privateInputStr, "\n");

@@ -9,7 +9,7 @@ function eventTo7Offsets(event, receiptBaseOffset) {
     rst.push(
       i < event.topics.length
         ? event.topics_offset[i][0] + receiptBaseOffset
-        : 0
+        : 0,
     );
   }
 
@@ -26,8 +26,11 @@ export function rlpDecodeAndEventFilter(rawreceiptList, srcAddr, srcEsigs) {
   const eventsList = [];
 
   for (let i in rawreceiptList) {
-    const es = TxReceipt.fromRawStr(rawreceiptList[i]).filter(srcAddr, srcEsigs);
-    
+    const es = TxReceipt.fromRawStr(rawreceiptList[i]).filter(
+      srcAddr,
+      srcEsigs,
+    );
+
     eventsList.push(es);
   }
   return eventsList;
@@ -43,7 +46,7 @@ export function genStreamAndMatchedEventOffsets(rawreceiptList, eventList) {
   for (let rcpid in rawreceiptList) {
     const es = eventList[rcpid];
     matched_offset_list = matched_offset_list.concat(
-      ...es.map((e) => eventTo7Offsets(e, accumulateReceiptLength))
+      ...es.map((e) => eventTo7Offsets(e, accumulateReceiptLength)),
     );
 
     var r = cleanReceipt(rawreceiptList[rcpid]);
@@ -56,12 +59,12 @@ export function genStreamAndMatchedEventOffsets(rawreceiptList, eventList) {
 }
 
 // Format inputs with length and input value
-export function formatVarLenInput (inputs) {
+export function formatVarLenInput(inputs) {
   var formatted = "";
   inputs.map((input) => {
     formatted += `0x${Math.ceil(input.length / 2).toString(
-      16
+      16,
     )}:i64 0x${input}:bytes-packed `;
   });
   return formatted;
-};
+}
