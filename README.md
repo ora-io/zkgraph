@@ -1,4 +1,4 @@
-# zkGraph SDK and Library
+# zkGraph Template
 
 ## Getting Started
 
