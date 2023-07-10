@@ -52,6 +52,7 @@ The configuration (such as blockchain json rpc provider url) for the local devel
 The configuration for the zkGraph.
 
 It specifies information including:
+
 - data source
 - target blockchain network
 - target smart contract address
