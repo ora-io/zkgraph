@@ -40,8 +40,6 @@ export function rlpDecodeAndEventFilter(rawreceiptList, srcAddr, srcEsigs) {
 }
 
 export function genStreamAndMatchedEventOffsets(rawreceiptList, eventList) {
-  console.log("test ", rawreceiptList);
-  console.log("test ", eventList);
   let matched_offset_list = [];
   let accumulateReceiptLength = 0;
   let rawreceipts = "";
