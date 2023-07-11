@@ -1,4 +1,4 @@
-import { Bytes, ByteArray } from "../type";
+import { Bytes, ByteArray } from "../../lib/common/type";
 
 export function testBytesWithByteArray(): void {
   const longArray = new ByteArray(5);

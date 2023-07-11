@@ -5,9 +5,9 @@
 // Need optimization for zkWASM
 // For this implementation, we use the `as-bigint` lib by Polywrap
 // (https://github.com/polywrap/as-bigint)
-import { BigInt } from "../type";
+import { BigInt } from "../common/type";
 // TODO: Remove third-party dependency
-import { BigInt as ASBigInt } from "../lib/asBigInt";
+import { BigInt as ASBigInt } from "../extlib/asBigInt";
 import { bigIntToASBigInt } from "./conversion";
 
 export function plus(x: BigInt, y: BigInt): BigInt {
@@ -45,13 +45,13 @@ export function fromString(s: string): BigInt {
 
 export function bitOr(x: BigInt, y: BigInt): BigInt {
   return BigInt.fromI64(
-    bigIntToASBigInt(x).bitwiseOr(bigIntToASBigInt(y)).toInt64()
+    bigIntToASBigInt(x).bitwiseOr(bigIntToASBigInt(y)).toInt64(),
   );
 }
 
 export function bitAnd(x: BigInt, y: BigInt): BigInt {
   return BigInt.fromI64(
-    bigIntToASBigInt(x).bitwiseAnd(bigIntToASBigInt(y)).toInt64()
+    bigIntToASBigInt(x).bitwiseAnd(bigIntToASBigInt(y)).toInt64(),
   );
 }
 

@@ -1,15 +1,24 @@
 {
   "name": "zkgraph",
   "scripts": {
-    "test": "asc demo-uniswap-v2-idx-zkgraph/mapping.ts -o build/mapping.wasm --bindings esm && node src/test.js",
-    "compile": "asc main.ts --lib ./demo-uniswap-v2-idx-zkgraph -t build/main.wat -O --noAssert -o build/main.wasm --bindings esm --disable bulk-memory --use abort=sdk/zkwasm/abort --target release --runtime stub && wc -l build/main.wat",
+    "compile-local": "node bundle-js/api-local/compile.js",
+    "exec-local": "node bundle-js/api-local/exec.js",
+    "prove-local": "node bundle-js/api-local/prove.js",
+    "deploy-local": "",
+    "compile": "",
+    "exec": "",
+    "prove": "",
+    "deploy": "",
+    "verify": "",
     "format": "prettier --write -c **/*.{js,ts,md}",
     "lint": "prettier -c **/*.{js,ts,md}",
-    "test-sdk": "asc sdk/test/test.ts -o build/sdk/test.wasm --bindings esm && node sdk/test/test.js"
+    "test-lib": "asc test/lib/test.ts -o build/lib/test.wasm --bindings esm && node test/lib/test.js"
   },
   "type": "module",
   "dependencies": {
-    "ethers": "^5.7.2"
+    "commander": "^11.0.0",
+    "ethers": "^5.7.2",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "assemblyscript": "^0.27.0",

@@ -1,0 +1,21 @@
+specVersion: 0.0.2
+description: Demo graph for zkAutomation.
+repository: https://github.com/hyperoracle/zkgraph
+dataSources:
+  - kind: ethereum/contract
+    network: mainnet
+    source:
+      address: '0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.1
+      language: wasm/assemblyscript
+      file: ./mapping.ts
+      eventHandlers:
+        - event: Sync(uint112,uint112)
+          handler: handleEvents
+dataDestinations:
+  - kind: ethereum/contract
+    network: mainnet
+    destination:
+      address: '0x123abc'

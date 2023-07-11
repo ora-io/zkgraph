@@ -2,8 +2,21 @@
 // (https://thegraph.com/docs/en/developing/assemblyscript-api/)
 // Reference Implementation:
 // (https://github.com/graphprotocol/graph-tooling/tree/main/packages/ts)
-import * as typeConversion from "./utils/conversion";
-import * as bigInt from "./utils/bigInt";
+import * as typeConversion from "../utils/conversion";
+import * as bigInt from "../utils/bigInt";
+
+// used in asc to rm env.abort
+function abort(a: usize, b: usize, c: u32, d: u32): void {}
+export class Event {
+  constructor(
+    public address: Bytes,
+    public esig: Bytes,
+    public topic1: Bytes,
+    public topic2: Bytes,
+    public topic3: Bytes,
+    public data: Bytes,
+  ) {}
+}
 
 /**
  * dereference helper
@@ -12,7 +25,7 @@ import * as bigInt from "./utils/bigInt";
  *
  * It's a custom implementation to get the initial Hyper Oracle MVP.
  */
-class PtrDeref {
+export class PtrDeref {
   data: usize = 0;
   static read(ptr: usize): usize {
     return changetype<PtrDeref>(ptr).data;
@@ -22,7 +35,10 @@ class PtrDeref {
   }
 }
 
-let _available_ptr: usize = 10000; // in js local: max mem size == 65535 (guess)
+/**
+ * Caution! use only if you know what you want to do, otherwise it will introduce weird bug (bus error, runtime err etc.)
+ */
+let _available_ptr: usize = 60000; // in js local: max mem size == 65535 (guess)
 function _static_alloc(_len: usize): usize {
   var _pre_ptr = _available_ptr;
   _available_ptr += _len;
@@ -277,6 +293,7 @@ export class ByteArray extends Uint8Array {
 
   /**
    * Provable on zkWASM.
+   *
    * WASM cost: 421 lines of wat.
    */
   toBase58(): string {
@@ -667,7 +684,9 @@ export class Bytes extends ByteArray {
    */
   static fromRawarrPtr(_arr_heap_ptr: usize, _len: i32): Bytes {
     // var _bytes_ptr = heap.alloc(12); // size of Uint8Array == 3*4 == 12
-    var _bytes_ptr = _static_alloc(12);
+    var _tmpu8a = new Uint8Array(0);
+    // var _bytes_ptr = _static_alloc(12);
+    var _bytes_ptr = _tmpu8a.dataStart;
     PtrDeref.write(_bytes_ptr, _arr_heap_ptr);
     PtrDeref.write(_bytes_ptr + 4, _arr_heap_ptr);
     PtrDeref.write(_bytes_ptr + 8, _len);
@@ -691,12 +710,17 @@ export class Bytes extends ByteArray {
     // this.arr.fill(_val)
   }
 
+  slice(start: i32, end: i32 = -1): Bytes {
+    end = end == -1 ? this.length : end;
+    return Bytes.fromUint8Array((this as Uint8Array).slice(start, end));
+  }
+
   /**
    * Try not to use this.
    *
    * It's a custom implementation to get the initial Hyper Oracle MVP.
    */
-  slice(start: i32, end: i32): Bytes {
+  _slice(start: i32, end: i32): Bytes {
     if (
       start < 0 ||
       end < 0 ||
@@ -704,12 +728,12 @@ export class Bytes extends ByteArray {
       end > this.length ||
       start >= end
     ) {
-      return Bytes.new(0);
+      return new Bytes(0);
       // throw new Error("Invalid slice parameters");
     }
 
     const len = end - start;
-    var dst = Bytes.new(len);
+    var dst = new Bytes(len);
     for (let i: i32 = 0; i < len; i++) {
       dst[i] = this[start + i];
     }
@@ -838,7 +862,7 @@ export class Address extends Bytes {
       throw new Error(
         // `Bytes of length ${b.length} can not be converted to 20 byte addresses`
         // Don't use ${} in error message for better performance in zkWASM
-        `Bytes of length of (not 20) can not be converted to 20 byte addresses`
+        `Bytes of length of (not 20) can not be converted to 20 byte addresses`,
       );
     }
     return changetype<Address>(b);
@@ -862,32 +886,61 @@ export class Address extends Bytes {
 
 /** An arbitrary size integer represented as an array of bytes. */
 export class BigInt extends Uint8Array {
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 48 line of wat.
+   */
   static fromI32(x: i32): BigInt {
     const byteArray = ByteArray.fromI32(x);
     return BigInt.fromByteArray(byteArray);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 115 line of wat.
+   */
   static fromU32(x: u32): BigInt {
     const byteArray = ByteArray.fromU32(x);
     return BigInt.fromUnsignedBytes(byteArray);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 92 line of wat.
+   */
   static fromI64(x: i64): BigInt {
     const byteArray = ByteArray.fromI64(x);
     return BigInt.fromByteArray(byteArray);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 159 line of wat.
+   */
   static fromU64(x: u64): BigInt {
     const byteArray = ByteArray.fromU64(x);
     return BigInt.fromUnsignedBytes(byteArray);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 48 line of wat.
+   */
   static zero(): BigInt {
     return BigInt.fromI32(0);
   }
 
   /**
    * `bytes` assumed to be little-endian. If your input is big-endian, call `.reverse()` first.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 17 line of wat.
    */
   static fromSignedBytes(bytes: Bytes): BigInt {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -895,16 +948,30 @@ export class BigInt extends Uint8Array {
     return BigInt.fromByteArray(byteArray);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 150 line of wat.
+   */
   static fromSignedBytesBigEndian(bytes: Bytes): BigInt {
-    return BigInt.fromSignedBytes(bytes.reverse());
+    return BigInt.fromSignedBytes(<Bytes>bytes.reverse());
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 17 line of wat.
+   */
   static fromByteArray(byteArray: ByteArray): BigInt {
     return changetype<BigInt>(byteArray);
   }
 
   /**
    * `bytes` assumed to be little-endian. If your input is big-endian, call `.reverse()` first.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 83 line of wat.
    */
   static fromUnsignedBytes(bytes: ByteArray): BigInt {
     const signedBytes = new BigInt(bytes.length + 1);
@@ -915,11 +982,20 @@ export class BigInt extends Uint8Array {
     return signedBytes;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 229 line of wat.
+   */
   static fromUnsignedBytesBigEndian(bytes: ByteArray): BigInt {
-    return BigInt.fromUnsignedBytes(bytes.reverse());
+    return BigInt.fromUnsignedBytes(<Bytes>bytes.reverse());
   }
 
   /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1632 line of wat.
+   *
    * Lowercase hex string without 0x prefix.
    */
   toHex(): string {
@@ -927,40 +1003,78 @@ export class BigInt extends Uint8Array {
   }
 
   /**
-   * Lowercase hex string with 0x prefix.
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1629 line of wat.
+   *
+   * Converts `BigInt` to a hexadecimal string representation, with an optional
+   * prefix (for example, '0x').
+   *
    * Notice: The Original AssemblySciprt API of The Graph is without 0x prefix.
    */
-  toHexString(): string {
-    // return typeConversion.bigIntToHex(this);
-    return "0x" + typeConversion.bigIntToHex(this);
+  toHexString(prefix: string = ""): string {
+    if (prefix !== "") {
+      return prefix + typeConversion.bigIntToHex(this);
+    }
+    return typeConversion.bigIntToHex(this);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1632 line of wat.
+   */
   toString(): string {
     return typeConversion.bigIntToString(this);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 4125 line of wat.
+   */
   static fromString(s: string): BigInt {
     return bigInt.fromString(s);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 200 line of wat.
+   */
   toI32(): i32 {
     const uint8Array = changetype<Uint8Array>(this);
     const byteArray = changetype<ByteArray>(uint8Array);
     return byteArray.toI32();
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 221 line of wat.
+   */
   toU32(): u32 {
     const uint8Array = changetype<Uint8Array>(this);
     const byteArray = changetype<ByteArray>(uint8Array);
     return byteArray.toU32();
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 302 line of wat.
+   */
   toI64(): i64 {
     const uint8Array = changetype<Uint8Array>(this);
     const byteArray = changetype<ByteArray>(uint8Array);
     return byteArray.toI64();
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 270 line of wat.
+   */
   toU64(): u64 {
     const uint8Array = changetype<Uint8Array>(this);
     const byteArray = changetype<ByteArray>(uint8Array);
@@ -971,10 +1085,20 @@ export class BigInt extends Uint8Array {
   //   return new BigDecimal(this);
   // }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 303 line of wat.
+   */
   isZero(): boolean {
     return this == BigInt.fromI32(0);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 331 line of wat.
+   */
   isI32(): boolean {
     return (
       BigInt.fromI32(i32.MIN_VALUE) <= this &&
@@ -982,12 +1106,42 @@ export class BigInt extends Uint8Array {
     );
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 3877 line of wat.
+   */
   abs(): BigInt {
     return this < BigInt.fromI32(0) ? this.neg() : this;
   }
 
+  /**
+   * Provable on zkWASM (if BigInt less than U64.MAX_VALUE).
+   *
+   * WASM cost: 5357 line of wat.
+   */
   sqrt(): BigInt {
     const x: BigInt = this;
+
+    // Handle negative numbers
+    if (x < BigInt.fromI32(0)) {
+      throw new Error("cannot sqrt negative number");
+    }
+
+    // Handle numbers smaller than U64.MAX_VALUE
+    if (x < BigInt.fromU64(U64.MAX_VALUE)) {
+      const xU64 = x.toU64();
+      // Note: This will add 1 to xU64 then overflow if condition is set to lte.
+      let zU64 = (xU64 + 1) / 2;
+      let yU64 = xU64;
+      while (zU64 < yU64) {
+        yU64 = zU64;
+        zU64 = (xU64 / zU64 + zU64) / 2;
+      }
+      return BigInt.fromU64(yU64);
+    }
+
+    // Handle numbers larger than U64.MAX_VALUE (the real BigInt)
     let z = x.plus(BigInt.fromI32(1)).div(BigInt.fromI32(2));
     let y = x;
     while (z < y) {
@@ -999,6 +1153,11 @@ export class BigInt extends Uint8Array {
   }
 
   // Operators
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 3552 line of wat.
+   */
   @operator("+")
   plus(other: BigInt): BigInt {
     // ERROR TS2322: Type 'sdk/type/BigInt | null' is not assignable to type 'sdk/type/BigInt'.
@@ -1009,6 +1168,11 @@ export class BigInt extends Uint8Array {
     return bigInt.plus(this, other);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 3553 line of wat.
+   */
   @operator("-")
   minus(other: BigInt): BigInt {
     // assert(
@@ -1018,6 +1182,11 @@ export class BigInt extends Uint8Array {
     return bigInt.minus(this, other);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 3369 line of wat.
+   */
   @operator("*")
   times(other: BigInt): BigInt {
     // assert(
@@ -1027,6 +1196,11 @@ export class BigInt extends Uint8Array {
     return bigInt.times(this, other);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 4455 line of wat.
+   */
   @operator("/")
   div(other: BigInt): BigInt {
     // assert(
@@ -1040,6 +1214,11 @@ export class BigInt extends Uint8Array {
   //   return bigInt.dividedByDecimal(this, other);
   // }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 4438 line of wat.
+   */
   @operator("%")
   mod(other: BigInt): BigInt {
     // assert(
@@ -1049,62 +1228,123 @@ export class BigInt extends Uint8Array {
     return bigInt.mod(this, other);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 298 line of wat.
+   */
   @operator("==")
   equals(other: BigInt): boolean {
     return BigInt.compare(this, other) == 0;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 298 line of wat.
+   */
   @operator("!=")
   notEqual(other: BigInt): boolean {
     return !(this == other);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 298 line of wat.
+   */
   @operator("<")
   lt(other: BigInt): boolean {
     return BigInt.compare(this, other) == -1;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 298 line of wat.
+   */
   @operator(">")
   gt(other: BigInt): boolean {
     return BigInt.compare(this, other) == 1;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 298 line of wat.
+   */
   @operator("<=")
   le(other: BigInt): boolean {
     return !(this > other);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 298 line of wat.
+   */
   @operator(">=")
   ge(other: BigInt): boolean {
     return !(this < other);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 3554 line of wat.
+   */
   @operator.prefix("-")
   neg(): BigInt {
     return BigInt.fromI32(0).minus(this);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 3753 line of wat.
+   */
   @operator("|")
   bitOr(other: BigInt): BigInt {
     return bigInt.bitOr(this, other);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 3747 line of wat.
+   */
   @operator("&")
   bitAnd(other: BigInt): BigInt {
     return bigInt.bitAnd(this, other);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 2994 line of wat.
+   */
   @operator("<<")
   leftShift(bits: u8): BigInt {
     return bigInt.leftShift(this, bits);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 3190 line of wat.
+   */
   @operator(">>")
   rightShift(bits: u8): BigInt {
     return bigInt.rightShift(this, bits);
   }
 
-  /// Limited to a low exponent to discourage creating a huge BigInt.
+  /**
+   * Limited to a low exponent to discourage creating a huge BigInt.
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 4058 line of wat.
+   */
   pow(exp: u8): BigInt {
     return bigInt.pow(this, exp);
   }
@@ -1168,110 +1408,3 @@ export class BigInt extends Uint8Array {
     return 0;
   }
 }
-
-// export class BigDecimal {
-//   digits: BigInt;
-//   exp: BigInt;
-
-//   constructor(bigInt: BigInt) {
-//     this.digits = bigInt;
-//     this.exp = BigInt.fromI32(0);
-//   }
-
-//   static fromString(s: string): BigDecimal {
-//     return bigDecimal.fromString(s);
-//   }
-
-//   static zero(): BigDecimal {
-//     return new BigDecimal(BigInt.zero());
-//   }
-
-//   toString(): string {
-//     return bigDecimal.toString(this);
-//   }
-
-//   truncate(decimals: i32): BigDecimal {
-//     const digitsRightOfZero = this.digits.toString().length + this.exp.toI32();
-//     const newDigitLength = decimals + digitsRightOfZero;
-//     const truncateLength = this.digits.toString().length - newDigitLength;
-//     if (truncateLength < 0) {
-//       return this;
-//     }
-//     for (let i = 0; i < truncateLength; i++) {
-//       this.digits = this.digits.div(BigInt.fromI32(10));
-//     }
-//     this.exp = BigInt.fromI32(decimals * -1);
-//     return this;
-//   }
-
-//   @operator('+')
-//   plus(other: BigDecimal): BigDecimal {
-//     assert(this !== null, "Failed to sum BigDecimals because left hand side is 'null'");
-//     return bigDecimal.plus(this, other);
-//   }
-
-//   @operator('-')
-//   minus(other: BigDecimal): BigDecimal {
-//     assert(this !== null, "Failed to subtract BigDecimals because left hand side is 'null'");
-//     return bigDecimal.minus(this, other);
-//   }
-
-//   @operator('*')
-//   times(other: BigDecimal): BigDecimal {
-//     assert(this !== null, "Failed to multiply BigDecimals because left hand side is 'null'");
-//     return bigDecimal.times(this, other);
-//   }
-
-//   @operator('/')
-//   div(other: BigDecimal): BigDecimal {
-//     assert(this !== null, "Failed to divide BigDecimals because left hand side is 'null'");
-//     return bigDecimal.dividedBy(this, other);
-//   }
-
-//   @operator('==')
-//   equals(other: BigDecimal): boolean {
-//     return BigDecimal.compare(this, other) == 0;
-//   }
-
-//   @operator("!=")
-//   notEqual(other: BigDecimal): boolean {
-//     return !(this == other);
-//   }
-
-//   @operator('<')
-//   lt(other: BigDecimal): boolean {
-//     return BigDecimal.compare(this, other) == -1;
-//   }
-
-//   @operator('>')
-//   gt(other: BigDecimal): boolean {
-//     return BigDecimal.compare(this, other) == 1;
-//   }
-
-//   @operator("<=")
-//   le(other: BigDecimal): boolean {
-//     return !(this > other);
-//   }
-
-//   @operator(">=")
-//   ge(other: BigDecimal): boolean {
-//     return !(this < other);
-//   }
-
-//   @operator.prefix('-')
-//   neg(): BigDecimal {
-//     assert(this !== null, "Failed to negate BigDecimal because the value of it is 'null'");
-//     return new BigDecimal(new BigInt(0)).minus(this);
-//   }
-
-//   /**
-//    * Returns −1 if a < b, 1 if a > b, and 0 if A == B
-//    */
-//   static compare(a: BigDecimal, b: BigDecimal): i32 {
-//     const diff = a.minus(b);
-//     if (diff.digits.isZero()) {
-//       return 0;
-//     }
-//     return diff.digits > BigInt.fromI32(0) ? 1 : -1;
-//   }
-// }
