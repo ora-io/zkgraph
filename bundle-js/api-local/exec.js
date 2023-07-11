@@ -66,7 +66,10 @@ console.log(
 );
 for (let i in filteredEventList) {
   for (let j in filteredEventList[i]) {
-    filteredEventList[i][j].prettyPrint("\tTx[" + i + "]Event[" + j + "]", false);
+    filteredEventList[i][j].prettyPrint(
+      "\tTx[" + i + "]Event[" + j + "]",
+      false,
+    );
   }
 }
 

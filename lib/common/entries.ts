@@ -8,16 +8,16 @@ import {
 } from "./zkwasm";
 
 export function asmain(
-    rawreceipts: Uint8Array,
-    matched_event_offsets: Uint32Array,
-  ): Uint8Array {
-    const state = receiveMatchedEvents(
-      rawreceipts.dataStart,
-      matched_event_offsets.length / 7,
-      matched_event_offsets.dataStart,
-    );
-    return state;
-  }
+  rawreceipts: Uint8Array,
+  matched_event_offsets: Uint32Array,
+): Uint8Array {
+  const state = receiveMatchedEvents(
+    rawreceipts.dataStart,
+    matched_event_offsets.length / 7,
+    matched_event_offsets.dataStart,
+  );
+  return state;
+}
 
 export function zkmain(): void {
   const rawreceipts: Bytes = read_private_len_then_bytes();

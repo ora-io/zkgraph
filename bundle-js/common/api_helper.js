@@ -31,17 +31,17 @@ export function rlpDecodeAndEventFilter(rawreceiptList, srcAddr, srcEsigs) {
       srcAddr,
       srcEsigs,
     );
-    if (es.length > 0){
-        filteredRawReceiptList.push(rawreceiptList[i])
-        filteredEventsList.push(es);
+    if (es.length > 0) {
+      filteredRawReceiptList.push(rawreceiptList[i]);
+      filteredEventsList.push(es);
     }
   }
   return [filteredRawReceiptList, filteredEventsList];
 }
 
 export function genStreamAndMatchedEventOffsets(rawreceiptList, eventList) {
-    console.log('test ', rawreceiptList)
-    console.log('test ', eventList)
+  console.log("test ", rawreceiptList);
+  console.log("test ", eventList);
   let matched_offset_list = [];
   let accumulateReceiptLength = 0;
   let rawreceipts = "";
