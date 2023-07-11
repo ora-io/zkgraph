@@ -17,5 +17,5 @@ export function handleEvents(events: Event[]): Bytes {
     state = events[0].address;
   }
   require(state.length == 20 ? 1 : 0);
-  return state;
+return state;
 }
