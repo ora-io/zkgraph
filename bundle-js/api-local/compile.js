@@ -9,7 +9,7 @@ const commands = [
   "npx asc lib/main_local.ts -t build/zkgraph_local.wat -O --noAssert -o build/zkgraph_local.wasm --disable bulk-memory --use abort=lib/common/type/abort --target release --bindings esm --runtime stub",
 ];
 
-const combinedCommand = commands.join(" && ");
+  const combinedCommand = commands.join(" && ")
 execSync(combinedCommand, { encoding: "utf-8" });
 
 function getLineCount(filePath) {
