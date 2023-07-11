@@ -79,3 +79,5 @@ const state = asmain(rawReceipts, matchedEventOffsets);
 console.log("[+] ZKGRAPH STATE OUTPUT:", toHexString(state), "\n");
 
 logDivider();
+
+process.exit(0);
