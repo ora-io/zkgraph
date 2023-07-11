@@ -37,7 +37,7 @@ const provider = new providers.JsonRpcProvider(constants.JsonRpcProviderUrl);
 const rawreceiptList = await getRawReceipts(provider, blockid);
 
 // RLP Decode and Filter
-const eventList = rlpDecodeAndEventFilter(
+const [filteredRawReceiptList, filteredEventList] = rlpDecodeAndEventFilter(
   rawreceiptList,
   fromHexString(source_address),
   source_esigs.map((esig) => fromHexString(esig)),
@@ -45,8 +45,8 @@ const eventList = rlpDecodeAndEventFilter(
 
 // Gen Offsets
 let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
-  rawreceiptList,
-  eventList,
+  filteredRawReceiptList,
+  filteredEventList,
 );
 matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 
@@ -64,9 +64,9 @@ console.log(
   matchedEventOffsets.length / 7,
   matchedEventOffsets.length / 7 > 1 ? "events matched" : "event matched",
 );
-for (let i in eventList) {
-  for (let j in eventList[i]) {
-    eventList[i][j].prettyPrint("\tTx[" + i + "]Event[" + j + "]", false);
+for (let i in filteredEventList) {
+  for (let j in filteredEventList[i]) {
+    filteredEventList[i][j].prettyPrint("\tTx[" + i + "]Event[" + j + "]", false);
   }
 }
 
