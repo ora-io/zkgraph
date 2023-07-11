@@ -32,7 +32,7 @@ program.parse(process.argv);
 const args = program.args;
 const options = program.opts();
 
-// Log mode first
+// Log mode name first
 switch (options.inputgen || options.pretest) {
   // Input generation mode
   case options.inputgen:
