@@ -32,6 +32,21 @@ program.parse(process.argv);
 const args = program.args;
 const options = program.opts();
 
+// Log mode name first
+switch (options.inputgen || options.pretest) {
+  // Input generation mode
+  case options.inputgen:
+    // Log script name
+    console.log(">> PROVE: INPUT GENERATION MODE", "\n");
+    break;
+
+  // Pretest mode
+  case options.pretest:
+    // Log script name
+    console.log(">> PROVE: PRETEST MODE", "\n");
+    break;
+}
+
 // Read block id
 const blockid = args[0].length >= 64 ? args[0] : parseInt(args[0]); //17633573
 let expectedStateStr = args[1];
@@ -89,11 +104,10 @@ const privateInputStr = formatVarLenInput([
 
 const publicInputStr = formatVarLenInput([expectedStateStr]);
 
+// Log content based on mode
 switch (options.inputgen || options.pretest) {
   // Input generation mode
   case options.inputgen:
-    // Log script name
-    console.log(">> PROVE: INPUT GENERATION MODE", "\n");
     console.log("[+] ZKGRAPH STATE OUTPUT:", expectedStateStr, "\n");
     console.log("[+] PRIVATE INPUT FOR ZKWASM:", "\n" + privateInputStr, "\n");
     console.log("[+] PUBLIC INPUT FOR ZKWASM:", "\n" + publicInputStr, "\n");
@@ -101,8 +115,6 @@ switch (options.inputgen || options.pretest) {
 
   // Pretest mode
   case options.pretest:
-    // Log script name
-    console.log(">> PROVE: PRETEST MODE", "\n");
     const mock = new ZKWASMMock();
     mock.set_private_input(privateInputStr);
     mock.set_public_input(publicInputStr);

@@ -23,7 +23,7 @@ console.log(
   compiledFileLineCount,
   compiledFileLineCount > 1
     ? "lines in build/zkgraph_local.wat"
-    : "lines in build/zkgraph_local.wat",
+    : "line in build/zkgraph_local.wat",
 );
 console.log("[+] COMPILATION COMPLETE!", "\n");
 
