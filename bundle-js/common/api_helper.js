@@ -23,20 +23,25 @@ function cleanReceipt(r) {
 }
 
 export function rlpDecodeAndEventFilter(rawreceiptList, srcAddr, srcEsigs) {
-  const eventsList = [];
+  const filteredRawReceiptList = [];
+  const filteredEventsList = [];
 
   for (let i in rawreceiptList) {
     const es = TxReceipt.fromRawStr(rawreceiptList[i]).filter(
       srcAddr,
       srcEsigs,
     );
-
-    eventsList.push(es);
+    if (es.length > 0){
+        filteredRawReceiptList.push(rawreceiptList[i])
+        filteredEventsList.push(es);
+    }
   }
-  return eventsList;
+  return [filteredRawReceiptList, filteredEventsList];
 }
 
 export function genStreamAndMatchedEventOffsets(rawreceiptList, eventList) {
+    console.log('test ', rawreceiptList)
+    console.log('test ', eventList)
   let matched_offset_list = [];
   let accumulateReceiptLength = 0;
   let rawreceipts = "";
