@@ -1,6 +1,6 @@
 # Test script for zkGraph
 
-# Update `constants.js` with your own parameters first!
+# Update `config.js` with your own parameters first!
 # Then run `sh test.sh`
 
 npm install

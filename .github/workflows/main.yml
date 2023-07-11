@@ -4,12 +4,20 @@ name: Prettier Action
 # https://github.com/marketplace/actions/prettier-action
 on:
   pull_request:
+    branches:
+      - master
+      - main
   push:
     branches:
       - master
+      - main
 
 jobs:
   prettier:
+    # https://github.com/ad-m/github-push-action/issues/96
+    # Allow write permission for github-actions
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
 
     steps:
@@ -18,8 +26,19 @@ jobs:
         with:
           # Make sure the actual branch is checked out when running on pull requests
           ref: ${{ github.head_ref }}
+          # https://stackoverflow.com/questions/72375995/how-to-get-commit-count-of-the-repository-in-github-actions
+          # 0 indicates all history for all branches and tags.
+          fetch-depth: 0
+
+      - name: Get commit count
+        id: commit-count
+        run: |
+          echo "COMMIT_COUNT=$(git rev-list --count HEAD)" >> $GITHUB_ENV
+          echo "Commit count: ${{ env.COMMIT_COUNT }}"
 
       - name: Prettify code
+        # Step only run if the repo is not created by "using this template" (commit count is 1)
+        if: ${{ env.COMMIT_COUNT != '1' }}
         uses: creyD/prettier_action@v4.3
         with:
           # This part is also where you can pass other options, for example:

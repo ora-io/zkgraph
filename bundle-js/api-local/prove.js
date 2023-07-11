@@ -17,7 +17,7 @@ import {
 } from "../common/utils.js";
 import { zkmain, setupZKWasmMock } from "../common/bundle_local.js";
 import { ZKWASMMock } from "../common/zkwasm_mock.js";
-import { constants } from "../../constants.js";
+import { config } from "../../config.js";
 
 program.version("1.0.0");
 
@@ -40,7 +40,7 @@ expectedStateStr = trimPrefix(expectedStateStr, "0x");
 // Load config
 const [source_address, source_esigs] = loadConfig("src/zkgraph.yaml");
 
-const provider = new providers.JsonRpcProvider(constants.JsonRpcProviderUrl);
+const provider = new providers.JsonRpcProvider(config.JsonRpcProviderUrl);
 
 // Fetch raw receipts
 let rawreceiptList = await getRawReceipts(provider, blockid);
