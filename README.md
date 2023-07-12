@@ -4,13 +4,28 @@
 
 To create your zkGraph project based on this template, click `Use this template`, and `Creating a new repository`.
 
-After clone your project, create `config.js` file at root folder based on `config-example.js`, and run:
+### Configuration
+
+After clone your project, you need to create `config.js` file at root folder based on `config-example.js`
+
+```js
+// ./config.js
+export const config = {
+  // Etherum JSON RPC provider URL:
+  // (Please note the provider must support debug_getRawReceipts RPC method.)
+  JsonRpcProviderUrl: "https://{URL}",
+};
+```
+
+Then run:
 
 ```bash
 npm install
 ```
 
-To test the whole flow of the library, then run:
+### Quick Start
+
+To test the whole flow of the library, run this after you have done the configuration:
 
 ```bash
 sh test.sh
