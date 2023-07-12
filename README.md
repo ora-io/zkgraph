@@ -9,6 +9,7 @@ To create your zkGraph project based on this template, click `Use this template`
 After clone your project, you need to create `config.js` file at root folder based on `config-example.js`
 
 ```js
+// ./config.js
 export const config = {
   // Etherum JSON RPC provider URL:
   // (Please note the provider must support debug_getRawReceipts RPC method.)
