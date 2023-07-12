@@ -108,3 +108,5 @@ build
 *.wat
 
 .DS_Store
+
+config.js
