@@ -8,7 +8,7 @@ import {
 } from "../common/api_helper.js";
 import { loadConfig } from "../common/config.js";
 import { program } from "commander";
-import { constants } from "../../constants.js";
+import { config } from "../../config.js";
 // usage: node exec.js -b <blocknum/blockhash>
 // TODO: update handler func name by yaml config
 
@@ -31,7 +31,7 @@ const [source_address, source_esigs] = loadConfig("src/zkgraph.yaml");
 console.log("[*] Source contract address:", source_address);
 console.log("[*] Source events signatures:", source_esigs, "\n");
 
-const provider = new providers.JsonRpcProvider(constants.JsonRpcProviderUrl);
+const provider = new providers.JsonRpcProvider(config.JsonRpcProviderUrl);
 
 // Fetch raw receipts
 const rawreceiptList = await getRawReceipts(provider, blockid);
@@ -79,3 +79,5 @@ const state = asmain(rawReceipts, matchedEventOffsets);
 console.log("[+] ZKGRAPH STATE OUTPUT:", toHexString(state), "\n");
 
 logDivider();
+
+process.exit(0);

@@ -26,3 +26,11 @@ export function logDivider() {
   const line = "=".repeat(process.stdout.columns);
   console.log(line);
 }
+
+export function concatHexStrings(hexStrings) {
+  let result = "";
+  for (let hexString of hexStrings) {
+    result += hexString.startsWith("0x") ? hexString.slice(2) : hexString;
+  }
+  return "0x" + result;
+}
