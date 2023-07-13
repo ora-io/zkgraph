@@ -1,5 +1,5 @@
 import { loadConfig } from "../common/config.js";
-import { logDivider, concatHexStrings } from "../common/utils.js";
+import { logDivider, concatHexStrings, fromHexString } from "../common/utils.js";
 import fs from "fs";
 import axios from "axios";
 import FormData from "form-data";
@@ -11,7 +11,7 @@ let isCompilationSuccess = true;
 // Constants
 const mappingPath = "src/mapping.ts";
 const configPath = "src/zkgraph.yaml";
-const outputPath = "build/zkgraph_full.wasm";
+const outputPathPrefix = "build/zkgraph_full";
 const apiEndpoint = "http://node.hyperoracle.io:8000/compile";
 
 // Load config
@@ -43,7 +43,11 @@ const response = await axios.request(config).catch((error) => {
 
 if (isCompilationSuccess) {
   // save file to build/zkgraph_full.wasm
-  fs.writeFileSync(outputPath, response.data);
+  const wasmModuleHex = response.data['wasmModuleHex']
+  const wasmWat = response.data['wasmWat']
+  const message = response.data['message']
+  fs.writeFileSync(outputPathPrefix + '.wasm', fromHexString(wasmModuleHex));
+  fs.writeFileSync(outputPathPrefix + '.wat', wasmWat);
 
   console.log("[+] Output written to `build` folder.")
   console.log("[+] COMPILATION SUCCESS!", "\n");
