@@ -32,6 +32,7 @@ if (isCompilationSuccess) {
   );
 
   // Log status
+  console.log("[+] Output written to `build` folder.")
   console.log("[+] COMPILATION SUCCESS!", "\n");
 
   logDivider();
@@ -42,7 +43,7 @@ if (isCompilationSuccess) {
   console.log();
 
   // Log status
-  console.log("[-] ERROR WITH COMPILING.", "\n");
+  console.log("[-] ERROR WHEN COMPILING.", "\n");
 
   logDivider();
 
