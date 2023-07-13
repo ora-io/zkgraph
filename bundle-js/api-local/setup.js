@@ -12,29 +12,37 @@
 // });
 
 import { readFileSync } from "fs";
+import fs from "fs";
 import {Blob} from 'buffer';
 import FormData from "form-data";
 import { ZkWasmUtil } from "zkwasm-service-helper";
-const compiledWasmBuffer = readFileSync("build/zkgraph_local.wasm");
-const compiledWasmBlob = new Blob([compiledWasmBuffer]);
+import url from "../requests/url.js";
+import axios from "axios";
+const inputPathPrefix = "build/zkgraph_full";
+const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
+// const compiledWasmBlob = new Blob([compiledWasmBuffer]);
 
 
 const md5 = ZkWasmUtil.convertToMd5(compiledWasmBuffer).toUpperCase();
             console.log("md5: ", md5)
 
+const userAddr = ""
+const description_url_encoded = ""
+
 let formData = new FormData();
             formData.append('name', "poc_module.wasm");
             formData.append('image_md5', md5);
-            formData.append("image",compiledWasmBlob);
-            formData.append("user_address", getState().entities.wallet.address.toLowerCase(),);
+            formData.append("image",fs.createReadStream(inputPathPrefix + ".wasm"));
+            // formData.append("image",compiledWasmBlob);
+            formData.append("user_address", userAddr);
             formData.append("description_url", description_url_encoded);
             formData.append("avator_url", "https://www.hyperoracle.io/static/media/Hyper%20Oracle%20Logo_White.8d58b96fc82ce311ad7ea6bf614ef344.svg");
             formData.append("circuit_size", 18);
-            formData.append("signature", signature);
+            // formData.append("signature", signature);
 
 
-let requestHeaders = new Headers();
-requestHeaders.append("Accept", "application/json");
+// let requestHeaders = new Headers();
+// requestHeaders.append("Accept", "application/json");
 
 function get(endpoint){
     return fetch(endpoint.url, {
@@ -48,21 +56,61 @@ function get(endpoint){
     });
 }
 
-function post(endpoint, data) {
-    console.log(data);
-    return fetch(endpoint.url, {
-        method: "POST",
-        // @ts-ignore
-        headers:{
-            ...endpoint.contentType,
-            Accept: "application/json",
-            Authorization: null,
+// function post(endpoint, data) {
+//     console.log(data);
+//     return fetch(endpoint.url, {
+//         method: "POST",
+//         // @ts-ignore
+//         headers:{
+//             ...endpoint.contentType,
+//             Accept: "application/json",
+//             Authorization: null,
+//         },
+//         body: data,
+//     }).then((res) => {
+//         console.log("[POST]: ", res);
+//         return handleResponse(res, endpoint.url);
+//     });
+// }
+
+
+async function post (endpoint, data) {
+    // console.log(data);
+    // console.log('endpoint', endpoint);
+    let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: endpoint.url,
+        headers: {
+          ...data.getHeaders(),
+        //   Authorization: null,
         },
-        body: data,
-    }).then((res) => {
-        console.log("[POST]: ", res);
-        return handleResponse(res, endpoint.url);
-    });
+        data: data,
+      };
+      // Send request
+    // return axios.request(config).then((res) => {
+    //         console.log("[POST]: ", res);
+    //         return handleResponse(res, endpoint.url);
+    //     }).catch((error) => {
+    //     });
+    
+        const res = await axios.request(config);
+        return handleResponse(res)
+
+//   console.log(response)
+    // return fetch(endpoint.url, {
+    //     method: "POST",
+    //     // @ts-ignore
+    //     headers:{
+    //         ...endpoint.contentType,
+    //         Accept: "application/json",
+    //         Authorization: null,
+    //     },
+    //     body: data,
+    // }).then((res) => {
+    //     console.log("[POST]: ", res);
+    //     return handleResponse(res, endpoint.url);
+    // });
 }
 
 async function handleResponse(response, url){
@@ -84,4 +132,4 @@ async function handleResponse(response, url){
 export {get, post};
 
 
-// post(url.postNewWasmImage, formData).then(res => console.log)
+post(url.postNewWasmImage(), formData).then(res => console.log(res))
