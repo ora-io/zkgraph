@@ -5,7 +5,7 @@
     "exec-local": "node bundle-js/api-local/exec.js",
     "prove-local": "node bundle-js/api-local/prove.js",
     "deploy-local": "",
-    "compile": "",
+    "compile": "node bundle-js/api-full/compile.js",
     "exec": "",
     "prove": "",
     "deploy": "",
@@ -16,6 +16,7 @@
   },
   "type": "module",
   "dependencies": {
+    "axios": "^1.4.0",
     "commander": "^11.0.0",
     "ethers": "^5.7.2",
     "js-yaml": "^4.1.0"

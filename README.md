@@ -2,7 +2,21 @@
 
 ## Getting Started
 
-To create your zkGraph project based on this template, click `Use this template`, and `Creating a new repository`.
+To create your zkGraph project based on this template:
+
+Option 1:
+
+Click `Use this template`, and `Creating a new repository`.
+
+Option 2:
+
+Use `gh` cli
+
+```bash
+brew install gh
+gh auth login
+gh repo create zkgraph-new --public --template="https://github.com/hyperoracle/zkgraph.git"
+```
 
 ### Configuration
 
@@ -54,6 +68,12 @@ npm run exec-local -- {block_id}
 ```bash
 npm run prove-local -- --inputgen {block_id} {expected_state}
 npm run prove-local -- --pretest {block_id} {expected_state}
+```
+
+### Compile (with Compile Server)
+
+```bash
+npm run compile
 ```
 
 ## Develop
