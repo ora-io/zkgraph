@@ -22,6 +22,12 @@ async function instantiate(module, imports = {}) {
         // lib/common/zkwasm/wasm_input(i32) => i64
         return zkwasmmock.wasm_input(x) || 0n;
       },
+      js_log(arg) { // to compatible with c-wasm
+        console.log(arg);
+      },
+      js_log_u64(arg) { // to compatible with c-wasm
+        console.log(arg);
+      }
     }),
   };
   const { exports } = await WebAssembly.instantiate(module, adaptedImports);
