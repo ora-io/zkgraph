@@ -3,11 +3,13 @@
 import { program } from "commander";
 import {
   formatVarLenInput,
+  formatIntInput,
+  formatHexStringInput,
   genStreamAndMatchedEventOffsets,
 } from "../common/api_helper.js";
 import { loadConfig } from "../common/config.js";
-import { providers } from "ethers";
-import { getRawReceipts } from "../common/ethers_helper.js";
+import { ethers, providers } from "ethers";
+import { getRawReceipts, getBlockByNumber } from "../common/ethers_helper.js";
 import { rlpDecodeAndEventFilter } from "../common/api_helper.js";
 import {
   fromHexString,
@@ -15,7 +17,7 @@ import {
   trimPrefix,
   logDivider,
 } from "../common/utils.js";
-import { zkmain, setupZKWasmMock } from "../common/bundle_local.js";
+import { zkmain, setupZKWasmMock } from "../common/bundle_full.js";
 import { ZKWASMMock } from "../common/zkwasm_mock.js";
 import { config } from "../../config.js";
 
@@ -63,17 +65,22 @@ let rawreceiptList = await getRawReceipts(provider, blockid);
 
 // RLP Decode and Filter
 const [filteredRawReceiptList, filteredEventList] = rlpDecodeAndEventFilter(
-  rawreceiptList,
-  fromHexString(source_address),
-  source_esigs.map((esig) => fromHexString(esig)),
-);
-
-// Gen Offsets
+    rawreceiptList,
+    fromHexString(source_address),
+    source_esigs.map((esig) => fromHexString(esig)),
+  );
+  
+  // Gen Offsets
 let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
   filteredRawReceiptList,
   filteredEventList,
 );
-matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
+
+// Get block
+const simpleblock = await provider.getBlock(blockid);
+const block = await getBlockByNumber(provider, simpleblock.number)
+// console.log(block.hash, block.number)
+// console.log(block)
 
 console.log(
   "[*]",
@@ -88,20 +95,15 @@ console.log(
   matchedEventOffsets.length / 7,
   matchedEventOffsets.length / 7 > 1 ? "events matched" : "event matched",
 );
-for (let i in filteredEventList) {
-  for (let j in filteredEventList[i]) {
-    filteredEventList[i][j].prettyPrint(
-      "\tTx[" + i + "]Event[" + j + "]",
-      false,
-    );
-  }
-}
+
+const publicInputStr = 
+    formatIntInput(parseInt(block.number)) +
+    formatHexStringInput(block.hash) + 
+    formatVarLenInput(expectedStateStr)
 
 const privateInputStr = 
-  formatVarLenInput(toHexString(rawReceipts)) +
-  formatVarLenInput(toHexString(new Uint8Array(matchedEventOffsets.buffer)));
-
-const publicInputStr = formatVarLenInput(expectedStateStr);
+    formatVarLenInput(toHexString(rawReceipts)) +
+    formatHexStringInput(block.receiptsRoot)
 
 // Log content based on mode
 switch (options.inputgen || options.pretest) {
