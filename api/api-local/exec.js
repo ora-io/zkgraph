@@ -6,7 +6,7 @@ import {
   rlpDecodeAndEventFilter,
   genStreamAndMatchedEventOffsets,
 } from "../common/api_helper.js";
-import { loadConfig } from "../common/config.js";
+import { loadZKGraphConfig } from "../common/config_utils.js";
 import { program } from "commander";
 import { config } from "../../config.js";
 // usage: node exec.js -b <blocknum/blockhash>
@@ -27,7 +27,7 @@ const args = program.args;
 const blockid = args[0].length >= 64 ? args[0] : parseInt(args[0]); //17633573
 
 // Load config
-const [source_address, source_esigs] = loadConfig("src/zkgraph.yaml");
+const [source_address, source_esigs] = loadZKGraphConfig("src/zkgraph.yaml");
 console.log("[*] Source contract address:", source_address);
 console.log("[*] Source events signatures:", source_esigs, "\n");
 

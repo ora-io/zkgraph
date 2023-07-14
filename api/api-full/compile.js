@@ -1,4 +1,4 @@
-import { loadConfig } from "../common/config.js";
+import { loadZKGraphConfig } from "../common/config_utils.js";
 import {
   logDivider,
   concatHexStrings,
@@ -20,7 +20,7 @@ const outputPathPrefix = "build/zkgraph_full";
 const apiEndpoint = config.CompilerServerEndpoint;
 
 // Load config
-const [source_address, source_esigs] = loadConfig(configPath);
+const [source_address, source_esigs] = loadZKGraphConfig(configPath);
 console.log("[*] Source contract address:", source_address);
 console.log("[*] Source events signatures:", source_esigs, "\n");
 

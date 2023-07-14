@@ -7,7 +7,7 @@ import {
   formatHexStringInput,
   genStreamAndMatchedEventOffsets,
 } from "../common/api_helper.js";
-import { loadConfig } from "../common/config.js";
+import { loadConfig } from "../common/config_utils.js";
 import { ethers, providers } from "ethers";
 import { getRawReceipts, getBlockByNumber } from "../common/ethers_helper.js";
 import { rlpDecodeAndEventFilter } from "../common/api_helper.js";
