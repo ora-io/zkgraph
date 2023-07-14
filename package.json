@@ -6,6 +6,7 @@
     "prove-local": "node bundle-js/api-local/prove.js",
     "deploy-local": "",
     "compile": "node bundle-js/api-full/compile.js",
+    "setup": "node bundle-js/api-full/setup.js",
     "exec": "node bundle-js/api-full/exec.js",
     "prove": "node bundle-js/api-full/prove.js",
     "deploy": "",
