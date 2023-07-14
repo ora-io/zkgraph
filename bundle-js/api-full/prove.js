@@ -69,7 +69,7 @@ const [filteredRawReceiptList, filteredEventList] = rlpDecodeAndEventFilter(
     fromHexString(source_address),
     source_esigs.map((esig) => fromHexString(esig)),
   );
-  
+
   // Gen Offsets
 let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
   filteredRawReceiptList,
@@ -95,13 +95,21 @@ console.log(
   matchedEventOffsets.length / 7,
   matchedEventOffsets.length / 7 > 1 ? "events matched" : "event matched",
 );
+for (let i in filteredEventList) {
+  for (let j in filteredEventList[i]) {
+    filteredEventList[i][j].prettyPrint(
+      "\tTx[" + i + "]Event[" + j + "]",
+      false,
+    );
+  }
+}
 
-const publicInputStr = 
+const publicInputStr =
     formatIntInput(parseInt(block.number)) +
-    formatHexStringInput(block.hash) + 
+    formatHexStringInput(block.hash) +
     formatVarLenInput(expectedStateStr)
 
-const privateInputStr = 
+const privateInputStr =
     formatVarLenInput(toHexString(rawReceipts)) +
     formatHexStringInput(block.receiptsRoot)
 
