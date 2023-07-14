@@ -1,11 +1,11 @@
-// usage: node prove.js [--inputgen/pretest] <blocknum/blockhash> <state> -> wasm input
+// usage: node prove.js [--inputgen/test] <blocknum/blockhash> <state> -> wasm input
 // TODO: add -o --outfile <file> under inputgen mode
 import { program } from "commander";
 import {
   formatVarLenInput,
   genStreamAndMatchedEventOffsets,
 } from "../common/api_helper.js";
-import { loadConfig } from "../common/config.js";
+import { loadZKGraphConfig } from "../common/config.js";
 import { providers } from "ethers";
 import { getRawReceipts } from "../common/ethers_helper.js";
 import { rlpDecodeAndEventFilter } from "../common/api_helper.js";
@@ -25,7 +25,7 @@ program
   .argument("<block id>", "Block number (or block hash) as runtime context")
   .argument("<expected state>", "State output of the zkgraph execution")
   .option("-i, --inputgen", "Generate input")
-  .option("-p, --pretest", "Run in pretest Mode");
+  .option("-p, --test", "Run in test Mode");
 
 program.parse(process.argv);
 
@@ -33,15 +33,15 @@ const args = program.args;
 const options = program.opts();
 
 // Log mode name first
-switch (options.inputgen || options.pretest) {
+switch (options.inputgen || options.test) {
   // Input generation mode
   case options.inputgen:
     // Log script name
     console.log(">> PROVE: INPUT GENERATION MODE", "\n");
     break;
 
-  // Pretest mode
-  case options.pretest:
+  // Test mode
+  case options.test:
     // Log script name
     console.log(">> PROVE: PRETEST MODE", "\n");
     break;
@@ -53,7 +53,7 @@ let expectedStateStr = args[1];
 expectedStateStr = trimPrefix(expectedStateStr, "0x");
 
 // Load config
-const [source_address, source_esigs] = loadConfig("src/zkgraph.yaml");
+const [source_address, source_esigs] = loadZKGraphConfig("src/zkgraph.yaml");
 
 const provider = new providers.JsonRpcProvider(config.JsonRpcProviderUrl);
 
@@ -104,7 +104,7 @@ const privateInputStr =
 const publicInputStr = formatVarLenInput(expectedStateStr);
 
 // Log content based on mode
-switch (options.inputgen || options.pretest) {
+switch (options.inputgen || options.test) {
   // Input generation mode
   case options.inputgen:
     console.log("[+] ZKGRAPH STATE OUTPUT:", expectedStateStr, "\n");
@@ -112,8 +112,8 @@ switch (options.inputgen || options.pretest) {
     console.log("[+] PUBLIC INPUT FOR ZKWASM:", "\n" + publicInputStr, "\n");
     break;
 
-  // Pretest mode
-  case options.pretest:
+  // Test mode
+  case options.test:
     const mock = new ZKWASMMock();
     mock.set_private_input(privateInputStr);
     mock.set_public_input(publicInputStr);
