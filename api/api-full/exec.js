@@ -4,7 +4,7 @@ import { program } from "commander";
 import {
   genStreamAndMatchedEventOffsets,
 } from "../common/api_helper.js";
-import { loadConfig } from "../common/config.js";
+import { loadZKGraphConfig } from "../common/config.js";
 import { ethers, providers } from "ethers";
 import { getRawReceipts, getBlockByNumber } from "../common/ethers_helper.js";
 import { rlpDecodeAndEventFilter } from "../common/api_helper.js";
@@ -30,7 +30,7 @@ const args = program.args;
 const blockid = args[0].length >= 64 ? args[0] : parseInt(args[0]); //17633573
 
 // Load config
-const [source_address, source_esigs] = loadConfig("src/zkgraph.yaml");
+const [source_address, source_esigs] = loadZKGraphConfig("src/zkgraph.yaml");
 
 const provider = new providers.JsonRpcProvider(config.JsonRpcProviderUrl);
 
