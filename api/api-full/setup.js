@@ -1,13 +1,10 @@
 import { readFileSync } from "fs";
 import fs from "fs";
-import FormData from "form-data";
 import { ZkWasmUtil } from "zkwasm-service-helper";
-import axios from "axios";
-import url from "../requests/url.js";
 import { config } from "../../config.js";
-import { Wallet } from "ethers";
 import { computeAddress } from "ethers/lib/utils.js";
 import { logDivider } from "../common/utils.js";
+import { zkwasm_setup } from "../requests/zkwasm_setup.js";
 
 const inputPathPrefix = "build/zkgraph_full";
 const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
@@ -23,45 +20,12 @@ const circuit_size = 22;
 
 // Log script name
 console.log(">> SET UP", "\n");
-let isSetUpSuccess = true;
 
-let message = ZkWasmUtil.createAddImageSignMessage({
-  name: name,
-  image_md5: md5,
-  image: image,
-  user_address: address,
-  description_url: description_url_encoded,
-  avator_url: avator_url,
-  circuit_size: circuit_size,
-});
-const wallet = new Wallet(config.UserPrivateKey);
-let signature = await wallet.signMessage(message);
-
-let formData = new FormData();
-formData.append("name", name);
-formData.append("image_md5", md5);
-formData.append("image", image);
-formData.append("user_address", address);
-formData.append("description_url", description_url_encoded);
-formData.append("avator_url", avator_url);
-formData.append("circuit_size", circuit_size);
-formData.append("signature", signature);
-
-let requestConfig = {
-  method: "post",
-  maxBodyLength: Infinity,
-  url: url.postNewWasmImage().url,
-  headers: {
-    ...formData.getHeaders(),
-  },
-  data: formData,
-};
-
-let errorMessage = "";
-const response = await axios.request(requestConfig).catch((error) => {
-    isSetUpSuccess = false;
-    errorMessage = error.response.data;
-});
+let [response, isSetUpSuccess, errorMessage] = await zkwasm_setup(name, md5, image, 
+    address,
+    description_url_encoded,
+    avator_url,
+    circuit_size)
 
 if (isSetUpSuccess) {
     console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
