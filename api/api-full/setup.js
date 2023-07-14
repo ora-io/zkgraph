@@ -19,7 +19,7 @@ const image = fs.createReadStream(inputPathPrefix + ".wasm");
 const address = computeAddress(config.UserPrivateKey).toLowerCase();
 const description_url_encoded = "";
 const avator_url = "";
-const circuit_size = 18;
+const circuit_size = 22;
 
 // Log script name
 console.log(">> SET UP", "\n");
