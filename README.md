@@ -13,8 +13,6 @@ Option 2:
 Use `gh` cli
 
 ```bash
-brew install gh
-gh auth login
 gh repo create zkgraph-new --public --template="https://github.com/hyperoracle/zkgraph.git"
 ```
 
