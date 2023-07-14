@@ -4,6 +4,7 @@ import { ZkWasmUtil } from "zkwasm-service-helper";
 import { config } from "../../config.js";
 import { logDivider } from "../common/utils.js";
 import { zkwasm_setup } from "../requests/zkwasm_setup.js";
+import { waitTaskStatus } from "../requests/zkwasm_taskdetails.js";
 
 const inputPathPrefix = "build/zkgraph_full";
 const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
@@ -29,9 +30,12 @@ let [response, isSetUpSuccess, errorMessage] = await zkwasm_setup(name, md5, ima
 if (isSetUpSuccess) {
     console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
 
-    console.log(`[+] TASK ID: ${response.data.result.id}`, "\n")
+    console.log(`[+] SET UP TASK STARTED. TASK ID: ${response.data.result.id}`, "\n");
 
-    console.log("[+] SET UP SUCCESSFULLY STARTED!", "\n");
+    console.log("[*] Please wait for image set up... (estimated: 1-5 min)", "\n");
+
+    let taskresult = await waitTaskStatus(response.data.result.id, ['Done', 'Fail'], 2000, 0); //TODO: timeout
+    console.log(`[+] SET UP ${taskresult}`, "\n");
 
     logDivider();
 

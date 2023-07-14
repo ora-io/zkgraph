@@ -159,9 +159,9 @@ switch (options.inputgen || options.test || options.prove) {
         if (isSetUpSuccess) {
             console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
 
-            console.log(`[+] PROVE STARTED. TASK ID: ${response.data.result.id}`, "\n");
+            console.log(`[+] PROVE TASK STARTED. TASK ID: ${response.data.result.id}`, "\n");
 
-            console.log("[*] Please wait for proof generation...", "\n");
+            console.log("[*] Please wait for proof generation... (estimated: 1-5 min)", "\n");
 
             let taskresult = await waitTaskStatus(response.data.result.id, ['Done', 'Fail'], 2000, 0); //TODO: timeout
             console.log(`[+] PROVE ${taskresult}`, "\n");
