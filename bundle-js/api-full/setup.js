@@ -66,7 +66,7 @@ const response = await axios.request(requestConfig).catch((error) => {
 if (isSetUpSuccess) {
     console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
 
-    console.log(`[+] IMAGE ID: ${response.data.result.id}`, "\n")
+    console.log(`[+] TASK ID: ${response.data.result.id}`, "\n")
 
     console.log("[+] SET UP SUCCESSFULLY STARTED!", "\n");
 
@@ -74,6 +74,7 @@ if (isSetUpSuccess) {
 
     process.exit(0);
   } else {
+    console.log(`[*] IMAGE MD5: ${md5}`, "\n");
     // Log status
     console.log(`[-] ${errorMessage}`, "\n");
 
