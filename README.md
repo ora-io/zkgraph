@@ -28,6 +28,8 @@ export const config = {
   // Etherum JSON RPC provider URL:
   // (Please note the provider must support debug_getRawReceipts RPC method.)
   JsonRpcProviderUrl: "https://{URL}",
+  ZkwasmProviderUrl: "https://zkwasm-explorer.delphinuslab.com:8090",
+  CompilerServerEndpoint: "http://node.hyperoracle.io:8000/compile",
 };
 ```
 
