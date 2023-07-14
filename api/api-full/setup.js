@@ -21,7 +21,7 @@ const circuit_size = 22;
 // Log script name
 console.log(">> SET UP", "\n");
 
-let [response, isSetUpSuccess, errorMessage] = await zkwasm_setup(name, md5, image, 
+let [response, isSetUpSuccess, errorMessage] = await zkwasm_setup(name, md5, image,
     prikey,
     description_url_encoded,
     avator_url,
@@ -34,14 +34,18 @@ if (isSetUpSuccess) {
 
     console.log("[*] Please wait for image set up... (estimated: 1-5 min)", "\n");
 
-    let taskresult = await waitTaskStatus(response.data.result.id, ['Done', 'Fail'], 2000, 0); //TODO: timeout
-    console.log(`[+] SET UP ${taskresult}`, "\n");
+    const taskResult = await waitTaskStatus(response.data.result.id, ['Done', 'Fail'], 2000, 0); //TODO: timeout
+
+    const taskStatus = (taskResult === "Done") ? "SUCCESS" : "FAILED"
+
+    console.log(`[${taskStatus === "SUCCESS" ? "+" : "-"}] SET UP ${taskStatus}`, "\n");
 
     logDivider();
 
     process.exit(0);
   } else {
     console.log(`[*] IMAGE MD5: ${md5}`, "\n");
+
     // Log status
     console.log(`[-] ${errorMessage}`, "\n");
 

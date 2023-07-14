@@ -8,7 +8,7 @@ import {
   genStreamAndMatchedEventOffsets,
 } from "../common/api_helper.js";
 import { loadZKGraphConfig } from "../common/config_utils.js";
-import { ethers, providers } from "ethers";
+import { providers } from "ethers";
 import { getRawReceipts, getBlockByNumber } from "../common/ethers_helper.js";
 import { rlpDecodeAndEventFilter } from "../common/api_helper.js";
 import {
@@ -76,20 +76,20 @@ let rawreceiptList = await getRawReceipts(provider, blockid);
 
 // RLP Decode and Filter
 const [filteredRawReceiptList, filteredEventList] = rlpDecodeAndEventFilter(
-    rawreceiptList,
-    fromHexString(source_address),
-    source_esigs.map((esig) => fromHexString(esig)),
-  );
+  rawreceiptList,
+  fromHexString(source_address),
+  source_esigs.map((esig) => fromHexString(esig))
+);
 
-  // Gen Offsets
+// Gen Offsets
 let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
   filteredRawReceiptList,
-  filteredEventList,
+  filteredEventList
 );
 
 // Get block
 const simpleblock = await provider.getBlock(blockid);
-const block = await getBlockByNumber(provider, simpleblock.number)
+const block = await getBlockByNumber(provider, simpleblock.number);
 // console.log(block.hash, block.number)
 // console.log(block)
 
@@ -99,30 +99,30 @@ console.log(
   rawreceiptList.length > 1
     ? "receipts fetched from block"
     : "receipt fetched from block",
-  blockid,
+  blockid
 );
 console.log(
   "[*]",
   matchedEventOffsets.length / 7,
-  matchedEventOffsets.length / 7 > 1 ? "events matched" : "event matched",
+  matchedEventOffsets.length / 7 > 1 ? "events matched" : "event matched"
 );
 for (let i in filteredEventList) {
   for (let j in filteredEventList[i]) {
     filteredEventList[i][j].prettyPrint(
       "\tTx[" + i + "]Event[" + j + "]",
-      false,
+      false
     );
   }
 }
 
 const publicInputStr =
-    formatIntInput(parseInt(block.number)) +
-    formatHexStringInput(block.hash) +
-    formatVarLenInput(expectedStateStr)
+  formatIntInput(parseInt(block.number)) +
+  formatHexStringInput(block.hash) +
+  formatVarLenInput(expectedStateStr);
 
 const privateInputStr =
-    formatVarLenInput(toHexString(rawReceipts)) +
-    formatHexStringInput(block.receiptsRoot)
+  formatVarLenInput(toHexString(rawReceipts)) +
+  formatHexStringInput(block.receiptsRoot);
 
 // Log content based on mode
 switch (options.inputgen || options.test || options.prove) {
@@ -142,35 +142,56 @@ switch (options.inputgen || options.test || options.prove) {
     zkmain();
     console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
     break;
-  
+
   // Prove mode
   case options.prove:
-        const inputPathPrefix = "build/zkgraph_full";
-        const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
-        const privateInputArray = privateInputStr.trim().split(" ")
-        const publicInputArray = publicInputStr.trim().split(" ")
+    const inputPathPrefix = "build/zkgraph_full";
+    const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
+    const privateInputArray = privateInputStr.trim().split(" ");
+    const publicInputArray = publicInputStr.trim().split(" ");
 
-        // Message and form data
-        const md5 = ZkWasmUtil.convertToMd5(compiledWasmBuffer).toUpperCase();
-        const prikey = config.UserPrivateKey
+    // Message and form data
+    const md5 = ZkWasmUtil.convertToMd5(compiledWasmBuffer).toUpperCase();
+    const prikey = config.UserPrivateKey;
 
-        let [response, isSetUpSuccess, errorMessage] = await zkwasm_prove(prikey, md5, publicInputArray, privateInputArray)
+    let [response, isSetUpSuccess, errorMessage] = await zkwasm_prove(
+      prikey,
+      md5,
+      publicInputArray,
+      privateInputArray
+    );
 
-        if (isSetUpSuccess) {
-            console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
+    if (isSetUpSuccess) {
+      console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
 
-            console.log(`[+] PROVE TASK STARTED. TASK ID: ${response.data.result.id}`, "\n");
+      console.log(
+        `[+] PROVE TASK STARTED. TASK ID: ${response.data.result.id}`,
+        "\n"
+      );
 
-            console.log("[*] Please wait for proof generation... (estimated: 1-5 min)", "\n");
+      console.log(
+        "[*] Please wait for proof generation... (estimated: 1-5 min)",
+        "\n"
+      );
 
-            let taskresult = await waitTaskStatus(response.data.result.id, ['Done', 'Fail'], 2000, 0); //TODO: timeout
-            console.log(`[+] PROVE ${taskresult}`, "\n");
+      const taskResult = await waitTaskStatus(
+        response.data.result.id,
+        ["Done", "Fail"],
+        2000,
+        0
+      ); //TODO: timeout
 
-          } else {
-            console.log(`[*] IMAGE MD5: ${md5}`, "\n");
-            // Log status
-            console.log(`[-] ${errorMessage}`, "\n");
-          }
+      const taskStatus = taskResult === "Done" ? "SUCCESS" : "FAILED";
+
+      console.log(
+        `[${taskStatus === "SUCCESS" ? "+" : "-"}] PROVE ${taskStatus}`,
+        "\n"
+      );
+    } else {
+      console.log(`[*] IMAGE MD5: ${md5}`, "\n");
+      // Log status
+      console.log(`[-] ${errorMessage}`, "\n");
+    }
     break;
 }
 
