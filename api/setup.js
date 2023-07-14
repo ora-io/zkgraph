@@ -1,10 +1,10 @@
 import { readFileSync } from "fs";
 import fs from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
-import { config } from "../../config.js";
-import { logDivider } from "../common/utils.js";
-import { zkwasm_setup } from "../requests/zkwasm_setup.js";
-import { waitTaskStatus } from "../requests/zkwasm_taskdetails.js";
+import { config } from "../config.js";
+import { logDivider } from "./common/utils.js";
+import { zkwasm_setup } from "./requests/zkwasm_setup.js";
+import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
 
 const inputPathPrefix = "build/zkgraph_full";
 const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");

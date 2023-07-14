@@ -6,24 +6,25 @@ import {
   formatIntInput,
   formatHexStringInput,
   genStreamAndMatchedEventOffsets,
-} from "../common/api_helper.js";
-import { loadZKGraphConfig } from "../common/config_utils.js";
+} from "./common/api_helper.js";
+import { loadZKGraphConfig } from "./common/config_utils.js";
 import { providers } from "ethers";
-import { getRawReceipts, getBlockByNumber } from "../common/ethers_helper.js";
-import { rlpDecodeAndEventFilter } from "../common/api_helper.js";
+import { getRawReceipts, getBlockByNumber } from "./common/ethers_helper.js";
+import { rlpDecodeAndEventFilter } from "./common/api_helper.js";
 import {
   fromHexString,
   toHexString,
   trimPrefix,
   logDivider,
-} from "../common/utils.js";
-import { zkmain, setupZKWasmMock } from "../common/bundle_full.js";
-import { ZKWASMMock } from "../common/zkwasm_mock.js";
-import { config } from "../../config.js";
-import { zkwasm_prove } from "../requests/zkwasm_prove.js";
+  currentNpmScriptName,
+  logReceiptAndEvents,
+} from "./common/utils.js";
+import { ZKWASMMock } from "./common/zkwasm_mock.js";
+import { config } from "../config.js";
+import { zkwasm_prove } from "./requests/zkwasm_prove.js";
 import { readFileSync } from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
-import { waitTaskStatus } from "../requests/zkwasm_taskdetails.js";
+import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
 
 program.version("1.0.0");
 
@@ -31,32 +32,35 @@ program
   .argument("<block id>", "Block number (or block hash) as runtime context")
   .argument("<expected state>", "State output of the zkgraph execution")
   .option("-i, --inputgen", "Generate input")
-  .option("-t, --test", "Run in test Mode")
-  .option("-p, --prove", "Run in prove Mode");
+  .option("-t, --test", "Run in test Mode");
+
+// If it's prove with full mode, add --prove option
+if (currentNpmScriptName() === "prove") {
+  program.option("-p, --prove", "Run in prove Mode");
+}
 
 program.parse(process.argv);
 
 const args = program.args;
 const options = program.opts();
 
-// Log mode name first
 switch (options.inputgen || options.test || options.prove) {
   // Input generation mode
-  case options.inputgen:
+  case options.inputgen === true:
     // Log script name
     console.log(">> PROVE: INPUT GENERATION MODE", "\n");
     break;
 
   // Test mode
-  case options.test:
+  case options.test === true:
     // Log script name
     console.log(">> PROVE: PRETEST MODE", "\n");
     break;
 
-  // Prove mode
-  case options.prove:
+  // Prove generation mode (prove-local will not have this option)
+  case options.prove === true:
     // Log script name
-    console.log(">> PROVE: PROOF GENERATION MODE", "\n");
+    console.log(">> PROVE: PROVE MODE", "\n");
     break;
 }
 
@@ -72,7 +76,6 @@ const provider = new providers.JsonRpcProvider(config.JsonRpcProviderUrl);
 
 // Fetch raw receipts
 let rawreceiptList = await getRawReceipts(provider, blockid);
-// rawreceiptList = rawreceiptList.slice(25, 26);
 
 // RLP Decode and Filter
 const [filteredRawReceiptList, filteredEventList] = rlpDecodeAndEventFilter(
@@ -87,64 +90,66 @@ let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
   filteredEventList
 );
 
-// Get block
-const simpleblock = await provider.getBlock(blockid);
-const block = await getBlockByNumber(provider, simpleblock.number);
-// console.log(block.hash, block.number)
-// console.log(block)
+// Declare inputs and bundle
+let privateInputStr, publicInputStr, bundle;
 
-console.log(
-  "[*]",
-  rawreceiptList.length,
-  rawreceiptList.length > 1
-    ? "receipts fetched from block"
-    : "receipt fetched from block",
-  blockid
-);
-console.log(
-  "[*]",
-  matchedEventOffsets.length / 7,
-  matchedEventOffsets.length / 7 > 1 ? "events matched" : "event matched"
-);
-for (let i in filteredEventList) {
-  for (let j in filteredEventList[i]) {
-    filteredEventList[i][j].prettyPrint(
-      "\tTx[" + i + "]Event[" + j + "]",
-      false
-    );
-  }
-}
+// Set value for inputs and bundle
+if (currentNpmScriptName() === "prove-local") {
+  matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 
-const publicInputStr =
-  formatIntInput(parseInt(block.number)) +
-  formatHexStringInput(block.hash) +
-  formatVarLenInput(expectedStateStr);
+  // Log receipt number from block, and filtered events
+  logReceiptAndEvents(
+    rawreceiptList,
+    blockid,
+    matchedEventOffsets,
+    filteredEventList
+  );
 
-const privateInputStr =
-  formatVarLenInput(toHexString(rawReceipts)) +
-  formatHexStringInput(block.receiptsRoot);
+  // Generate inputs
+  privateInputStr =
+    formatVarLenInput(toHexString(rawReceipts)) +
+    formatVarLenInput(toHexString(new Uint8Array(matchedEventOffsets.buffer)));
+  publicInputStr = formatVarLenInput(expectedStateStr);
 
-// Log content based on mode
-switch (options.inputgen || options.test || options.prove) {
-  // Input generation mode
-  case options.inputgen:
-    console.log("[+] ZKGRAPH STATE OUTPUT:", expectedStateStr, "\n");
-    console.log("[+] PRIVATE INPUT FOR ZKWASM:", "\n" + privateInputStr, "\n");
-    console.log("[+] PUBLIC INPUT FOR ZKWASM:", "\n" + publicInputStr, "\n");
-    break;
+  bundle = await import("./common/bundle_local.js").catch(() => {
+    process.exit(1);
+  });
+} else if (currentNpmScriptName() === "prove") {
+  // Get block
+  const simpleblock = await provider.getBlock(blockid).catch(() => {
+    console.log("[-] ERROR: Failed to getBlock()", "\n");
+    process.exit(1);
+  });
+  const block = await getBlockByNumber(provider, simpleblock.number).catch(
+    () => {
+      console.log("[-] ERROR: Failed to getBlockByNumber()", "\n");
+      process.exit(1);
+    }
+  );
 
-  // Test mode
-  case options.test:
-    const mock = new ZKWASMMock();
-    mock.set_private_input(privateInputStr);
-    mock.set_public_input(publicInputStr);
-    setupZKWasmMock(mock);
-    zkmain();
-    console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
-    break;
+  // Log receipt number from block, and filtered events
+  logReceiptAndEvents(
+    rawreceiptList,
+    blockid,
+    matchedEventOffsets,
+    filteredEventList
+  );
+
+  // Generate inputs
+  publicInputStr =
+    formatIntInput(parseInt(block.number)) +
+    formatHexStringInput(block.hash) +
+    formatVarLenInput(expectedStateStr);
+  privateInputStr =
+    formatVarLenInput(toHexString(rawReceipts)) +
+    formatHexStringInput(block.receiptsRoot);
+
+  bundle = await import("./common/bundle_full.js").catch(() => {
+    process.exit(1);
+  });
 
   // Prove mode
-  case options.prove:
+  if (options.prove === true) {
     const inputPathPrefix = "build/zkgraph_full";
     const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
     const privateInputArray = privateInputStr.trim().split(" ");
@@ -192,6 +197,25 @@ switch (options.inputgen || options.test || options.prove) {
       // Log status
       console.log(`[-] ${errorMessage}`, "\n");
     }
+  }
+}
+
+switch (options.inputgen || options.test) {
+  // Input generation mode
+  case options.inputgen === true:
+    console.log("[+] ZKGRAPH STATE OUTPUT:", expectedStateStr, "\n");
+    console.log("[+] PRIVATE INPUT FOR ZKWASM:", "\n" + privateInputStr, "\n");
+    console.log("[+] PUBLIC INPUT FOR ZKWASM:", "\n" + publicInputStr, "\n");
+    break;
+
+  // Test mode
+  case options.test === true:
+    const mock = new ZKWASMMock();
+    mock.set_private_input(privateInputStr);
+    mock.set_public_input(publicInputStr);
+    bundle.setupZKWasmMock(mock);
+    bundle.zkmain();
+    console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
     break;
 }
 
