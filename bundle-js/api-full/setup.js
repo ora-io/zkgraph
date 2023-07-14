@@ -6,6 +6,7 @@ import axios from "axios";
 import url from "../requests/url.js";
 import { config } from "../../config.js";
 import { Wallet } from "ethers";
+import { computeAddress } from "ethers/lib/utils.js";
 import { logDivider } from "../common/utils.js";
 
 const inputPathPrefix = "build/zkgraph_full";
@@ -15,7 +16,7 @@ const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
 const name = "zkgraph_full.wasm";
 const md5 = ZkWasmUtil.convertToMd5(compiledWasmBuffer).toUpperCase();
 const image = fs.createReadStream(inputPathPrefix + ".wasm");
-const address = config.UserAddress.toLowerCase();
+const address = computeAddress(config.UserPrivateKey).toLowerCase();
 const description_url_encoded = "";
 const avator_url = "";
 const circuit_size = 18;
