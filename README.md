@@ -80,6 +80,12 @@ npm run prove-local -- --pretest {block_id} {expected_state}
 npm run compile
 ```
 
+### Set Up Image (with zkWASM Node)
+
+```bash
+npm run setup
+```
+
 ## Develop
 
 ### `config.js`
