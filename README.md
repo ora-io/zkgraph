@@ -83,6 +83,14 @@ npm run compile
 npm run setup
 ```
 
+### Prove (with zkWASM Node)
+
+```bash
+npm run prove -- --inputgen {block_id} {expected_state}
+npm run prove -- --pretest {block_id} {expected_state}
+npm run prove -- --prove {block_id} {expected_state}
+```
+
 ## Develop
 
 ### `config.js`
@@ -150,7 +158,7 @@ References: [WebAssembly Opcodes](https://pengowray.github.io/wasm-ops/).
 
 This repo has the following folders relevant to zkGraph development:
 
-- `bundle-js`: APIs (the scripts in `package.json`) for compile, execute, prove, and deploy zkGraph for testing locally.
+- `api`: APIs (the scripts in `package.json`) for compile, execute, prove, and deploy zkGraph for testing locally, and fully with zkWASM node.
 - `example`: Example zkGraphs.
 - `lib`: AssemblyScript library for zkGraph development, with data structure such as Bytes, ByteArray and BigInt.
 - `src`: Where your actual zkGraph should be in. Contains `mapping.ts` and `zkgraph.yaml`.
