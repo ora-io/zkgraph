@@ -67,7 +67,7 @@ if (isSetUpSuccess) {
 
     console.log(`[+] IMAGE ID: ${response.data.result.id}`, "\n")
 
-    console.log("[+] SET UP SUCCESS!", "\n");
+    console.log("[+] SET UP SUCCESSFULLY STARTED!", "\n");
 
     logDivider();
 
