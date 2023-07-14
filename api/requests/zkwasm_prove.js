@@ -19,12 +19,7 @@ export async function zkwasm_prove(
     //   public_inputs: public_inputs,
     //   private_inputs: private_inputs,
     // });
-    console.log({
-        user_address,
-        md5: image_md5,
-        public_inputs: public_inputs,
-        private_inputs: private_inputs
-    })
+    
     let message = JSON.stringify({
         user_address,
         md5: image_md5,

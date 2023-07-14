@@ -23,6 +23,7 @@ import { config } from "../../config.js";
 import { zkwasm_prove } from "../requests/zkwasm_prove.js";
 import { readFileSync } from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
+import { waitTaskStatus } from "../requests/zkwasm_taskdetails.js";
 
 program.version("1.0.0");
 
@@ -160,9 +161,11 @@ switch (options.inputgen || options.test || options.prove) {
 
             console.log(`[+] PROVE STARTED. TASK ID: ${response.data.result.id}`, "\n");
 
-            logDivider();
+            console.log("[*] Please wait for proof generation...", "\n");
 
-            process.exit(0);
+            let taskresult = await waitTaskStatus(response.data.result.id, ['Done', 'Fail'], 2000, 0); //TODO: timeout
+            console.log(`[+] PROVE ${taskresult}`, "\n");
+
           } else {
             console.log(`[*] IMAGE MD5: ${md5}`, "\n");
             // Log status

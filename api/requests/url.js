@@ -21,8 +21,12 @@ export default {
     new EndPoint(`${config.ZkwasmProviderUrl}/deploy`, false, {
       "Content-Type": "application/json",
     }),
-  proveWasmImageURL: () =>
-    new EndPoint(`${config.ZkwasmProviderUrl}/prove`, false, {
+    proveWasmImageURL: () =>
+      new EndPoint(`${config.ZkwasmProviderUrl}/prove`, false, {
+        "Content-Type": "application/json",
+      }),
+  getTaskDetails: (taskId) =>
+    new EndPoint(`${config.ZkwasmProviderUrl}/tasks?id=${taskId}`, false, {
       "Content-Type": "application/json",
     }),
   searchImageURL: (md5) => new EndPoint(`${config.ZkwasmProviderUrl}/image?md5=${md5}`, false),
