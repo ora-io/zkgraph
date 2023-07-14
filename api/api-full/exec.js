@@ -4,7 +4,7 @@ import { program } from "commander";
 import {
   genStreamAndMatchedEventOffsets,
 } from "../common/api_helper.js";
-import { loadZKGraphConfig } from "../common/config.js";
+import { loadZKGraphConfig } from "../common/config_utils.js";
 import { ethers, providers } from "ethers";
 import { getRawReceipts, getBlockByNumber } from "../common/ethers_helper.js";
 import { rlpDecodeAndEventFilter } from "../common/api_helper.js";

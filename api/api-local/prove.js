@@ -5,7 +5,7 @@ import {
   formatVarLenInput,
   genStreamAndMatchedEventOffsets,
 } from "../common/api_helper.js";
-import { loadZKGraphConfig } from "../common/config.js";
+import { loadZKGraphConfig } from "../common/config_utils.js";
 import { providers } from "ethers";
 import { getRawReceipts } from "../common/ethers_helper.js";
 import { rlpDecodeAndEventFilter } from "../common/api_helper.js";
