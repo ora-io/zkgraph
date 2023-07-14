@@ -3,18 +3,21 @@ import axios from "axios";
 import url from "./url.js";
 import { Wallet } from "ethers";
 import { ZkWasmUtil } from "zkwasm-service-helper";
-import { config } from "../../config.js";
+import { computeAddress } from "ethers/lib/utils.js";
 
 export async function zkwasm_setup(
     name,
     image_md5,
     image,
-    user_address,
+    user_privatekey,
     description_url,
     avator_url,
     circuit_size
     ){
+        
     let isSetUpSuccess = true;
+
+    const user_address = computeAddress(user_privatekey).toLowerCase();
 
     let message = ZkWasmUtil.createAddImageSignMessage({
       name: name,
@@ -25,7 +28,8 @@ export async function zkwasm_setup(
       avator_url: avator_url,
       circuit_size: circuit_size,
     });
-    const wallet = new Wallet(config.UserPrivateKey);
+
+    const wallet = new Wallet(user_privatekey);
     let signature = await wallet.signMessage(message);
 
     let formData = new FormData();

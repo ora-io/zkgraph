@@ -2,7 +2,6 @@ import { readFileSync } from "fs";
 import fs from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
 import { config } from "../../config.js";
-import { computeAddress } from "ethers/lib/utils.js";
 import { logDivider } from "../common/utils.js";
 import { zkwasm_setup } from "../requests/zkwasm_setup.js";
 
@@ -13,7 +12,7 @@ const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
 const name = "zkgraph_full.wasm";
 const md5 = ZkWasmUtil.convertToMd5(compiledWasmBuffer).toUpperCase();
 const image = fs.createReadStream(inputPathPrefix + ".wasm");
-const address = computeAddress(config.UserPrivateKey).toLowerCase();
+const prikey = config.UserPrivateKey
 const description_url_encoded = "";
 const avator_url = "";
 const circuit_size = 22;
@@ -22,7 +21,7 @@ const circuit_size = 22;
 console.log(">> SET UP", "\n");
 
 let [response, isSetUpSuccess, errorMessage] = await zkwasm_setup(name, md5, image, 
-    address,
+    prikey,
     description_url_encoded,
     avator_url,
     circuit_size)
