@@ -1,2 +1,2 @@
 export * from "./common/type"
-export * from "./common/zkwasm"
+export { require } from "./common/zkwasm"
