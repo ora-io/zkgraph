@@ -25,7 +25,7 @@ import { zkwasm_prove } from "./requests/zkwasm_prove.js";
 import { readFileSync } from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
 import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
-import { instantiateWasm } from "./common/bundle.js";
+import { instantiateWasm, setupZKWasmMock } from "./common/bundle.js";
 
 program.version("1.0.0");
 
@@ -108,7 +108,7 @@ let wasmFilePath;
 
 // Set value for inputs
 if (currentNpmScriptName() === "prove-local") {
-  wasmFilePath = `../../build/${config.LocalWasmBinaryFileName}`
+  wasmFilePath = `build/${config.LocalWasmBinaryFileName}`
 
   // Generate inputs
   privateInputStr =
@@ -117,7 +117,7 @@ if (currentNpmScriptName() === "prove-local") {
   publicInputStr = formatVarLenInput(expectedStateStr);
 
 } else if (currentNpmScriptName() === "prove") {
-  wasmFilePath = `../../build/${config.WasmBinaryFileName}`
+  wasmFilePath = `build/${config.WasmBinaryFileName}`
 
   // Get block
   const simpleblock = await provider.getBlock(blockid).catch(() => {
@@ -144,7 +144,7 @@ if (currentNpmScriptName() === "prove-local") {
   if (options.prove === true) {
     // const inputPathPrefix = "build/zkgraph_full";
     // const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
-    const compiledWasmBuffer = readFileSync(inputPathPrefix);
+    const compiledWasmBuffer = readFileSync(wasmFilePath);
     const privateInputArray = privateInputStr.trim().split(" ");
     const publicInputArray = publicInputStr.trim().split(" ");
 
@@ -193,9 +193,6 @@ if (currentNpmScriptName() === "prove-local") {
   }
 }
 
-
-const {setupZKWasmMock, zkmain} = await instantiateWasm(wasmFilePath);
-
 switch (options.inputgen || options.test) {
   // Input generation mode
   case options.inputgen === true:
@@ -210,6 +207,7 @@ switch (options.inputgen || options.test) {
     mock.set_private_input(privateInputStr);
     mock.set_public_input(publicInputStr);
     setupZKWasmMock(mock);
+    const {zkmain} = await instantiateWasm(wasmFilePath);
     zkmain();
     console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
     break;

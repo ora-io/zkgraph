@@ -6,13 +6,14 @@ import { logDivider } from "./common/utils.js";
 import { zkwasm_setup } from "./requests/zkwasm_setup.js";
 import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
 
-const inputPathPrefix = "build/zkgraph_full";
-const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
+// const inputPathPrefix = "build/zkgraph_full";
+const wasmPath = `build/${config.WasmBinaryFileName}`
+const compiledWasmBuffer = readFileSync(wasmPath);
 
 // Message and form data
-const name = "zkgraph_full.wasm";
+const name = config.WasmBinaryFileName; // only use in zkwasm, can diff from local files
 const md5 = ZkWasmUtil.convertToMd5(compiledWasmBuffer).toUpperCase();
-const image = fs.createReadStream(inputPathPrefix + ".wasm");
+const image = fs.createReadStream(wasmPath);
 const prikey = config.UserPrivateKey
 const description_url_encoded = "";
 const avator_url = "";
