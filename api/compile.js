@@ -17,9 +17,14 @@ console.log(">> COMPILE", "\n");
 
 let isCompilationSuccess = true;
 
+let watPath;
+
 if (currentNpmScriptName() === "compile-local") {
+  // Wat Path
+  watPath = config.LocalWasmBinPath.replace(/\.wasm/, ".wat")
+
   const commands = [
-    "npx asc lib/main_local.ts -t build/zkgraph_local.wat -O --noAssert -o build/zkgraph_local.wasm --disable bulk-memory --use abort=lib/common/type/abort --target release --bindings esm --runtime stub",
+    `npx asc lib/main_local.ts -t ${watPath} -O --noAssert -o ${config.LocalWasmBinPath} --disable bulk-memory --use abort=lib/common/type/abort --runtime stub`, //  --target release --bindings esm
   ];
 
   const combinedCommand = commands.join(" && ");
@@ -30,45 +35,15 @@ if (currentNpmScriptName() === "compile-local") {
     isCompilationSuccess = false;
   }
 
-  if (isCompilationSuccess) {
-    // Log compiled file size by line count
-    const compiledFileContent = readFileSync(
-      "build/zkgraph_local.wat",
-      "utf-8"
-    );
-    const compiledFileLineCount = compiledFileContent.split("\n").length;
-    console.log(
-      "[*]",
-      compiledFileLineCount,
-      compiledFileLineCount > 1
-        ? "lines in build/zkgraph_local.wat"
-        : "line in build/zkgraph_local.wat"
-    );
-
-    // Log status
-    console.log("[+] Output written to `build` folder.");
-    console.log("[+] COMPILATION SUCCESS!", "\n");
-
-    logDivider();
-
-    process.exit(0);
-  } else {
-    // Extra new line for error
-    console.log();
-
-    // Log status
-    console.log("[-] ERROR WHEN COMPILING.", "\n");
-
-    logDivider();
-
-    process.exit(1);
-  }
 } else if (currentNpmScriptName() === "compile") {
   // Constants
   const mappingPath = "src/mapping.ts";
   const configPath = "src/zkgraph.yaml";
-  const outputPathPrefix = "build/zkgraph_full";
+  const wasmPath = config.WasmBinPath;
   const apiEndpoint = config.CompilerServerEndpoint;
+
+  // Wat Path
+  watPath = config.WasmBinPath.replace(/\.wasm/, ".wat")
 
   // Load config
   const [source_address, source_esigs] = loadZKGraphConfig(configPath);
@@ -102,9 +77,27 @@ if (currentNpmScriptName() === "compile-local") {
     const wasmModuleHex = response.data["wasmModuleHex"];
     const wasmWat = response.data["wasmWat"];
     const message = response.data["message"];
-    fs.writeFileSync(outputPathPrefix + ".wasm", fromHexString(wasmModuleHex));
-    fs.writeFileSync(outputPathPrefix + ".wat", wasmWat);
+    fs.writeFileSync(wasmPath, fromHexString(wasmModuleHex));
+    fs.writeFileSync(watPath, wasmWat);
+  }
+}
 
+if (isCompilationSuccess) {
+    // Log compiled file size by line count
+    const compiledFileContent = readFileSync(
+      watPath,
+      "utf-8"
+    );
+    const compiledFileLineCount = compiledFileContent.split("\n").length;
+    console.log(
+      "[*]",
+      compiledFileLineCount,
+      compiledFileLineCount > 1
+        ? `lines in ${watPath}`
+        : `line in ${watPath}`
+    );
+
+    // Log status
     console.log("[+] Output written to `build` folder.");
     console.log("[+] COMPILATION SUCCESS!", "\n");
 
@@ -122,4 +115,3 @@ if (currentNpmScriptName() === "compile-local") {
 
     process.exit(1);
   }
-}
