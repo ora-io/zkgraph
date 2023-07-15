@@ -146,7 +146,9 @@ async function instantiate(module, imports = {}) {
 //   ))(new URL("../../build/zkgraph_full.wasm", import.meta.url));
 
 export const instantiateWasm = async (wasmpath) => {
+    // update this when move bundle.js
     let curPathToRoot = '../../'
+
     let url = new URL(curPathToRoot+wasmpath, import.meta.url)
   return instantiate(
     await (async () => {

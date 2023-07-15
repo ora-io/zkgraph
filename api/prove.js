@@ -142,8 +142,6 @@ if (currentNpmScriptName() === "prove-local") {
 
   // Prove mode
   if (options.prove === true) {
-    // const inputPathPrefix = "build/zkgraph_full";
-    // const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
     const compiledWasmBuffer = readFileSync(wasmPath);
     const privateInputArray = privateInputStr.trim().split(" ");
     const publicInputArray = publicInputStr.trim().split(" ");

@@ -7,7 +7,6 @@ import { zkwasm_setup } from "./requests/zkwasm_setup.js";
 import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
 import path from "path";
 
-// const inputPathPrefix = "build/zkgraph_full";
 const wasmPath = config.WasmBinPath
 const compiledWasmBuffer = readFileSync(wasmPath);
 

@@ -73,7 +73,7 @@ if (currentNpmScriptName() === "compile-local") {
   });
 
   if (isCompilationSuccess) {
-    // save file to build/zkgraph_full.wasm
+    // save file to config.WasmBinPath
     const wasmModuleHex = response.data["wasmModuleHex"];
     const wasmWat = response.data["wasmWat"];
     const message = response.data["message"];
@@ -82,6 +82,7 @@ if (currentNpmScriptName() === "compile-local") {
   }
 }
 
+// Log Results
 if (isCompilationSuccess) {
     // Log compiled file size by line count
     const compiledFileContent = readFileSync(
