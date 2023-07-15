@@ -25,6 +25,7 @@ import { zkwasm_prove } from "./requests/zkwasm_prove.js";
 import { readFileSync } from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
 import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
+import { instantiateWasm } from "./common/bundle.js";
 
 program.version("1.0.0");
 
@@ -89,13 +90,15 @@ let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
   filteredRawReceiptList,
   filteredEventList
 );
+// may remove
+matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 
-// Declare inputs and bundle
-let privateInputStr, publicInputStr, bundle;
+// Declare inputs
+let privateInputStr, publicInputStr;
+let wasmFilePath;
 
-// Set value for inputs and bundle
+// Set value for inputs
 if (currentNpmScriptName() === "prove-local") {
-  matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 
   // Log receipt number from block, and filtered events
   logReceiptAndEvents(
@@ -111,9 +114,8 @@ if (currentNpmScriptName() === "prove-local") {
     formatVarLenInput(toHexString(new Uint8Array(matchedEventOffsets.buffer)));
   publicInputStr = formatVarLenInput(expectedStateStr);
 
-  bundle = await import("./common/bundle_local.js").catch(() => {
-    process.exit(1);
-  });
+    wasmFilePath = `../../build/${config.LocalWasmBinaryFileName}`
+
 } else if (currentNpmScriptName() === "prove") {
   // Get block
   const simpleblock = await provider.getBlock(blockid).catch(() => {
@@ -144,14 +146,13 @@ if (currentNpmScriptName() === "prove-local") {
     formatVarLenInput(toHexString(rawReceipts)) +
     formatHexStringInput(block.receiptsRoot);
 
-  bundle = await import("./common/bundle_full.js").catch(() => {
-    process.exit(1);
-  });
+    wasmFilePath = `../../build/${config.WasmBinaryFileName}`
 
   // Prove mode
   if (options.prove === true) {
-    const inputPathPrefix = "build/zkgraph_full";
-    const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
+    // const inputPathPrefix = "build/zkgraph_full";
+    // const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
+    const compiledWasmBuffer = readFileSync(inputPathPrefix);
     const privateInputArray = privateInputStr.trim().split(" ");
     const publicInputArray = publicInputStr.trim().split(" ");
 
@@ -200,6 +201,9 @@ if (currentNpmScriptName() === "prove-local") {
   }
 }
 
+
+const {setupZKWasmMock, zkmain} = await instantiateWasm(wasmFilePath);
+
 switch (options.inputgen || options.test) {
   // Input generation mode
   case options.inputgen === true:
@@ -213,8 +217,8 @@ switch (options.inputgen || options.test) {
     const mock = new ZKWASMMock();
     mock.set_private_input(privateInputStr);
     mock.set_public_input(publicInputStr);
-    bundle.setupZKWasmMock(mock);
-    bundle.zkmain();
+    setupZKWasmMock(mock);
+    zkmain();
     console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
     break;
 }
