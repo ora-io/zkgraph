@@ -14,6 +14,7 @@ import {
   logReceiptAndEvents
 } from "./common/utils.js";
 import { config } from "../config.js";
+import { instantiateWasm } from "./common/bundle_full.js";
 
 program.version("1.0.0");
 
@@ -53,25 +54,20 @@ let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
 // Log
 logReceiptAndEvents(rawreceiptList, blockid, matchedEventOffsets, filteredEventList);
 
+// may remove
+matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
+
 let state = null;
 if (currentNpmScriptName() === "exec-local") {
-  matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 
-  const bundle = await import("./common/bundle_local.js").catch(() => {
-    console.log("[-] Error: bundle_local.js not found.", "\n");
-    process.exit(1);
-  });
+  const { asmain } = await instantiateWasm(`../../build/${config.LocalWasmBinaryFileName}`)
+  state = asmain(rawReceipts, matchedEventOffsets);
 
-  // Execute zkgraph that would call mapping.ts
-  state = bundle.asmain(rawReceipts, matchedEventOffsets);
 } else if (currentNpmScriptName() === "exec") {
-  const bundle = await import("./common/bundle_full.js").catch(() => {
-    console.log("[-] Error: bundle_full.js not found.", "\n");
-    process.exit(1);
-  });
+  const { asmain } = await instantiateWasm(`../../build/${config.WasmBinaryFileName}`)
 
   // Execute zkgraph that would call mapping.ts
-  state = bundle.asmain(rawReceipts, matchedEventOffsets);
+  state = asmain(rawReceipts, matchedEventOffsets);
 }
 
 console.log("[+] ZKGRAPH STATE OUTPUT:", toHexString(state), "\n");
