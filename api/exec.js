@@ -57,18 +57,19 @@ logReceiptAndEvents(rawreceiptList, blockid, matchedEventOffsets, filteredEventL
 // may remove
 matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 
-let state = null;
+// Declare Wasm Binary Path
+let wasmFilePath;
+
 if (currentNpmScriptName() === "exec-local") {
-
-  const { asmain } = await instantiateWasm(config.LocalWasmBinaryPath)
-  state = asmain(rawReceipts, matchedEventOffsets);
-
+    wasmFilePath = config.LocalWasmBinaryPath
 } else if (currentNpmScriptName() === "exec") {
-  const { asmain } = await instantiateWasm(config.WasmBinaryPath)
-
-  // Execute zkgraph that would call mapping.ts
-  state = asmain(rawReceipts, matchedEventOffsets);
+    wasmFilePath = config.WasmBinaryPath
 }
+
+const { asmain } = await instantiateWasm(wasmFilePath)
+
+// Execute zkgraph that would call mapping.ts
+let state = asmain(rawReceipts, matchedEventOffsets);
 
 console.log("[+] ZKGRAPH STATE OUTPUT:", toHexString(state), "\n");
 
