@@ -58,15 +58,15 @@ logReceiptAndEvents(rawreceiptList, blockid, matchedEventOffsets, filteredEventL
 matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 
 // Declare Wasm Binary Path
-let wasmFilePath;
+let wasmPath;
 
 if (currentNpmScriptName() === "exec-local") {
-    wasmFilePath = config.LocalWasmBinaryPath
+    wasmPath = config.LocalWasmBinaryPath
 } else if (currentNpmScriptName() === "exec") {
-    wasmFilePath = config.WasmBinaryPath
+    wasmPath = config.WasmBinaryPath
 }
 
-const { asmain } = await instantiateWasm(wasmFilePath)
+const { asmain } = await instantiateWasm(wasmPath)
 
 // Execute zkgraph that would call mapping.ts
 let state = asmain(rawReceipts, matchedEventOffsets);

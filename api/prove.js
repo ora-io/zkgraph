@@ -104,11 +104,11 @@ matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 
 // Declare inputs
 let privateInputStr, publicInputStr;
-let wasmFilePath;
+let wasmPath;
 
 // Set value for inputs
 if (currentNpmScriptName() === "prove-local") {
-  wasmFilePath = config.LocalWasmBinaryPath
+  wasmPath = config.LocalWasmBinaryPath
 
   // Generate inputs
   privateInputStr =
@@ -117,7 +117,7 @@ if (currentNpmScriptName() === "prove-local") {
   publicInputStr = formatVarLenInput(expectedStateStr);
 
 } else if (currentNpmScriptName() === "prove") {
-  wasmFilePath = config.WasmBinaryPath
+  wasmPath = config.WasmBinaryPath
 
   // Get block
   const simpleblock = await provider.getBlock(blockid).catch(() => {
@@ -144,7 +144,7 @@ if (currentNpmScriptName() === "prove-local") {
   if (options.prove === true) {
     // const inputPathPrefix = "build/zkgraph_full";
     // const compiledWasmBuffer = readFileSync(inputPathPrefix + ".wasm");
-    const compiledWasmBuffer = readFileSync(wasmFilePath);
+    const compiledWasmBuffer = readFileSync(wasmPath);
     const privateInputArray = privateInputStr.trim().split(" ");
     const publicInputArray = publicInputStr.trim().split(" ");
 
@@ -207,7 +207,7 @@ switch (options.inputgen || options.test) {
     mock.set_private_input(privateInputStr);
     mock.set_public_input(publicInputStr);
     setupZKWasmMock(mock);
-    const {zkmain} = await instantiateWasm(wasmFilePath);
+    const {zkmain} = await instantiateWasm(wasmPath);
     zkmain();
     console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
     break;
