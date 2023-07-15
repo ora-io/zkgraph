@@ -94,8 +94,9 @@ if (isCompilationSuccess) {
       "[*]",
       compiledFileLineCount,
       compiledFileLineCount > 1
-        ? `lines in ${watPath}`
-        : `line in ${watPath}`
+        ? "lines"
+        : "line",
+        `in ${watPath}`
     );
 
     // Log status
