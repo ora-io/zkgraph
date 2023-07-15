@@ -14,7 +14,7 @@ import {
   logReceiptAndEvents
 } from "./common/utils.js";
 import { config } from "../config.js";
-import { instantiateWasm } from "./common/bundle_full.js";
+import { instantiateWasm } from "./common/bundle.js";
 
 program.version("1.0.0");
 
