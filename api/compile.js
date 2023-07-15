@@ -24,7 +24,7 @@ if (currentNpmScriptName() === "compile-local") {
   watPath = config.LocalWasmBinPath.replace(/\.wasm/, ".wat")
 
   const commands = [
-    `npx asc lib/main_local.ts -t ${watPath} -O --noAssert -o ${config.LocalWasmBinPath} --disable bulk-memory --use abort=lib/common/type/abort --runtime stub`, //  --target release --bindings esm
+    `npx asc lib/main_local.ts -t ${watPath} -O --noAssert -o ${config.LocalWasmBinPath} --disable bulk-memory --use abort=lib/common/type/abort --exportRuntime --runtime stub`, // note: need --exportRuntime or --bindings esm; (--target release)
   ];
 
   const combinedCommand = commands.join(" && ");
