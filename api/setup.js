@@ -8,11 +8,11 @@ import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
 import path from "path";
 
 // const inputPathPrefix = "build/zkgraph_full";
-const wasmPath = config.WasmPath
+const wasmPath = config.WasmBinPath
 const compiledWasmBuffer = readFileSync(wasmPath);
 
 // Message and form data
-const name = path.basename(config.WasmPath); // only use in zkwasm, can diff from local files
+const name = path.basename(config.WasmBinPath); // only use in zkwasm, can diff from local files
 const md5 = ZkWasmUtil.convertToMd5(compiledWasmBuffer).toUpperCase();
 const image = fs.createReadStream(wasmPath);
 const prikey = config.UserPrivateKey
