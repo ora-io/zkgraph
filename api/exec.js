@@ -61,9 +61,9 @@ matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 let wasmPath;
 
 if (currentNpmScriptName() === "exec-local") {
-    wasmPath = config.LocalWasmBinaryPath
+    wasmPath = config.LocalWasmPath
 } else if (currentNpmScriptName() === "exec") {
-    wasmPath = config.WasmBinaryPath
+    wasmPath = config.WasmPath
 }
 
 const { asmain } = await instantiateWasm(wasmPath)

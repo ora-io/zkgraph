@@ -108,7 +108,7 @@ let wasmPath;
 
 // Set value for inputs
 if (currentNpmScriptName() === "prove-local") {
-  wasmPath = config.LocalWasmBinaryPath
+  wasmPath = config.LocalWasmPath
 
   // Generate inputs
   privateInputStr =
@@ -117,7 +117,7 @@ if (currentNpmScriptName() === "prove-local") {
   publicInputStr = formatVarLenInput(expectedStateStr);
 
 } else if (currentNpmScriptName() === "prove") {
-  wasmPath = config.WasmBinaryPath
+  wasmPath = config.WasmPath
 
   // Get block
   const simpleblock = await provider.getBlock(blockid).catch(() => {
