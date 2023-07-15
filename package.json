@@ -4,7 +4,6 @@
     "compile-local": "node api/compile.js",
     "exec-local": "node api/exec.js",
     "prove-local": "node api/prove.js",
-    "deploy-local": "",
     "compile": "node api/compile.js",
     "setup": "node api/setup.js",
     "exec": "node api/exec.js",
