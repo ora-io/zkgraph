@@ -8,6 +8,15 @@ export function toHexString(bytes) {
   return Buffer.from(bytes).toString("hex");
 }
 
+export function toHexStringBytes32Reverse(arr) {
+  let result = "";
+  for (let i = 0; i < arr.length / 32; i++) {
+    result +=
+      "0x" + toHexString(arr.slice(i * 32, (i + 1) * 32).reverse()) + "\n";
+  }
+  return result;
+};
+
 export function areEqualArrays(first, second) {
   return (
     first.length === second.length &&
@@ -25,6 +34,41 @@ export function trimPrefix(str, prefix) {
 export function logDivider() {
   const line = "=".repeat(process.stdout.columns);
   console.log(line);
+}
+
+export function logLoadingAnimation() {
+  const width = 55;
+  let frame = 0;
+  let stop = false;
+
+  const frames = ["▓"];
+  let position = 0;
+  const intervalId = setInterval(() => {
+    if (stop) {
+      clearInterval(intervalId);
+      process.stdout.clearLine();
+      process.stdout.cursorTo(0);
+      return;
+    }
+
+    const currentFrame = frames[frame % frames.length];
+    const loadingBar = `[*] ${currentFrame.repeat(position)}▒${currentFrame.repeat(width - position - 1)}`;
+
+    process.stdout.cursorTo(0);
+    process.stdout.write(loadingBar);
+
+    position = (position + 1) % width;
+
+    frame++;
+  }, 400);
+
+  return {
+    stopAndClear: () => {
+      stop = true;
+      process.stdout.clearLine();
+      process.stdout.cursorTo(0);
+    },
+  };
 }
 
 export function concatHexStrings(hexStrings) {
