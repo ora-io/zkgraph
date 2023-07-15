@@ -61,13 +61,27 @@ export function genStreamAndMatchedEventOffsets(rawreceiptList, eventList) {
   return [fromHexString(rawreceipts), matched_offset_list];
 }
 
+
 // Format inputs with length and input value
-export function formatVarLenInput(inputs) {
-  var formatted = "";
-  inputs.map((input) => {
-    formatted += `0x${Math.ceil(input.length / 2).toString(
-      16,
-    )}:i64 0x${input}:bytes-packed `;
-  });
+export function formatIntInput(input) {
+    return `0x${input.toString(16)}:i64 `;
+  }
+
+
+// Format bytes input
+export function formatHexStringInput(input) {
+    return `0x${trimPrefix(input, '0x')}:bytes-packed `;
+  }
+
+// Format inputs with length and input value
+export function formatVarLenInput(input) {
+//   var formatted = "";
+//   inputs.map((input) => {
+//     var inp = trimPrefix(input, '0x')
+//     formatted += `${formatIntInput(Math.ceil(inp.length / 2))}${formatHexStringInput(inp)}`;
+//   });
+
+  var inp = trimPrefix(input, '0x')
+  var formatted = `${formatIntInput(Math.ceil(inp.length / 2))}${formatHexStringInput(inp)}`;
   return formatted;
 }

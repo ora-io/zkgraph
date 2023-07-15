@@ -13,8 +13,6 @@ Option 2:
 Use `gh` cli
 
 ```bash
-brew install gh
-gh auth login
 gh repo create zkgraph-new --public --template="https://github.com/hyperoracle/zkgraph.git"
 ```
 
@@ -28,6 +26,9 @@ export const config = {
   // Etherum JSON RPC provider URL:
   // (Please note the provider must support debug_getRawReceipts RPC method.)
   JsonRpcProviderUrl: "https://{URL}",
+  ZkwasmProviderUrl: "https://zkwasm-explorer.delphinuslab.com:8090",
+  CompilerServerEndpoint: "http://node.hyperoracle.io:8000/compile",
+  UserPrivateKey: "0x{PRIVATE_KEY}",
 };
 ```
 
@@ -74,6 +75,20 @@ npm run prove-local -- --pretest {block_id} {expected_state}
 
 ```bash
 npm run compile
+```
+
+### Set Up Image (with zkWASM Node)
+
+```bash
+npm run setup
+```
+
+### Prove (with zkWASM Node)
+
+```bash
+npm run prove -- --inputgen {block_id} {expected_state}
+npm run prove -- --pretest {block_id} {expected_state}
+npm run prove -- --prove {block_id} {expected_state}
 ```
 
 ## Develop
@@ -143,7 +158,7 @@ References: [WebAssembly Opcodes](https://pengowray.github.io/wasm-ops/).
 
 This repo has the following folders relevant to zkGraph development:
 
-- `bundle-js`: APIs (the scripts in `package.json`) for compile, execute, prove, and deploy zkGraph for testing locally.
+- `api`: APIs (the scripts in `package.json`) for compile, execute, prove, and deploy zkGraph for testing locally, and fully with zkWASM node.
 - `example`: Example zkGraphs.
 - `lib`: AssemblyScript library for zkGraph development, with data structure such as Bytes, ByteArray and BigInt.
 - `src`: Where your actual zkGraph should be in. Contains `mapping.ts` and `zkgraph.yaml`.
