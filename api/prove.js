@@ -14,17 +14,19 @@ import { rlpDecodeAndEventFilter } from "./common/api_helper.js";
 import {
   fromHexString,
   toHexString,
+  toHexStringBytes32Reverse,
   trimPrefix,
   logDivider,
   currentNpmScriptName,
   logReceiptAndEvents,
+  logLoadingAnimation,
 } from "./common/utils.js";
 import { ZKWASMMock } from "./common/zkwasm_mock.js";
 import { config } from "../config.js";
 import { zkwasm_prove } from "./requests/zkwasm_prove.js";
 import { readFileSync } from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
-import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
+import { waitTaskStatus, zkwasm_taskdetails } from "./requests/zkwasm_taskdetails.js";
 import { instantiateWasm, setupZKWasmMock } from "./common/bundle.js";
 
 program.version("1.0.0");
@@ -170,6 +172,8 @@ if (currentNpmScriptName() === "prove-local") {
         "\n"
       );
 
+      const loading = logLoadingAnimation();
+
       const taskResult = await waitTaskStatus(
         response.data.result.id,
         ["Done", "Fail"],
@@ -177,16 +181,49 @@ if (currentNpmScriptName() === "prove-local") {
         0
       ); //TODO: timeout
 
-      const taskStatus = taskResult === "Done" ? "SUCCESS" : "FAILED";
+      if (taskResult === "Done") {
+        loading.stopAndClear();
 
-      console.log(
-        `[${taskStatus === "SUCCESS" ? "+" : "-"}] PROVE ${taskStatus}`,
-        "\n"
-      );
+        console.log(
+          "[+] PROVE SUCCESS!",
+          "\n"
+        );
+
+        const [detailResponse, _, __] = await zkwasm_taskdetails(
+          response.data.result.id
+        );
+        console.log("[+] PROVE DETAILS (showing aux data only):");
+        console.log(toHexStringBytes32Reverse(detailResponse.data.result.data[0].aux), "\n");
+
+        logDivider();
+
+        process.exit(0);
+      } else {
+        loading.stopAndClear();
+
+        console.log(
+          "[-] PROVE FAILED.",
+          "\n"
+        )
+
+        const [detailResponse, _, __] = await zkwasm_taskdetails(
+          response.data.result.id
+        );
+        console.log(`[-] ${detailResponse.data.result.data[0].internal_message}`, "\n");
+
+        logDivider();
+
+        process.exit(1);
+      }
+
     } else {
       console.log(`[*] IMAGE MD5: ${md5}`, "\n");
       // Log status
       console.log(`[-] ${errorMessage}`, "\n");
+
+      logDivider();
+
+      process.exit(1);
     }
   }
 }
