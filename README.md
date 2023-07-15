@@ -23,12 +23,11 @@ After clone your project, you need to create `config.js` file at root folder bas
 ```js
 // ./config.js
 export const config = {
-  // Etherum JSON RPC provider URL:
-  // (Please note the provider must support debug_getRawReceipts RPC method.)
+  // Update your Etherum JSON RPC provider URL here.
+  // Please note that the provider must support debug_getRawReceipts RPC method.
   JsonRpcProviderUrl: "https://{URL}",
-  ZkwasmProviderUrl: "https://zkwasm-explorer.delphinuslab.com:8090",
-  CompilerServerEndpoint: "http://node.hyperoracle.io:8000/compile",
   UserPrivateKey: "0x{PRIVATE_KEY}",
+  // ...and other configs.
 };
 ```
 
