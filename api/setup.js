@@ -5,13 +5,14 @@ import { config } from "../config.js";
 import { logDivider } from "./common/utils.js";
 import { zkwasm_setup } from "./requests/zkwasm_setup.js";
 import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
+import path from "path";
 
 // const inputPathPrefix = "build/zkgraph_full";
-const wasmPath = `build/${config.WasmBinaryFileName}`
+const wasmPath = config.WasmBinaryPath
 const compiledWasmBuffer = readFileSync(wasmPath);
 
 // Message and form data
-const name = config.WasmBinaryFileName; // only use in zkwasm, can diff from local files
+const name = path.basename(config.WasmBinaryPath); // only use in zkwasm, can diff from local files
 const md5 = ZkWasmUtil.convertToMd5(compiledWasmBuffer).toUpperCase();
 const image = fs.createReadStream(wasmPath);
 const prikey = config.UserPrivateKey
