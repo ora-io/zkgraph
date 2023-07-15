@@ -90,6 +90,15 @@ let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
   filteredRawReceiptList,
   filteredEventList
 );
+
+// Log receipt number from block, and filtered events
+logReceiptAndEvents(
+    rawreceiptList,
+    blockid,
+    matchedEventOffsets,
+    filteredEventList
+);
+
 // may remove
 matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 
@@ -99,14 +108,7 @@ let wasmFilePath;
 
 // Set value for inputs
 if (currentNpmScriptName() === "prove-local") {
-
-  // Log receipt number from block, and filtered events
-  logReceiptAndEvents(
-    rawreceiptList,
-    blockid,
-    matchedEventOffsets,
-    filteredEventList
-  );
+  wasmFilePath = `../../build/${config.LocalWasmBinaryFileName}`
 
   // Generate inputs
   privateInputStr =
@@ -114,9 +116,9 @@ if (currentNpmScriptName() === "prove-local") {
     formatVarLenInput(toHexString(new Uint8Array(matchedEventOffsets.buffer)));
   publicInputStr = formatVarLenInput(expectedStateStr);
 
-    wasmFilePath = `../../build/${config.LocalWasmBinaryFileName}`
-
 } else if (currentNpmScriptName() === "prove") {
+  wasmFilePath = `../../build/${config.WasmBinaryFileName}`
+
   // Get block
   const simpleblock = await provider.getBlock(blockid).catch(() => {
     console.log("[-] ERROR: Failed to getBlock()", "\n");
@@ -129,14 +131,6 @@ if (currentNpmScriptName() === "prove-local") {
     }
   );
 
-  // Log receipt number from block, and filtered events
-  logReceiptAndEvents(
-    rawreceiptList,
-    blockid,
-    matchedEventOffsets,
-    filteredEventList
-  );
-
   // Generate inputs
   publicInputStr =
     formatIntInput(parseInt(block.number)) +
@@ -145,8 +139,6 @@ if (currentNpmScriptName() === "prove-local") {
   privateInputStr =
     formatVarLenInput(toHexString(rawReceipts)) +
     formatHexStringInput(block.receiptsRoot);
-
-    wasmFilePath = `../../build/${config.WasmBinaryFileName}`
 
   // Prove mode
   if (options.prove === true) {
