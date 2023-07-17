@@ -701,19 +701,6 @@ export class Bytes extends ByteArray {
     return PtrDeref.read(changetype<usize>(this));
   }
 
-  /**
-   * Try not to use this.
-   *
-   * It's a custom implementation to get the initial Hyper Oracle MVP.
-   */
-  fill(_val: u8 = 0): this {
-    for (var i: i32 = 0; i < this.length; i++) {
-      this[i] = _val;
-    }
-    return this;
-    // this.arr.fill(_val)
-  }
-
   slice(start: i32, end: i32 = -1): Bytes {
     end = end == -1 ? this.length : end;
     return Bytes.fromUint8Array((this as Uint8Array).slice(start, end));
@@ -756,31 +743,20 @@ export class Bytes extends ByteArray {
     return rst;
   }
 
-  padding(target_length: i32, is_pre: bool, pad:u8=0): Bytes{
-    if (target_length <= this.length) return this;
+  paddingTo(total_length: i32, is_positon_pre: bool=true, paddingChar:u8=0): Bytes{
+    if (total_length <= this.length) return this;
 
-    var rst = new Bytes(target_length)
-    if (is_pre){
-        var offset = target_length - this.length
-        for (let i = 0; i < this.length; i++){
-            rst[offset + i] = this[i]
-        }
-        if (pad != 0){
-            for (let i = 0; i < offset; i++){
-                rst[i] = pad
-            }
-        }
-    } else {
-        for (let i = 0; i < this.length; i++){
-            rst[i] = this[i]
-        }
-        if (pad != 0){
-            for (let i = target_length - this.length; i < target_length; i++){
-                rst[i] = pad
-            }
-        }
+    // Prepare padding bytes
+    let _padding = new Bytes(total_length - this.length)
+    if (paddingChar != 0) { _padding.fill(paddingChar)}
+    // Concat
+    let rst: ByteArray
+    if (is_positon_pre){ // pre-padding
+        rst = _padding.concat(this);
+    } else { // post-padding
+        rst = this.concat(_padding);
     }
-    return rst;
+    return rst as Bytes;
   }
 
   // Disabled due to the existence of implementation of ByteArray
