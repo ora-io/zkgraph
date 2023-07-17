@@ -222,14 +222,18 @@ export class ByteArray extends Uint8Array {
    *
    * Provable on zkWASM.
    *
-   * WASM cost: 1396 lines of wat.
+   * WASM cost: 1396 lines of wat. //TODO: update this
    */
   static fromHexString(hex: string): ByteArray {
-    assert(hex.length % 2 == 0, "input has odd length");
+    // assert(hex.length % 2 == 0, "input has odd length");
     // Skip possible `0x` prefix.
     if (hex.length >= 2 && hex.charAt(0) == "0" && hex.charAt(1) == "x") {
       hex = hex.substr(2);
     }
+
+    // padding prefix 0 when odd len
+    if (hex.length % 2 != 0) hex = '0'+hex
+
     const output = new Bytes(hex.length / 2);
     for (let i = 0; i < hex.length; i += 2) {
       // @deprecated — Converts a string to an integer of this type. Please use "i32.parse" method.
