@@ -90,6 +90,12 @@ npm run prove -- --pretest {block_id} {expected_state}
 npm run prove -- --prove {block_id} {expected_state}
 ```
 
+### Verifier Contract Interface
+
+```AggregatorVerifier
+https://github.com/DelphinusLab/halo2aggregator-s/blob/main/sol/contracts/AggregatorVerifier.sol#L40
+```
+
 ## Develop
 
 ### `config.js`
