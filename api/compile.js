@@ -107,9 +107,6 @@ if (isCompilationSuccess) {
 
     process.exit(0);
   } else {
-    // Extra new line for error
-    console.log();
-
     // Log status
     console.log("[-] ERROR WHEN COMPILING.", "\n");
 
