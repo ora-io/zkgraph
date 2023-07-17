@@ -756,6 +756,33 @@ export class Bytes extends ByteArray {
     return rst;
   }
 
+  padding(target_length: i32, is_pre: bool, pad:u8=0): Bytes{
+    if (target_length <= this.length) return this;
+
+    var rst = new Bytes(target_length)
+    if (is_pre){
+        var offset = target_length - this.length
+        for (let i = 0; i < this.length; i++){
+            rst[offset + i] = this[i]
+        }
+        if (pad != 0){
+            for (let i = 0; i < offset; i++){
+                rst[i] = pad
+            }
+        }
+    } else {
+        for (let i = 0; i < this.length; i++){
+            rst[i] = this[i]
+        }
+        if (pad != 0){
+            for (let i = target_length - this.length; i < target_length; i++){
+                rst[i] = pad
+            }
+        }
+    }
+    return rst;
+  }
+
   // Disabled due to the existence of implementation of ByteArray
   @operator("==")
   __opeq(right: Bytes): bool {
