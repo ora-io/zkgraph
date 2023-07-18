@@ -93,5 +93,6 @@ export function bytesToBase58(n: Uint8Array): string {
  * Helper function to convert a BigInt to an ASBigInt for using `as-bigint` lib.
  */
 export function bigIntToASBigInt(bigInt: BigInt): ASBigInt {
+  // TODO: Remove this temp hack
   return ASBigInt.fromInt64(bigInt.toI64());
 }
