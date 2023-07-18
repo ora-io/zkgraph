@@ -19,31 +19,25 @@ let isCompilationSuccess = true;
 
 let watPath;
 
-if (currentNpmScriptName() === "compile-local") {
-  // Wat Path
-  watPath = config.LocalWasmBinPath.replace(/\.wasm/, ".wat")
+const localCompile = (wasmPath, watPath) => {
+    const commands = [
+        `npx asc lib/main_local.ts -t ${watPath} -O --noAssert -o ${wasmPath} --disable bulk-memory --use abort=lib/common/type/abort --exportRuntime --runtime stub`, // note: need --exportRuntime or --bindings esm; (--target release)
+      ];
+    
+      const combinedCommand = commands.join(" && ");
+      try {
+        execSync(combinedCommand, { encoding: "utf-8" });
+      } catch (error) {
+        // Handle or log the error here if required
+        isCompilationSuccess = false;
+      }
+}
 
-  const commands = [
-    `npx asc lib/main_local.ts -t ${watPath} -O --noAssert -o ${config.LocalWasmBinPath} --disable bulk-memory --use abort=lib/common/type/abort --exportRuntime --runtime stub`, // note: need --exportRuntime or --bindings esm; (--target release)
-  ];
-
-  const combinedCommand = commands.join(" && ");
-  try {
-    execSync(combinedCommand, { encoding: "utf-8" });
-  } catch (error) {
-    // Handle or log the error here if required
-    isCompilationSuccess = false;
-  }
-
-} else if (currentNpmScriptName() === "compile") {
+const remoteCompile = async (wasmPath, watPath) => {
   // Constants
   const mappingPath = "src/mapping.ts";
   const configPath = "src/zkgraph.yaml";
-  const wasmPath = config.WasmBinPath;
   const apiEndpoint = config.CompilerServerEndpoint;
-
-  // Wat Path
-  watPath = config.WasmBinPath.replace(/\.wasm/, ".wat")
 
   // Load config
   const [source_address, source_esigs] = loadZKGraphConfig(configPath);
@@ -79,6 +73,27 @@ if (currentNpmScriptName() === "compile-local") {
     const message = response.data["message"];
     fs.writeFileSync(wasmPath, fromHexString(wasmModuleHex));
     fs.writeFileSync(watPath, wasmWat);
+  }
+}
+
+if (currentNpmScriptName() === "compile-local") {
+  // Wat Path
+  watPath = config.LocalWasmBinPath.replace(/\.wasm/, ".wat")
+
+  // Compile Locally
+  localCompile(config.LocalWasmBinPath, watPath)
+
+} else if (currentNpmScriptName() === "compile") {
+  // Test Compile Erro with Local Compile
+  localCompile("build/tmp.wasm", "build/tmp.wat")
+
+  // Only Call Compile Server When No Local Compile Errors
+  if (isCompilationSuccess == true){
+    // Wat Path
+    watPath = config.WasmBinPath.replace(/\.wasm/, ".wat")
+    
+    // Compile with Remote Compile Server
+    await remoteCompile(config.WasmBinPath, watPath)
   }
 }
 
