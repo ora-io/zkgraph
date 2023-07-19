@@ -1,4 +1,5 @@
 import { BigInt, ByteArray, Bytes } from "../../lib/common/type";
+import { uint8ArrayToUint32Array } from "../../lib/utils/conversion";
 
 export function testBigInt(): void {
   // fromString, toString
@@ -103,6 +104,14 @@ export function testBigInt(): void {
   assert(bigint.bitAnd(BigInt.fromString("1")).toString() == "1", "BigInt bitAnd failed");
   assert(bigint.leftShift(1).toString() == "-18446744073709551618", "BigInt leftShift failed");
   assert(bigint.rightShift(1).toString() == "-4611686018427387905", "BigInt rightShift failed");
+
+  // copy, bitNot, bitXor, isNegative, isOdd
+  bigint = BigInt.fromString("18446744073709551616"); // 2^64 (U64.MAX_VALUE + 1)
+  assert(bigint.copy().toString() == "18446744073709551616", "BigInt copy failed");
+  assert(bigint.bitNot().toString() == "-18446744073709551617", "BigInt bitNot failed");
+  assert(bigint.bitXor(BigInt.fromString("1")).toString() == "18446744073709551617", "BigInt bitXor failed");
+  assert(!bigint.isNegative, "BigInt isNegative failed");
+  assert(!bigint.isOdd(), "BigInt isOdd failed");
 
   console.log("✅ Test BigInt");
 }
