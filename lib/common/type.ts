@@ -4,7 +4,7 @@
 // (https://github.com/graphprotocol/graph-tooling/tree/main/packages/ts)
 import * as typeConversion from "../utils/conversion";
 import * as bigInt from "../utils/bigInt";
-
+import { js_log } from "../../src/mapping";
 // used in asc to rm env.abort
 function abort(a: usize, b: usize, c: u32, d: u32): void {}
 export class Event {
@@ -470,6 +470,7 @@ export class ByteArray extends Uint8Array {
     const padding = isNeg ? 255 : 0;
     for (let i = 8; i < this.length; i++) {
       if (this[i] != padding) {
+        js_log(999)
         assert(false, "overflow converting to this i64");
       }
     }

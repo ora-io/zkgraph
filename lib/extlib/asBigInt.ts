@@ -2,6 +2,7 @@
 // https://github.com/polywrap/as-bigint
 // Library is added locally for reduce dependency.
 
+import { js_log } from "../../src/mapping";
 // multiple precision integer
 export class BigInt {
   private d: Uint32Array; // digits
@@ -165,6 +166,7 @@ export class BigInt {
   }
 
   static fromInt64(val: i64): BigInt {
+    js_log(5001)
     const isNeg: boolean = val < 0;
     const res = new BigInt(BigInt.precision, isNeg);
     let unsignedDigit: u64 = <u64>(isNeg ? -1 * val : val);
@@ -296,15 +298,18 @@ export class BigInt {
   }
 
   toInt64(): i64 {
+    js_log(5002)
     if (this.n <= 1) {
       return this.n == 0 ? <i64>0 : <i64>this.d[0] * (this.isNeg ? -1 : 1);
     }
     const bitCount: i32 = this.countBits();
     if (bitCount > 64) {
+        js_log(5004)
       throw new Error(
         `Integer overflow: cannot output i64 from an integer that uses ${bitCount} bits`,
       );
     }
+    js_log(5005)
     const biString: string = this.toString();
     const result: i64 = I64.parseInt(biString);
     if (bitCount == 64 && result.toString() != biString) {
@@ -949,6 +954,7 @@ export class BigInt {
 
   // handles sign and allows for easy replacement of algorithm in future update
   div<T>(other: T): BigInt {
+    js_log(50000)
     return this._div(BigInt.from(other));
   }
 

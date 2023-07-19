@@ -10,6 +10,7 @@ import { BigInt } from "../common/type";
 import { BigInt as ASBigInt } from "../extlib/asBigInt";
 import { bigIntToASBigInt } from "./conversion";
 
+import { js_log } from "../../src/mapping";
 export function plus(x: BigInt, y: BigInt): BigInt {
   return BigInt.fromI64(bigIntToASBigInt(x).add(bigIntToASBigInt(y)).toInt64());
 }
@@ -23,6 +24,7 @@ export function times(x: BigInt, y: BigInt): BigInt {
 }
 
 export function dividedBy(x: BigInt, y: BigInt): BigInt {
+    js_log(4000)
   return BigInt.fromI64(bigIntToASBigInt(x).div(bigIntToASBigInt(y)).toInt64());
 }
 
