@@ -5,10 +5,8 @@
 // Need optimization for zkWASM
 // For this implementation, we use the `as-bigint` lib by Polywrap
 // (https://github.com/polywrap/as-bigint)
-import { BigInt, ByteArray } from "../common/type";
+import { ByteArray } from "../common/type";
 // TODO: Remove third-party dependency
-import { BigInt as ASBigInt } from "../extlib/asBigInt";
-
 export function bytesToString(bytes: Uint8Array): string {
   let str = "";
   for (let i = 0; i < bytes.length; i++) {
@@ -24,14 +22,6 @@ export function bytesToHex(bytes: Uint8Array): string {
     hex += byte;
   }
   return "0x" + hex;
-}
-
-export function bigIntToString(bigInt: Uint8Array): string {
-  return bigIntToASBigInt(changetype<BigInt>(bigInt)).toString();
-}
-
-export function bigIntToHex(bigInt: Uint8Array): string {
-  return bigIntToASBigInt(changetype<BigInt>(bigInt)).toString(16);
 }
 
 export function stringToH160(s: string): Uint8Array {
@@ -92,7 +82,23 @@ export function bytesToBase58(n: Uint8Array): string {
 /**
  * Helper function to convert a BigInt to an ASBigInt for using `as-bigint` lib.
  */
-export function bigIntToASBigInt(bigInt: BigInt): ASBigInt {
-  // TODO: Remove this temp hack
-  return ASBigInt.fromInt64(bigInt.toI64());
+export function uint8ArrayToUint32Array(u8Array: Uint8Array): Uint32Array {
+  const remainingBytes = u8Array.length % 4;
+  if (remainingBytes === 0) {
+    return Uint32Array.wrap(u8Array.buffer); // No padding needed
+  }
+
+  const paddedLength = u8Array.length + (4 - remainingBytes);
+  const paddedArray = new Uint8Array(paddedLength);
+
+  for (let i = 0; i < u8Array.length; i++) {
+    paddedArray[i] = u8Array[i];
+  }
+
+  return Uint32Array.wrap(paddedArray.buffer)
 }
+
+// TODO: depended by ByteArray.fromBigInt
+// export function uint32ArrayToUint8Array(u32Array: Uint32Array): Uint8Array {
+
+// }
