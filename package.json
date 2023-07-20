@@ -12,7 +12,9 @@
     "verify": "",
     "format": "prettier --write -c **/*.{js,ts,md}",
     "lint": "prettier -c **/*.{js,ts,md}",
-    "test-lib": "asc test/lib/test.ts -o build/lib/test.wasm --bindings esm && node test/lib/test.js"
+    "test-lib": "asc test/lib/test.ts -o build/lib/test.wasm --bindings esm && node test/lib/test.js",
+    "make": "asc lib/common/inner.ts -o inner_pre_pre.wasm --runtime stub --use abort=lib/common/type/abort --disable bulk-memory --disable mutable-globals --exportRuntime --memoryBase 10000&& wasm-opt -Oz inner_pre_pre.wasm -o inner_pre.wasm --disable-bulk-memory --disable-mutable-globals && wasm2wat inner_pre.wasm -o inner_pre.wat --inline-exports --generate-names --disable-bulk-memory --disable-mutable-globals && wat2wasm inner_pre.wat -r -o build/zkgraph_local.wasm",
+    "make-as": "asc lib/common/inner.ts -o build/zkgraph_local.wasm -t build/zkgraph_local.wat --runtime stub --use abort=lib/common/type/abort --disable bulk-memory --disable mutable-globals --exportRuntime"
   },
   "type": "module",
   "dependencies": {
