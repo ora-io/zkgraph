@@ -5,6 +5,10 @@ export function testBigInt(): void {
   // fromString, toString
   let bigint = BigInt.fromString(I32.MAX_VALUE.toString());
   assert(bigint.toString() == I32.MAX_VALUE.toString(), "BigInt fromString and toString failed");
+  bigint = BigInt.fromString("9999999999999999999999999999999999999999999999999"); // definitely larger than I64.MAX_VALUE
+  assert(bigint.toString() == "9999999999999999999999999999999999999999999999999", "BigInt big int failed");
+  bigint = BigInt.fromString("-999999999999999999999999999999999999999999999999"); // definitely smaller than I64.MIN_VALUE
+  assert(bigint.toString() == "-999999999999999999999999999999999999999999999999", "BigInt small int failed");
 
   // fromBytes, fromBytesBigEndian
   bigint = BigInt.fromBytes(ByteArray.fromI32(I32.MAX_VALUE));
