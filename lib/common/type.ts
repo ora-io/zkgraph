@@ -7,7 +7,7 @@
 export * from "./types/bigInt";
 // class Event
 export * from "./types/event";
-// class Bytes
+// class ByteArray, Bytes, Address
 export { ByteArray, Bytes, Address } from "./types/bytes";
 
 // used in asc to rm env.abort
