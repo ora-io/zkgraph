@@ -1,4 +1,5 @@
 import * as typeConversion from "../../utils/conversion";
+import { Bytes } from "./bytes";
 
 // Reference Implementation: as-bigint ^0.5.3
 // (https://github.com/polywrap/as-bigint)
@@ -112,6 +113,13 @@ export class BigInt {
     }
     res.isNeg = isNegative;
     res.trimLeadingZeros();
+    // log res.digits
+    let log = "";
+    for (let i = 0; i < res.d.length; i++) {
+      log += res.d[i].toString();
+      log += " ";
+    }
+    console.log("fromString 32: " + log);
     return res;
   }
 
@@ -214,10 +222,20 @@ export class BigInt {
   }
 
   static fromBytesBigEndian(bytes: Uint8Array, isNegative: boolean = false): BigInt {
-    return BigInt.fromDigits(
-      typeConversion.uint8ArrayToUint32Array(bytes.slice().reverse()),
-      isNegative
+    const bytesReversed = bytes.slice();
+    bytesReversed.reverse();
+    const res = BigInt.fromDigits(
+      typeConversion.uint8ArrayToUint32Array(bytesReversed),
+      isNegative,
     );
+    // log res.digits
+    let log = "fromBytes  32: ";
+    for (let i = 0; i < res.d.length; i++) {
+      log += res.d[i].toString();
+      log += " ";
+    }
+    console.log(log);
+    return res;
   }
 
   // O(N)
