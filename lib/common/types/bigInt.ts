@@ -215,7 +215,7 @@ export class BigInt {
 
   static fromBytesBigEndian(bytes: Uint8Array, isNegative: boolean = false): BigInt {
     return BigInt.fromDigits(
-      typeConversion.uint8ArrayToUint32Array(bytes).reverse(),
+      typeConversion.uint8ArrayToUint32Array(bytes.slice().reverse()),
       isNegative
     );
   }
