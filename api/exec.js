@@ -60,16 +60,20 @@ matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
 // Declare Wasm Binary Path
 let wasmPath;
 
+let asmain_exported;
 if (currentNpmScriptName() === "exec-local") {
     wasmPath = config.LocalWasmBinPath
+    const { asmain } = await instantiateWasm(wasmPath)
+    asmain_exported = asmain
 } else if (currentNpmScriptName() === "exec") {
     wasmPath = config.WasmBinPath
+    const { asmain, __as_start } = await instantiateWasm(wasmPath)
+    asmain_exported = asmain
+    __as_start()
 }
 
-const { asmain } = await instantiateWasm(wasmPath)
-
 // Execute zkgraph that would call mapping.ts
-let state = asmain(rawReceipts, matchedEventOffsets);
+let state = asmain_exported(rawReceipts, matchedEventOffsets);
 
 console.log("[+] ZKGRAPH STATE OUTPUT:", toHexString(state), "\n");
 

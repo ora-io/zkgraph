@@ -63,6 +63,7 @@ const remoteCompile = async (wasmPath, watPath) => {
 
   // Send request
   const response = await axios.request(requestConfig).catch((error) => {
+    console.log(`[-] ${error.message} ${error.code}`, "\n");
     isCompilationSuccess = false;
   });
 
