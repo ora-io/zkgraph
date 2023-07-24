@@ -84,14 +84,6 @@ export function bytesToBase58(n: Uint8Array): string {
  */
 export function uint8ArrayToUint32Array(u8Array: Uint8Array): Uint32Array {
   const remainingBytes = u8Array.length % 4;
-  // log each byte
-  let log = "conversion input 8: ";
-  for (let i = 0; i < u8Array.length; i++) {
-    log += u8Array[i].toString();
-    log += " ";
-  }
-  console.log(log);
-
   if (remainingBytes === 0) {
     return Uint32Array.wrap(u8Array.buffer); // No padding needed
   }
