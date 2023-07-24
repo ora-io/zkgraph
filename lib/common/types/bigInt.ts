@@ -214,24 +214,37 @@ export class BigInt {
     return res;
   }
 
-  private static applyDigitMask(bytes: Uint32Array): void {
-    // apply digit mask
+  private static applyDigitMask(bytes: Uint32Array): Uint32Array {
+    // Get first half bytes
+    const firstHalfBytes = [];
+    for (let i = 0; i < bytes.length; i++) {
+      firstHalfBytes.push(bytes[i] >> BigInt.p);
+    }
     for (let i = 0; i < bytes.length - 1; i++) {
-      const maskedDigit = (<u32>bytes[i]) & BigInt.digitMask;
-      if (maskedDigit != bytes[i]) {
-        // get first half byte of bytes[i]
-        const firstHalfByte = bytes[i] >> BigInt.p;
-        // Make firstHalfByte the least significant byte of the next digit
-        bytes[i + 1] = (bytes[i + 1] << 4) | firstHalfByte;
-        // Mask the digit
-        bytes[i] = maskedDigit;
+      if (firstHalfBytes[i] != 0) {
+        bytes[i] = bytes[i] & BigInt.digitMask;
+        bytes[i + 1] = (bytes[i + 1] << 4) | firstHalfBytes[i];
       }
     }
+    // if firstHalfBytes' last element is not 0, then add a new element to bytes
+    if (firstHalfBytes[firstHalfBytes.length - 1] != 0) {
+      const newBytes = new Uint32Array(bytes.length + 1);
+      newBytes.set(bytes)
+      newBytes[bytes.length] = firstHalfBytes[firstHalfBytes.length - 1];
+      return newBytes;
+    }
+    return bytes;
   }
 
   static fromBytes(bytes: Uint8Array, isNegative: boolean = false): BigInt {
-    const digits = typeConversion.uint8ArrayToUint32Array(bytes);
-    BigInt.applyDigitMask(digits);
+    let digits = typeConversion.uint8ArrayToUint32Array(bytes);
+    digits = BigInt.applyDigitMask(digits);
+    let log = "fromBytes  32: ";
+    for (let i = 0; i < digits.length; i++) {
+      log += digits[i].toString();
+      log += " ";
+    }
+    console.log(log);
     return BigInt.fromDigits(
       digits,
       isNegative,
@@ -242,8 +255,8 @@ export class BigInt {
     // Copy of bytes with leading zeros removed
     const bytesTrimmed = bytes.slice(bytes.findIndex((value) => value !== 0));
     bytesTrimmed.reverse();
-    const digits = typeConversion.uint8ArrayToUint32Array(bytesTrimmed);
-    BigInt.applyDigitMask(digits);
+    let digits = typeConversion.uint8ArrayToUint32Array(bytesTrimmed);
+    digits = BigInt.applyDigitMask(digits);
     const res = BigInt.fromDigits(
       digits,
       isNegative,
