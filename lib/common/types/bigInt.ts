@@ -214,21 +214,38 @@ export class BigInt {
     return res;
   }
 
+  private static applyDigitMask(bytes: Uint32Array): void {
+    // apply digit mask
+    for (let i = 0; i < bytes.length - 1; i++) {
+      const maskedDigit = (<u32>bytes[i]) & BigInt.digitMask;
+      if (maskedDigit != bytes[i]) {
+        // get first half byte of bytes[i]
+        const firstHalfByte = bytes[i] >> BigInt.p;
+        // Make firstHalfByte the least significant byte of the next digit
+        bytes[i + 1] = (bytes[i + 1] << 4) | firstHalfByte;
+        // Mask the digit
+        bytes[i] = maskedDigit;
+      }
+    }
+  }
+
   static fromBytes(bytes: Uint8Array, isNegative: boolean = false): BigInt {
+    let digits = typeConversion.uint8ArrayToUint32Array(bytes);
+    BigInt.applyDigitMask(digits);
     return BigInt.fromDigits(
-      typeConversion.uint8ArrayToUint32Array(bytes),
-      isNegative
-    );
+      digits,
+      isNegative,
+    );;
   }
 
   static fromBytesBigEndian(bytes: Uint8Array, isNegative: boolean = false): BigInt {
-    const bytesReversed = bytes.slice();
-    bytesReversed.reverse();
+    const bytesReversed = bytes.slice().reverse();
+    const digits = typeConversion.uint8ArrayToUint32Array(bytesReversed);
+    BigInt.applyDigitMask(digits);
     const res = BigInt.fromDigits(
-      typeConversion.uint8ArrayToUint32Array(bytesReversed),
+      digits,
       isNegative,
     );
-    // log res.digits
     let log = "fromBytes  32: ";
     for (let i = 0; i < res.d.length; i++) {
       log += res.d[i].toString();
