@@ -23,7 +23,7 @@ const localCompile = (wasmPath, watPath) => {
     const commands = [
         `npx asc lib/main_local.ts -t ${watPath} -O --noAssert -o ${wasmPath} --disable bulk-memory --use abort=lib/common/type/abort --exportRuntime --runtime stub`, // note: need --exportRuntime or --bindings esm; (--target release)
       ];
-    
+
       const combinedCommand = commands.join(" && ");
       try {
         execSync(combinedCommand, { encoding: "utf-8" });
@@ -92,7 +92,7 @@ if (currentNpmScriptName() === "compile-local") {
   if (isCompilationSuccess == true){
     // Wat Path
     watPath = config.WasmBinPath.replace(/\.wasm/, ".wat")
-    
+
     // Compile with Remote Compile Server
     await remoteCompile(config.WasmBinPath, watPath)
   }
@@ -124,7 +124,7 @@ if (isCompilationSuccess) {
     process.exit(0);
   } else {
     // Log status
-    console.log("[-] ERROR WHEN COMPILING.", "\n");
+    console.log("\n" + "[-] ERROR WHEN COMPILING." + "\n");
 
     logDivider();
 
