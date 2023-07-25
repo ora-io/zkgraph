@@ -6,14 +6,15 @@ import { Bytes, Event, BigInt, ByteArray } from "../lib/common/type";
 export declare function js_log(x: i32): void
 
 export function handleEvents(events: Event[]): Bytes {
-  // const source = changetype<Bytes>(events[0].data);
-  // let reserve0 = Bytes.fromU8Array(source.slice(0, 32));
+  const source = changetype<Bytes>(events[0].data);
+  let reserve0 = Bytes.fromU8Array(source.slice(0, 31));
   // // let reserve1 = source.slice(32, 64);
 
-  // let r0_ = BigInt.fromBytesBigEndian(reserve0);
-  // console.log("actual  :" + r0_.toHexString());
-  // let r0 = BigInt.fromString(reserve0.toHexString(), 16);
-  // console.log("expected:" + r0.toHexString());
+  console.log("reserve0:" + reserve0.toHexString());
+  let r0_ = BigInt.fromBytesBigEndian(reserve0);
+  console.log("actual  :" + r0_.toHexString());
+  let r0 = BigInt.fromString(reserve0.toHexString(), 16);
+  console.log("expected:" + r0.toHexString());
 
 //   let a = new Uint32Array(5);
 //   a[0] = 0x12345678;
@@ -24,11 +25,11 @@ export function handleEvents(events: Event[]): Bytes {
   let a_str = "0x1234567890abcd"
   let a: Uint8Array = changetype<Uint8Array>(ByteArray.fromHexString(a_str))
 //   let b = Uint8Array.wrap(a.buffer);
-  let c = BigInt.fromBytes(a);
+  let c = BigInt.fromBytesBigEndian(a);
   console.log("c:" + c.toString(16));
   let d = BigInt.fromString(a_str, 16);
   console.log("d:" + d.toString(16));
-  let e = BigInt.fromBytesBigEndian(a);
+  let e = BigInt.fromBytes(a);
   console.log("e:" + e.toString(16));
   let f = BigInt.fromString("cdab9078563412", 16);
   console.log("f:" + f.toString(16));

@@ -85,11 +85,11 @@ export function bytesToBase58(n: Uint8Array): string {
  */
 export function uint8ArrayToUint32Array(
   u8Array: Uint8Array,
-  bigEndian: bool = false
+  littleEndian: bool = true
 ): Uint32Array {
   let hex = "";
   let u8ArrayCopy: Uint8Array;
-  if (bigEndian) {
+  if (littleEndian) {
     u8ArrayCopy = u8Array.slice();
     u8ArrayCopy.reverse();
     for (let i = 0; i < u8ArrayCopy.length; i++) {

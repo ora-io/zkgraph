@@ -229,7 +229,7 @@ export class BigInt {
   }
 
   static fromBytesBigEndian(bytes: Uint8Array, isNegative: boolean = false): BigInt {
-    let digits = typeConversion.uint8ArrayToUint32Array(bytes, true);
+    let digits = typeConversion.uint8ArrayToUint32Array(bytes, false);
     const res = BigInt.fromDigits(
       digits,
       isNegative,

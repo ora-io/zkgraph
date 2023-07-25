@@ -29,8 +29,8 @@ export function testUtils(): void {
   uint8Array[3] = 0x78;
   let uint32Array = uint8ArrayToUint32Array(uint8Array);
   assert(uint32Array.length == 2, "uint8ArrayToUint32Array()");
-  assert(uint32Array[0] == 0x2345678, "uint8ArrayToUint32Array()");
-  assert(uint32Array[1] == 0x1, "uint8ArrayToUint32Array()");
+  assert(uint32Array[0] == 0x8563412, "uint8ArrayToUint32Array()");
+  assert(uint32Array[1] == 0x7, "uint8ArrayToUint32Array()");
 
   console.log("✅ Test Utils");
 }
