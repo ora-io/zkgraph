@@ -90,7 +90,7 @@ export function uint8ArrayToUint32Array(
   let hex = "";
   let u8ArrayCopy: Uint8Array;
   if (bigEndian) {
-    u8ArrayCopy = Uint8Array.wrap(u8Array.buffer);
+    u8ArrayCopy = u8Array.slice();
     u8ArrayCopy.reverse();
     for (let i = 0; i < u8ArrayCopy.length; i++) {
       let byte = (u8ArrayCopy[i] < 16 ? "0" : "") + u8ArrayCopy[i].toString(16);
