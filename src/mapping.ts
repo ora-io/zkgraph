@@ -16,11 +16,11 @@ export function handleEvents(events: Event[]): Bytes {
   console.log("expected:" + r0.toHexString());
 
   let a = new Uint32Array(5);
-  a[0] = 0xf0000000;
-  a[1] = 0xf0000000;
-  a[2] = 0xf0000000;
-  a[3] = 0xf0000000;
-  a[4] = 0xf0000000;
+  a[0] = 0xf1234567;
+  a[1] = 0xfabcdef8;
+  a[2] = 0xf1234567;
+  a[3] = 0xfabcdef8;
+  a[4] = 0xf1234567;
   let b = Uint8Array.wrap(a.buffer);
   let c = BigInt.fromBytes(b);
   console.log("c:" + c.toString(16));

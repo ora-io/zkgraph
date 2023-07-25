@@ -226,10 +226,11 @@ export class BigInt {
         bytes[i + 1] = (bytes[i + 1] << 4) | firstHalfBytes[i];
       }
     }
-    // if firstHalfBytes' last element is not 0, then add a new element to bytes
+    // if firstHalfBytes' last element is not 0, then apply mask to the last element and add a new element to bytes
     if (firstHalfBytes[firstHalfBytes.length - 1] != 0) {
       const newBytes = new Uint32Array(bytes.length + 1);
       newBytes.set(bytes)
+      newBytes[bytes.length - 1] = bytes[bytes.length - 1] & BigInt.digitMask;
       newBytes[bytes.length] = firstHalfBytes[firstHalfBytes.length - 1];
       return newBytes;
     }
