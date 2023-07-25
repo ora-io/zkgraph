@@ -81,21 +81,22 @@ export function bytesToBase58(n: Uint8Array): string {
 
 /**
  * Helper function to convert a BigInt to an ASBigInt for using `as-bigint` lib.
+ * Convert Uint8Array to Uint32Array (with digit mask that restrict each element to be Uint28)
  */
 export function uint8ArrayToUint32Array(u8Array: Uint8Array): Uint32Array {
-  const remainingBytes = u8Array.length % 4;
-  if (remainingBytes === 0) {
-    return Uint32Array.wrap(u8Array.buffer); // No padding needed
-  }
-
-  const paddedLength = u8Array.length + (4 - remainingBytes);
-  const paddedArray = new Uint8Array(paddedLength);
-
+  let hex = "";
   for (let i = 0; i < u8Array.length; i++) {
-    paddedArray[i] = u8Array[i];
+    let byte = u8Array[i].toString(16).padStart(2, "0");
+    hex += byte;
   }
-
-  return Uint32Array.wrap(paddedArray.buffer)
+  const length = hex.length / 7 + 1;
+  const u32Array = new Uint32Array(length);
+  for (let i = 0; i < length; i++) {
+    const firstIndex = hex.length - (i + 1) * 7;
+    const lastIndex = hex.length - i * 7;
+    u32Array[i] = <u32>parseInt(hex.slice(firstIndex > 0 ? firstIndex : 0, lastIndex), 16);
+  }
+  return u32Array;
 }
 
 // TODO: depended by ByteArray.fromBigInt

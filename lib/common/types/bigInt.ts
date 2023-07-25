@@ -116,7 +116,7 @@ export class BigInt {
     // log res.digits
     let log = "";
     for (let i = 0; i < res.d.length; i++) {
-      log += res.d[i].toString();
+      log += res.d[i].toString(16);
       log += " ";
     }
     console.log("fromString 32: " + log);
@@ -214,35 +214,11 @@ export class BigInt {
     return res;
   }
 
-  private static applyDigitMask(bytes: Uint32Array): Uint32Array {
-    // Get first half bytes
-    const firstHalfBytes = [];
-    for (let i = 0; i < bytes.length; i++) {
-      firstHalfBytes.push(bytes[i] >> BigInt.p);
-    }
-    for (let i = 0; i < bytes.length - 1; i++) {
-      if (firstHalfBytes[i] != 0) {
-        bytes[i] = bytes[i] & BigInt.digitMask;
-        bytes[i + 1] = (bytes[i + 1] << 4) | firstHalfBytes[i];
-      }
-    }
-    // if firstHalfBytes' last element is not 0, then apply mask to the last element and add a new element to bytes
-    if (firstHalfBytes[firstHalfBytes.length - 1] != 0) {
-      const newBytes = new Uint32Array(bytes.length + 1);
-      newBytes.set(bytes)
-      newBytes[bytes.length - 1] = bytes[bytes.length - 1] & BigInt.digitMask;
-      newBytes[bytes.length] = firstHalfBytes[firstHalfBytes.length - 1];
-      return newBytes;
-    }
-    return bytes;
-  }
-
   static fromBytes(bytes: Uint8Array, isNegative: boolean = false): BigInt {
     let digits = typeConversion.uint8ArrayToUint32Array(bytes);
-    digits = BigInt.applyDigitMask(digits);
     let log = "fromBytes  32: ";
     for (let i = 0; i < digits.length; i++) {
-      log += digits[i].toString();
+      log += digits[i].toString(16);
       log += " ";
     }
     console.log(log);
@@ -257,14 +233,13 @@ export class BigInt {
     const bytesTrimmed = bytes.slice(bytes.findIndex((value) => value !== 0));
     bytesTrimmed.reverse();
     let digits = typeConversion.uint8ArrayToUint32Array(bytesTrimmed);
-    digits = BigInt.applyDigitMask(digits);
     const res = BigInt.fromDigits(
       digits,
       isNegative,
     );
-    let log = "fromBytes  32: ";
+    let log = "fromBytesBigEndian32: ";
     for (let i = 0; i < res.d.length; i++) {
-      log += res.d[i].toString();
+      log += res.d[i].toString(16);
       log += " ";
     }
     console.log(log);
