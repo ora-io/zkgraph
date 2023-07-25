@@ -229,10 +229,7 @@ export class BigInt {
   }
 
   static fromBytesBigEndian(bytes: Uint8Array, isNegative: boolean = false): BigInt {
-    // Copy of bytes with leading zeros removed
-    const bytesTrimmed = bytes.slice(bytes.findIndex((value) => value !== 0));
-    bytesTrimmed.reverse();
-    let digits = typeConversion.uint8ArrayToUint32Array(bytesTrimmed);
+    let digits = typeConversion.uint8ArrayToUint32Array(bytes, true);
     const res = BigInt.fromDigits(
       digits,
       isNegative,

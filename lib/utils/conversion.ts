@@ -83,18 +83,34 @@ export function bytesToBase58(n: Uint8Array): string {
  * Helper function to convert a BigInt to an ASBigInt for using `as-bigint` lib.
  * Convert Uint8Array to Uint32Array (with digit mask that restrict each element to be Uint28)
  */
-export function uint8ArrayToUint32Array(u8Array: Uint8Array): Uint32Array {
+export function uint8ArrayToUint32Array(
+  u8Array: Uint8Array,
+  bigEndian: bool = false
+): Uint32Array {
   let hex = "";
-  for (let i = 0; i < u8Array.length; i++) {
-    let byte = u8Array[i].toString(16).padStart(2, "0");
-    hex += byte;
+  let u8ArrayCopy: Uint8Array;
+  if (bigEndian) {
+    u8ArrayCopy = Uint8Array.wrap(u8Array.buffer);
+    u8ArrayCopy.reverse();
+    for (let i = 0; i < u8ArrayCopy.length; i++) {
+      let byte = (u8ArrayCopy[i] < 16 ? "0" : "") + u8ArrayCopy[i].toString(16);
+      hex += byte;
+    }
+  } else {
+    for (let i = 0; i < u8Array.length; i++) {
+      let byte = (u8Array[i] < 16 ? "0" : "") + u8Array[i].toString(16);
+      hex += byte;
+    }
   }
+
   const length = (hex.length + 6) / 7;
   const u32Array = new Uint32Array(length);
   for (let i = 0; i < length; i++) {
     const firstIndex = hex.length - (i + 1) * 7;
     const lastIndex = hex.length - i * 7;
-    u32Array[i] = <u32>parseInt(hex.slice(firstIndex > 0 ? firstIndex : 0, lastIndex), 16);
+    u32Array[i] = <u32>(
+      parseInt(hex.slice(firstIndex > 0 ? firstIndex : 0, lastIndex), 16)
+    );
   }
   return u32Array;
 }
