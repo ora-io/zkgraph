@@ -89,7 +89,7 @@ export function uint8ArrayToUint32Array(u8Array: Uint8Array): Uint32Array {
     let byte = u8Array[i].toString(16).padStart(2, "0");
     hex += byte;
   }
-  const length = hex.length / 7 + 1;
+  const length = (hex.length + 6) / 7;
   const u32Array = new Uint32Array(length);
   for (let i = 0; i < length; i++) {
     const firstIndex = hex.length - (i + 1) * 7;

@@ -21,7 +21,7 @@ export function handleEvents(events: Event[]): Bytes {
 //   a[2] = 0x12345678;
 //   a[3] = 0x09abcdef;
 //   a[4] = 0x12345678;
-  let a_str = "0x1234567890abcdef"
+  let a_str = "0x1234567890abcd"
   let a: Uint8Array = changetype<Uint8Array>(ByteArray.fromHexString(a_str))
 //   let b = Uint8Array.wrap(a.buffer);
   let c = BigInt.fromBytes(a);
@@ -30,7 +30,7 @@ export function handleEvents(events: Event[]): Bytes {
   console.log("d:" + d.toString(16));
   let e = BigInt.fromBytesBigEndian(a);
   console.log("e:" + e.toString(16));
-  let f = BigInt.fromString("efcdab9078563412", 16);
+  let f = BigInt.fromString("cdab9078563412", 16);
   console.log("f:" + f.toString(16));
   console.log(c == d ? "TRUE" : "FALSE");
 
