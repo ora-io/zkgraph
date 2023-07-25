@@ -683,7 +683,7 @@ export class Bytes extends ByteArray {
     return PtrDeref.read(changetype<usize>(this));
   }
 
-  slice(start: i32, end: i32 = -1): Bytes {
+  slice_(start: i32, end: i32 = -1): Bytes {
     end = end == -1 ? this.length : end;
     return Bytes.fromU8Array((this as Uint8Array).slice(start, end));
   }

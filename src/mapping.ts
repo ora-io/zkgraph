@@ -1,13 +1,13 @@
 //@ts-ignore
 import { require } from "../lib/common/zkwasm";
-import { Bytes, Event, BigInt } from "../lib/common/type";
+import { Bytes, Event, BigInt, ByteArray } from "../lib/common/type";
 // @ts-ignore
 @external("env", "js_log")
 export declare function js_log(x: i32): void
 
 export function handleEvents(events: Event[]): Bytes {
   const source = changetype<Bytes>(events[0].data);
-  let reserve0 = source.slice(0, 32);
+  let reserve0 = Bytes.fromU8Array(source.slice(0, 32));
   // let reserve1 = source.slice(32, 64);
 
   let r0_ = BigInt.fromBytesBigEndian(reserve0);
@@ -15,16 +15,18 @@ export function handleEvents(events: Event[]): Bytes {
   let r0 = BigInt.fromString(reserve0.toHexString(), 16);
   console.log("expected:" + r0.toHexString());
 
-  let a = new Uint32Array(5);
-  a[0] = 0xf1234567;
-  a[1] = 0xfabcdef8;
-  a[2] = 0xf1234567;
-  a[3] = 0xfabcdef8;
-  a[4] = 0xf1234567;
-  let b = Uint8Array.wrap(a.buffer);
-  let c = BigInt.fromBytes(b);
+//   let a = new Uint32Array(5);
+//   a[0] = 0x12345678;
+//   a[1] = 0x90abcdef;
+//   a[2] = 0x12345678;
+//   a[3] = 0x09abcdef;
+//   a[4] = 0x12345678;
+  let a_str = "0x1234567890abcdef1234567809abcdef12345678"
+  let a:Uint8Array = changetype<Uint8Array>(ByteArray.fromHexString(a_str))
+//   let b = Uint8Array.wrap(a.buffer);
+  let c = BigInt.fromBytesBigEndian(a);
   console.log("c:" + c.toString(16));
-  let d = BigInt.fromString(c.toString(16), 16);
+  let d = BigInt.fromString(a_str, 16);
   console.log("d:" + d.toString(16));
   console.log(c == d ? "TRUE" : "FALSE");
 
