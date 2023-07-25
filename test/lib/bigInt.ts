@@ -11,13 +11,13 @@ export function testBigInt(): void {
   assert(bigint.toString() == "-999999999999999999999999999999999999999999999999", "BigInt small int failed");
 
   // fromBytes, fromBytesBigEndian
-  bigint = BigInt.fromBytes(ByteArray.fromI32(I32.MAX_VALUE));
+  bigint = BigInt.fromBytesBigEndian(ByteArray.fromI32(I32.MAX_VALUE));
   assert(bigint.toString() == I32.MAX_VALUE.toString(), "BigInt fromBytes (ByteArray) failed");
-  bigint = BigInt.fromBytes(ByteArray.fromI32(I32.MIN_VALUE), true);
+  bigint = BigInt.fromBytesBigEndian(ByteArray.fromI32(I32.MIN_VALUE), true);
   assert(bigint.toString() == I32.MIN_VALUE.toString(), "BigInt fromBytes (ByteArray negative) failed");
-  bigint = BigInt.fromBytes(Bytes.fromU32(U32.MAX_VALUE));
+  bigint = BigInt.fromBytes(Bytes.fromU32(U32.MAX_VALUE).reverse());
   assert(bigint.toString() == U32.MAX_VALUE.toString(), "BigInt fromBytes (Bytes) failed");
-  bigint = BigInt.fromBytesBigEndian(Bytes.fromU32(U32.MAX_VALUE).reverse());
+  bigint = BigInt.fromBytesBigEndian(Bytes.fromU32(U32.MAX_VALUE));
   assert(bigint.toString() == U32.MAX_VALUE.toString(), "BigInt fromBytes (Bytes negative) failed");
 
   // fromI32, toI32, fromU32, toU32
