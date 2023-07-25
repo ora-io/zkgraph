@@ -725,7 +725,7 @@ export class Bytes extends ByteArray {
     return rst;
   }
 
-  paddingTo(
+  padTo(
     total_length: i32,
     is_positon_pre: bool = true,
     paddingChar: u8 = 0

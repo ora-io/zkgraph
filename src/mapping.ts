@@ -39,6 +39,6 @@ export function handleEvents(events: Event[]): Bytes {
 
   // require(bi_price.ge(BigInt.fromString('466ba8760e97fb2')) == true ? 1 : 0);
 
-  // let payload = Bytes.fromHexString(bi_price.toString(16)).paddingTo(32, true, 0)
+  // let payload = Bytes.fromHexString(bi_price.toString(16)).padTo(32, true, 0)
   return events[0].data;
 }
