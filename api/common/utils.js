@@ -15,7 +15,7 @@ export function toHexStringBytes32Reverse(arr) {
       "0x" + toHexString(arr.slice(i * 32, (i + 1) * 32).reverse()) + "\n";
   }
   return result;
-};
+}
 
 export function areEqualArrays(first, second) {
   return (
@@ -37,7 +37,10 @@ export function logDivider() {
 }
 
 export function logLoadingAnimation() {
-  const width = 55;
+  // If width is equal to process.stdout.columns, the bar will overflow into the next line.
+  // 4 is the length of the prefix "[*] ".
+  // 55 is about the same length as the longest message in this script.
+  const width = Math.min(process.stdout.columns - 4, 55);
   let frame = 0;
   let stop = false;
 
@@ -52,7 +55,9 @@ export function logLoadingAnimation() {
     }
 
     const currentFrame = frames[frame % frames.length];
-    const loadingBar = `[*] ${currentFrame.repeat(position)}▒${currentFrame.repeat(width - position - 1)}`;
+    const loadingBar = `[*] ${currentFrame.repeat(
+      position
+    )}▒${currentFrame.repeat(width - position - 1)}`;
 
     process.stdout.cursorTo(0);
     process.stdout.write(loadingBar);
@@ -83,7 +88,12 @@ export function currentNpmScriptName() {
   return process.env.npm_lifecycle_event;
 }
 
-export function logReceiptAndEvents(rawreceiptList, blockid, matchedEventOffsets, filteredEventList) {
+export function logReceiptAndEvents(
+  rawreceiptList,
+  blockid,
+  matchedEventOffsets,
+  filteredEventList
+) {
   console.log(
     "[*]",
     rawreceiptList.length,
