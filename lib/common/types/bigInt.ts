@@ -1,14 +1,18 @@
-// as-bigint ^0.5.3
-// https://github.com/polywrap/as-bigint
-// Library is added locally for reduce dependency.
+import * as typeConversion from "../../utils/conversion";
+import { Bytes } from "./bytes";
 
-// multiple precision integer
+// Reference Implementation: as-bigint ^0.5.3
+// (https://github.com/polywrap/as-bigint)
+/** An arbitrary size integer represented as an array of UInt32Array. */
 export class BigInt {
   private d: Uint32Array; // digits
   private n: i32 = 0; // digits used
   private isNeg: boolean; // sign
   get isNegative(): boolean {
     return this.isNeg;
+  }
+  get digits(): Uint32Array {
+    return this.d;
   }
 
   // private static readonly q: i32 = 2;
@@ -29,7 +33,7 @@ export class BigInt {
 
   private constructor(
     size: i32 = BigInt.precision,
-    isNegative: boolean = false,
+    isNegative: boolean = false
   ) {
     this.d = new Uint32Array(size);
     this.isNeg = isNegative;
@@ -46,22 +50,24 @@ export class BigInt {
     if (val instanceof BigInt) return val;
     // @ts-ignore
     if (val instanceof string) return BigInt.fromString(val);
+    if (val instanceof i8) return BigInt.fromI16(<i16>val);
     // @ts-ignore
-    if (val instanceof i8) return BigInt.fromInt16(<i16>val);
+    if (val instanceof u8) return BigInt.fromU16(<u16>val);
     // @ts-ignore
-    if (val instanceof u8) return BigInt.fromUInt16(<u16>val);
+    if (val instanceof i16) return BigInt.fromI16(val);
     // @ts-ignore
-    if (val instanceof i16) return BigInt.fromInt16(val);
+    if (val instanceof u16) return BigInt.fromU16(val);
     // @ts-ignore
-    if (val instanceof u16) return BigInt.fromUInt16(val);
+    if (val instanceof i32) return BigInt.fromI32(val);
     // @ts-ignore
-    if (val instanceof i32) return BigInt.fromInt32(val);
+    if (val instanceof u32) return BigInt.fromU32(val);
     // @ts-ignore
-    if (val instanceof u32) return BigInt.fromUInt32(val);
+    if (val instanceof i64) return BigInt.fromI64(val);
     // @ts-ignore
-    if (val instanceof i64) return BigInt.fromInt64(val);
+    if (val instanceof u64) return BigInt.fromU64(val);
+    // Uint8Array, Bytes, ByteArray
     // @ts-ignore
-    if (val instanceof u64) return BigInt.fromUInt64(val);
+    if (val instanceof Uint8Array) return BigInt.fromBytes(val);
 
     throw new TypeError("Unsupported generic type " + nameof<T>(val));
   }
@@ -84,7 +90,7 @@ export class BigInt {
       i += 2;
       radix = 16;
     }
-    let res: BigInt = BigInt.fromUInt16(0);
+    let res: BigInt = BigInt.fromU16(0);
     const radixU: u16 = <u16>radix;
     for (; i < bigInteger.length; i++) {
       const code: i32 = bigInteger.charCodeAt(i);
@@ -100,24 +106,24 @@ export class BigInt {
           "Character " +
             bigInteger.charAt(i) +
             " is not supported for radix " +
-            radix.toString(),
+            radix.toString()
         );
       }
-      res = res.inplaceMulInt(radixU).add(BigInt.fromUInt16(val));
+      res = res.inplaceMulInt(radixU).plus(BigInt.fromU16(val));
     }
     res.isNeg = isNegative;
     res.trimLeadingZeros();
     return res;
   }
 
-  static fromUInt16(val: u16): BigInt {
+  static fromU16(val: u16): BigInt {
     const res = new BigInt(BigInt.precision, false);
     res.d[0] = (<u32>val) & BigInt.digitMask;
     res.n = res.d[0] != 0 ? 1 : 0;
     return res;
   }
 
-  static fromUInt32(val: u32): BigInt {
+  static fromU32(val: u32): BigInt {
     const res = new BigInt(BigInt.precision, false);
     let i = 0;
     while (val != 0) {
@@ -129,7 +135,7 @@ export class BigInt {
     return res;
   }
 
-  static fromUInt64(val: u64): BigInt {
+  static fromU64(val: u64): BigInt {
     const res = new BigInt(BigInt.precision, false);
     let i = 0;
     while (val != 0) {
@@ -141,7 +147,7 @@ export class BigInt {
     return res;
   }
 
-  static fromInt16(val: i16): BigInt {
+  static fromI16(val: i16): BigInt {
     const isNeg: boolean = val < 0;
     const res = new BigInt(BigInt.precision, isNeg);
     const unsignedDigit: u16 = <u16>(isNeg ? -1 * val : val);
@@ -150,7 +156,7 @@ export class BigInt {
     return res;
   }
 
-  static fromInt32(val: i32): BigInt {
+  static fromI32(val: i32): BigInt {
     const isNeg: boolean = val < 0;
     const res = new BigInt(BigInt.precision, isNeg);
     let unsignedDigit: u32 = <u32>(isNeg ? -1 * val : val);
@@ -164,7 +170,7 @@ export class BigInt {
     return res;
   }
 
-  static fromInt64(val: i64): BigInt {
+  static fromI64(val: i64): BigInt {
     const isNeg: boolean = val < 0;
     const res = new BigInt(BigInt.precision, isNeg);
     let unsignedDigit: u64 = <u64>(isNeg ? -1 * val : val);
@@ -183,7 +189,7 @@ export class BigInt {
     digits: Uint32Array,
     isNegative: boolean = false,
     n: i32 = digits.length,
-    minSize: i32 = digits.length,
+    minSize: i32 = digits.length
   ): BigInt {
     let size = minSize;
     if (size < digits.length) {
@@ -201,13 +207,29 @@ export class BigInt {
     return res;
   }
 
+  static fromBytes(bytes: Uint8Array, isNegative: boolean = false): BigInt {
+    let digits = typeConversion.uint8ArrayToUint32Array(bytes);
+    return BigInt.fromDigits(
+      digits,
+      isNegative,
+    );;
+  }
+
+  static fromBytesBigEndian(bytes: Uint8Array, isNegative: boolean = false): BigInt {
+    let digits = typeConversion.uint8ArrayToUint32Array(bytes, false);
+    return BigInt.fromDigits(
+      digits,
+      isNegative,
+    );
+  }
+
   // O(N)
   copy(): BigInt {
     return BigInt.fromDigits(this.d, this.isNeg, this.n);
   }
 
   // O(N)
-  opposite(): BigInt {
+  neg(): BigInt {
     return BigInt.fromDigits(this.d, this.n > 0 && !this.isNeg, this.n);
   }
 
@@ -219,7 +241,7 @@ export class BigInt {
   private static getEmptyResultContainer(
     minSize: i32,
     isNegative: boolean,
-    n: i32,
+    n: i32
   ): BigInt {
     const size: i32 = minSize + BigInt.precision - (minSize % BigInt.precision);
     const res: BigInt = new BigInt(size, isNegative);
@@ -260,10 +282,10 @@ export class BigInt {
     if (this.n == 0) return "0";
     let res: string = this.isNeg ? "-" : "";
     let t: BigInt = this.abs();
-    const zero: BigInt = BigInt.fromUInt16(0);
+    const zero: BigInt = BigInt.fromU16(0);
     const codes: i32[] = [];
     const radixU: u32 = <u32>radix;
-    while (t.ne(zero)) {
+    while (t.notEqual(zero)) {
       const d: i32 = <i32>t.modInt(radixU);
       t = t.inplaceDivInt(radixU);
       if (d < 10) {
@@ -277,14 +299,25 @@ export class BigInt {
     return res;
   }
 
-  toInt32(): i32 {
+  toHex(): string {
+    return this.toString(16);
+  }
+
+  toHexString(prefix: string = ""): string {
+    if (prefix !== "") {
+      return prefix + this.toHex();
+    }
+    return this.toHex();
+  }
+
+  toI32(): i32 {
     if (this.n <= 1) {
       return this.n == 0 ? <i32>0 : <i32>this.d[0] * (this.isNeg ? -1 : 1);
     }
     const bitCount: i32 = this.countBits();
     if (bitCount > 32) {
       throw new Error(
-        `Integer overflow: cannot output i32 from an integer that uses ${bitCount} bits`,
+        `Integer overflow: cannot output i32 from an integer that uses ${bitCount} bits`
       );
     }
     const biString: string = this.toString();
@@ -295,14 +328,14 @@ export class BigInt {
     return result;
   }
 
-  toInt64(): i64 {
+  toI64(): i64 {
     if (this.n <= 1) {
       return this.n == 0 ? <i64>0 : <i64>this.d[0] * (this.isNeg ? -1 : 1);
     }
     const bitCount: i32 = this.countBits();
     if (bitCount > 64) {
       throw new Error(
-        `Integer overflow: cannot output i64 from an integer that uses ${bitCount} bits`,
+        `Integer overflow: cannot output i64 from an integer that uses ${bitCount} bits`
       );
     }
     const biString: string = this.toString();
@@ -313,7 +346,7 @@ export class BigInt {
     return result;
   }
 
-  toUInt32(): u32 {
+  toU32(): u32 {
     if (this.isNeg) {
       throw new Error("Cannot cast negative integer to u32");
     }
@@ -323,13 +356,13 @@ export class BigInt {
     const bitCount: i32 = this.countBits();
     if (bitCount > 32) {
       throw new Error(
-        `Integer overflow: cannot output u32 from an integer that uses ${bitCount} bits`,
+        `Integer overflow: cannot output u32 from an integer that uses ${bitCount} bits`
       );
     }
     return U32.parseInt(this.toString());
   }
 
-  toUInt64(): u64 {
+  toU64(): u64 {
     if (this.isNeg) {
       throw new Error("Cannot cast negative integer to u64");
     }
@@ -339,7 +372,7 @@ export class BigInt {
     const bitCount: i32 = this.countBits();
     if (bitCount > 64) {
       throw new Error(
-        `Integer overflow: cannot output u64 from an integer that uses ${bitCount} bits`,
+        `Integer overflow: cannot output u64 from an integer that uses ${bitCount} bits`
       );
     }
     return U64.parseInt(this.toString());
@@ -347,31 +380,47 @@ export class BigInt {
 
   // COMPARISON OPERATORS //////////////////////////////////////////////////////////////////////////////////////////////
 
-  eq<T>(other: T): boolean {
+  equals<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) == 0;
   }
 
+  eq<T>(other: T): boolean {
+    return this.equals(other);
+  }
+
+  notEqual<T>(other: T): boolean {
+    return !this.equals(BigInt.from(other));
+  }
+
   ne<T>(other: T): boolean {
-    return !this.eq(BigInt.from(other));
+    return this.notEqual(other);
   }
 
   lt<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) < 0;
   }
 
-  lte<T>(other: T): boolean {
+  le<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) <= 0;
+  }
+
+  lte<T>(other: T): boolean {
+    return this.le(other);
   }
 
   gt<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) > 0;
   }
 
-  gte<T>(other: T): boolean {
+  ge<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) >= 0;
   }
 
-  compareTo(other: BigInt): i32 {
+  gte<T>(other: T): boolean {
+    return this.ge(other);
+  }
+
+  private compareTo(other: BigInt): i32 {
     // opposite signs
     if (this.isNeg && !other.isNeg) {
       return -1;
@@ -384,7 +433,7 @@ export class BigInt {
     }
   }
 
-  magCompareTo(other: BigInt): i32 {
+  private magCompareTo(other: BigInt): i32 {
     if (this.n > other.n) return 1;
     if (this.n < other.n) return -1;
     for (let i = this.n - 1; i >= 0; i--) {
@@ -399,7 +448,7 @@ export class BigInt {
   // CORE MATH OPERATIONS //////////////////////////////////////////////////////////////////////////////////////////////
 
   // signed addition
-  add<T>(other: T): BigInt {
+  plus<T>(other: T): BigInt {
     const addend: BigInt = BigInt.from(other);
     if (this.isNeg == addend.isNeg) {
       return this._add(addend, this.isNeg);
@@ -410,8 +459,12 @@ export class BigInt {
     }
   }
 
+  add<T>(other: T): BigInt {
+    return this.plus(other);
+  }
+
   // signed subtraction
-  sub<T>(other: T): BigInt {
+  minus<T>(other: T): BigInt {
     const subtrahend: BigInt = BigInt.from(other);
     if (this.isNeg != subtrahend.isNeg) {
       return this._add(subtrahend, this.isNeg);
@@ -420,6 +473,10 @@ export class BigInt {
     } else {
       return subtrahend._sub(this, !this.isNeg);
     }
+  }
+
+  sub<T>(other: T): BigInt {
+    return this.minus(other);
   }
 
   // unsigned addition
@@ -441,7 +498,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       max + 1,
       resultIsNegative,
-      max,
+      max
     );
     // add
     let carry: u32 = 0;
@@ -473,7 +530,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       max,
       resultIsNegative,
-      max,
+      max
     );
     // subtract
     let carry: u32 = 0;
@@ -500,7 +557,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       this.n + 1,
       resultIsNegative,
-      this.n,
+      this.n
     );
     let carry = 1;
     for (let i = 0; i < this.n; i++) {
@@ -521,7 +578,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       this.n,
       resultIsNegative,
-      this.n,
+      this.n
     );
     let carry = 1;
     for (let i = 0; i < this.n; i++) {
@@ -534,11 +591,11 @@ export class BigInt {
   }
 
   // efficient multiply by 2
-  mul2(): BigInt {
+  private mul2(): BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       this.n + 1,
       this.isNeg,
-      this.n,
+      this.n
     );
     let r: u32 = 0;
     for (let i = 0; i < this.n; i++) {
@@ -553,11 +610,11 @@ export class BigInt {
   }
 
   // efficient div by 2
-  div2(): BigInt {
+  private div2(): BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       this.n,
       this.isNeg,
-      this.n,
+      this.n
     );
     let r: u32 = 0;
     for (let i = this.n - 1; i >= 0; i--) {
@@ -609,7 +666,7 @@ export class BigInt {
 
   // multiply by power of 2
   // O(2N)
-  mulPowTwo(k: i32): BigInt {
+  private mulPowTwo(k: i32): BigInt {
     if (k <= 0) {
       return this.copy();
     }
@@ -638,7 +695,7 @@ export class BigInt {
   }
 
   // divide by power of 2
-  divPowTwo(k: i32): BigInt {
+  private divPowTwo(k: i32): BigInt {
     const res = this.copy();
     if (k <= 0) {
       return res;
@@ -662,9 +719,9 @@ export class BigInt {
   }
 
   // remainder of division by power of 2
-  modPowTwo(k: i32): BigInt {
+  private modPowTwo(k: i32): BigInt {
     if (k == 0) {
-      return BigInt.fromUInt16(<u16>0);
+      return BigInt.fromU16(<u16>0);
     }
     const res = this.copy();
     // if 2^k > BigInt, then BigInt % 2^k == BigInt
@@ -745,13 +802,13 @@ export class BigInt {
     if (isNeg) {
       return BigInt.NEG_ONE;
     }
-    return BigInt.ZERO;
+    return BigInt.zero();
   }
 
   // MULTIPLICATION ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // chooses best multiplication algorithm for situation and handles sign
-  mul<T>(other: T): BigInt {
+  times<T>(other: T): BigInt {
     const multiplier: BigInt = BigInt.from(other);
     let res: BigInt;
     const digitsNeeded: i32 = this.n + multiplier.n + 1;
@@ -763,6 +820,10 @@ export class BigInt {
     }
     res.isNeg = this.isNeg != multiplier.isNeg && res.n > 0;
     return res;
+  }
+
+  mul<T>(other: T): BigInt {
+    return this.times(other);
   }
 
   // unsigned multiplication that returns at most maxDigits
@@ -827,7 +888,7 @@ export class BigInt {
     let res: BigInt = BigInt.ONE;
     while (k > 0) {
       /* if the bit is set multiply */
-      if ((k & 1) != 0) res = res.mul(temp);
+      if ((k & 1) != 0) res = res.times(temp);
       /* square */
       if (k > 1) temp = temp.square();
       /* shift to next bit */
@@ -927,19 +988,19 @@ export class BigInt {
     if (this.n == 0) return this.copy();
 
     // rely on built in sqrt if possible
-    if (this.lte(BigInt.fromUInt64(<u64>F64.MAX_SAFE_INTEGER))) {
-      const fVal: f64 = <f64>this.toUInt64();
+    if (this.le(BigInt.fromU64(<u64>F64.MAX_SAFE_INTEGER))) {
+      const fVal: f64 = <f64>this.toU64();
       const fSqrt: f64 = Math.floor(Math.sqrt(fVal));
-      return BigInt.fromUInt64(<u64>fSqrt);
+      return BigInt.fromU64(<u64>fSqrt);
     }
 
     // Newton Raphson iteration
     let z: BigInt = this; // eslint-disable-line  @typescript-eslint/no-this-alias
-    let x: BigInt = BigInt.fromUInt16(1).mulPowTwo(this.countBits() / 2);
-    x = this.div(x).add(x).div2();
+    let x: BigInt = BigInt.fromU16(1).mulPowTwo(this.countBits() / 2);
+    x = this.div(x).plus(x).div2();
     while (x < z) {
       z = x;
-      x = this.div(x).add(x).div2();
+      x = this.div(x).plus(x).div2();
     }
 
     return z;
@@ -958,109 +1019,19 @@ export class BigInt {
   }
 
   // returns [quotient, remainder]
-  divMod<T>(other: T): BigInt[] {
+  private divMod<T>(other: T): BigInt[] {
     return this._divMod(BigInt.from(other));
   }
 
-  // TODO: fast division has bug(s) -> using "slow" division
-  // private _fastDiv(other: BigInt): BigInt[] {
-  //   if (other.eq(BigInt.fromUInt16(0))) {
-  //     throw new Error("Divide by zero");
-  //   }
-  //   const cmp: i32 = this.magCompareTo(other);
-  //   if (cmp < 0) {
-  //     return [BigInt.fromUInt16(0), this.copy()];
-  //   } else if (cmp == 0) {
-  //     const q = BigInt.fromUInt16(1);
-  //     q.isNeg = this.isNeg != other.isNeg;
-  //     return [q, BigInt.fromUInt16(0)];
-  //   }
-  //   // set up numbers
-  //   let q: BigInt = BigInt.getEmptyResultContainer(
-  //     this.n + 2,
-  //     this.isNeg != other.isNeg,
-  //     this.n + 2
-  //   );
-  //   let x: BigInt = this.abs();
-  //   let y: BigInt = other.abs();
-  //   // norm leading digits of x and y
-  //   let norm: i32 = y.countBits() % BigInt.p;
-  //   if (norm < BigInt.p - 1) {
-  //     norm = BigInt.p - 1 - norm;
-  //     x = x.mulPowTwo(norm);
-  //     y = y.mulPowTwo(norm);
-  //   } else {
-  //     norm = 0;
-  //   }
-  //
-  //   // find leading digit of quotient
-  //   const n: i32 = this.n - 1;
-  //   const t: i32 = other.n - 1;
-  //   const nSubt = n - t;
-  //   y.mulBasisPow(nSubt);
-  //   while (x.compareTo(y) >= 0) {
-  //     q.d[nSubt]++;
-  //     x = x.sub(y);
-  //   }
-  //   y.divBasisPow(nSubt);
-  //   // find remainder of digits
-  //   let temp1: BigInt;
-  //   let temp2: BigInt;
-  //   for (let i = n; i > t; i--) {
-  //     if (i > x.n) continue;
-  //     if (x.d[i] == y.d[t]) {
-  //       q.d[i - t - 1] = (<u32>1 << BigInt.p) - 1;
-  //     } else {
-  //       let r: u64 = (<u64>x.d[i]) << (<u64>BigInt.p);
-  //       r |= <u64>x.d[i - 1];
-  //       r /= <u64>y.d[t];
-  //       if (r > <u64>BigInt.digitMask) {
-  //         r = <u64>BigInt.digitMask;
-  //       }
-  //       q.d[i - t - 1] = <u32>(r & (<u64>BigInt.digitMask));
-  //     }
-  //     // fix up quotient estimation
-  //     q.d[i - t - 1] = ++q.d[i - t - 1] & BigInt.digitMask;
-  //     do {
-  //       q.d[i - t - 1] = --q.d[i - t - 1] & BigInt.digitMask;
-  //       // find left
-  //       temp1 = BigInt.getEmptyResultContainer(2, false, 2);
-  //       temp1.d[0] = t - 1 < 0 ? 0 : y.d[t - 1];
-  //       temp1.d[1] = y.d[t];
-  //       temp1 = temp1.mulInt(q.d[i - t - 1]);
-  //       // find right
-  //       temp2 = BigInt.getEmptyResultContainer(3, false, 3);
-  //       temp2.d[0] = i - 2 < 0 ? 0 : x.d[i - 2];
-  //       temp2.d[1] = i - 1 < 0 ? 0 : x.d[i - 1];
-  //       temp2.d[2] = x.d[i];
-  //     } while (temp1.magCompareTo(temp2) > 0);
-  //
-  //     temp1 = y.mulInt(q.d[i - t - 1]);
-  //     temp1.mulBasisPow(i - t - 1);
-  //     x = x.sub(temp1);
-  //     if (x.isNeg) {
-  //       temp1 = y.copy();
-  //       temp1.mulBasisPow(i - t - 1);
-  //       x = x.add(temp1);
-  //       q.d[i - t - 1] = --q.d[i - t - 1] & BigInt.digitMask;
-  //     }
-  //   }
-  //   // finalize
-  //   q.trimLeadingZeros();
-  //   x.isNeg = x.n != 0 && this.isNeg;
-  //   const r: BigInt = x.divPowTwo(norm);
-  //   return [q, r];
-  // }
-
   private _div(other: BigInt): BigInt {
-    if (other.eq(BigInt.fromUInt16(0))) {
+    if (other.equals(BigInt.fromU16(0))) {
       throw new Error("Divide by zero");
     }
     const cmp: i32 = this.magCompareTo(other);
     if (cmp < 0) {
-      return BigInt.fromUInt16(0);
+      return BigInt.fromU16(0);
     } else if (cmp == 0) {
-      const q = BigInt.fromUInt16(1);
+      const q = BigInt.fromU16(1);
       q.isNeg = this.isNeg != other.isNeg;
       return q;
     }
@@ -1072,14 +1043,14 @@ export class BigInt {
   }
 
   private _divRemainder(other: BigInt): BigInt {
-    if (other.eq(BigInt.fromUInt16(0))) {
+    if (other.equals(BigInt.fromU16(0))) {
       throw new Error("Divide zero error");
     }
     const cmp: i32 = this.magCompareTo(other);
     if (cmp < 0) {
       return this.copy();
     } else if (cmp == 0) {
-      return BigInt.fromUInt16(0);
+      return BigInt.fromU16(0);
     }
     const res: BigInt[] = this._divCore(other);
     const r: BigInt = res[1];
@@ -1090,16 +1061,16 @@ export class BigInt {
 
   // returns [quotient, remainder]
   private _divMod(other: BigInt): BigInt[] {
-    if (other.eq(BigInt.fromUInt16(0))) {
+    if (other.equals(BigInt.fromU16(0))) {
       throw new Error("Divide by zero");
     }
     const cmp: i32 = this.magCompareTo(other);
     if (cmp < 0) {
-      return [BigInt.fromUInt16(0), this.copy()];
+      return [BigInt.fromU16(0), this.copy()];
     } else if (cmp == 0) {
-      const q = BigInt.fromUInt16(1);
+      const q = BigInt.fromU16(1);
       q.isNeg = this.isNeg != other.isNeg;
-      return [q, BigInt.fromUInt16(0)];
+      return [q, BigInt.fromU16(0)];
     }
     const res: BigInt[] = this._divCore(other);
     const q: BigInt = res[0];
@@ -1112,8 +1083,8 @@ export class BigInt {
   }
 
   private _divCore(other: BigInt): BigInt[] {
-    let q: BigInt = BigInt.fromUInt16(0);
-    let tempQ = BigInt.fromUInt16(1);
+    let q: BigInt = BigInt.fromU16(0);
+    let tempQ = BigInt.fromU16(1);
     let n: i32 = this.countBits() - other.countBits();
     let tempA = this.abs();
     let tempB = other.abs();
@@ -1121,8 +1092,8 @@ export class BigInt {
     tempQ = tempQ.mulPowTwo(n);
     for (; n >= 0; n--) {
       if (tempB.magCompareTo(tempA) <= 0) {
-        tempA = tempA.sub(tempB);
-        q = q.add(tempQ);
+        tempA = tempA.minus(tempB);
+        q = q.plus(tempQ);
       }
       tempB = tempB.div2();
       tempQ = tempQ.div2();
@@ -1131,34 +1102,34 @@ export class BigInt {
   }
 
   // divides and rounds to nearest integer
-  roundedDiv<T>(other: T): BigInt {
+  private roundedDiv<T>(other: T): BigInt {
     const divisor: BigInt = BigInt.from(other);
-    if (divisor.eq(BigInt.fromUInt16(0))) {
+    if (divisor.equals(BigInt.fromU16(0))) {
       throw new Error("Divide by zero");
     }
     if (this.isZero()) {
-      return BigInt.fromUInt16(0);
+      return BigInt.fromU16(0);
     }
     const r: BigInt = divisor.div2();
     if (this.isNeg != divisor.isNeg) {
       r.isNeg = !r.isNeg;
     }
-    return this.add(r).div(divisor);
+    return this.plus(r).div(divisor);
   }
 
   // SINGLE-DIGIT HELPERS //////////////////////////////////////////////////////////////////////////////////////////////
 
-  addInt(b: u32): BigInt {
-    return this.add(BigInt.fromUInt32(b));
+  private addInt(b: u32): BigInt {
+    return this.plus(BigInt.fromU32(b));
   }
 
-  subInt(b: u32): BigInt {
-    return this.sub(BigInt.fromUInt32(b));
+  private subInt(b: u32): BigInt {
+    return this.minus(BigInt.fromU32(b));
   }
 
-  mulInt(b: u32): BigInt {
+  private mulInt(b: u32): BigInt {
     if (b > 268435456) {
-      return this.mul(BigInt.fromUInt32(b));
+      return this.times(BigInt.fromU32(b));
     }
     const res = BigInt.fromDigits(this.d, this.isNeg, this.n, this.n + 1);
     let r: u32 = 0;
@@ -1176,7 +1147,7 @@ export class BigInt {
   // MUTATES
   private inplaceMulInt(b: u32): BigInt {
     if (b > 268435456) {
-      return this.mul(BigInt.fromUInt32(b));
+      return this.times(BigInt.fromU32(b));
     }
     this.grow(this.n + 1);
     let r: u32 = 0;
@@ -1191,7 +1162,7 @@ export class BigInt {
     return this;
   }
 
-  divInt(b: u32): BigInt {
+  private divInt(b: u32): BigInt {
     if (b == 0) throw new Error("Divide by zero");
     // try optimizations
     if (b == 1 || this.n == 0) return this.copy();
@@ -1239,7 +1210,7 @@ export class BigInt {
     return this;
   }
 
-  modInt(b: u32): u32 {
+  private modInt(b: u32): u32 {
     if (b == 0) throw new Error("Divide by zero");
     // try optimizations
     if (b == 1 || this.n == 0) {
@@ -1265,17 +1236,17 @@ export class BigInt {
   }
 
   // returns [quotient, remainder]
-  divModInt(b: u32): BigInt[] {
+  private divModInt(b: u32): BigInt[] {
     if (b == 0) throw new Error("Divide by zero");
     // try optimizations
     if (b == 1 || this.n == 0) {
-      return [this.copy(), BigInt.ZERO];
+      return [this.copy(), BigInt.zero()];
     }
     const pow2Bit: i32 = BigInt.isPow2(b);
     if (pow2Bit != 0) {
       const q: BigInt = this.divPowTwo(pow2Bit);
       const r: u32 = this.d[0] & (((<u32>1) << pow2Bit) - <u32>1);
-      return [q, BigInt.fromUInt32(r)];
+      return [q, BigInt.fromU32(r)];
     }
     // divide
     const q = BigInt.getEmptyResultContainer(this.n, this.isNeg, this.n);
@@ -1292,26 +1263,26 @@ export class BigInt {
       q.d[i] = val;
     }
     q.trimLeadingZeros();
-    return [q, BigInt.fromUInt32(<u32>r)];
+    return [q, BigInt.fromU32(<u32>r)];
   }
 
   // divides and rounds to nearest integer
-  roundedDivInt(b: u32): BigInt {
+  private roundedDivInt(b: u32): BigInt {
     if (b == 0) throw new Error("Divide by zero");
     if (this.isZero()) {
-      return BigInt.fromUInt16(0);
+      return BigInt.fromU16(0);
     }
-    const r: BigInt = BigInt.fromUInt32(b >> 1);
+    const r: BigInt = BigInt.fromU32(b >> 1);
     if (this.isNeg) {
       r.isNeg = true;
     }
-    return this.add(r).divInt(b);
+    return this.plus(r).divInt(b);
   }
 
-  // BITWISE OPERATIONS ////////////////////////////////////////////////////////////////////////////////////////////////
+  // bit OPERATIONS ////////////////////////////////////////////////////////////////////////////////////////////////
 
   @operator.prefix("~")
-  bitwiseNot(): BigInt {
+  bitNot(): BigInt {
     if (this.isNeg) {
       // ~(-x) == ~(~(x-1)) == x-1
       return this._subOne(false);
@@ -1320,7 +1291,7 @@ export class BigInt {
     return this._addOne(true);
   }
 
-  bitwiseAnd<T>(other: T): BigInt {
+  bitAnd<T>(other: T): BigInt {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let a: BigInt = this;
     let b: BigInt = BigInt.from(other);
@@ -1344,7 +1315,7 @@ export class BigInt {
     return a._andNot(b1);
   }
 
-  bitwiseOr<T>(other: T): BigInt {
+  bitOr<T>(other: T): BigInt {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let a: BigInt = this;
     let b: BigInt = BigInt.from(other);
@@ -1369,7 +1340,7 @@ export class BigInt {
     }
   }
 
-  bitwiseXor<T>(other: T): BigInt {
+  bitXor<T>(other: T): BigInt {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let a: BigInt = this;
     let b: BigInt = BigInt.from(other);
@@ -1393,13 +1364,13 @@ export class BigInt {
     }
   }
 
-  // unsigned bitwise AND
+  // unsigned bit AND
   private static _and(a: BigInt, b: BigInt): BigInt {
     const numPairs: i32 = a.n < b.n ? a.n : b.n;
     const res: BigInt = BigInt.getEmptyResultContainer(
       numPairs,
       false,
-      numPairs,
+      numPairs
     );
 
     let i = 0;
@@ -1409,7 +1380,7 @@ export class BigInt {
     return res;
   }
 
-  // unsigned bitwise AND NOT (i.e. a & ~b)
+  // unsigned bit AND NOT (i.e. a & ~b)
   private _andNot(other: BigInt): BigInt {
     const numPairs: i32 = this.n < other.n ? this.n : other.n;
     const res: BigInt = BigInt.getEmptyResultContainer(this.n, false, this.n);
@@ -1424,7 +1395,7 @@ export class BigInt {
     return res;
   }
 
-  // unsigned bitwise OR
+  // unsigned bit OR
   private static _or(a: BigInt, b: BigInt): BigInt {
     let numPairs: i32;
     let resLength: i32;
@@ -1438,7 +1409,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       resLength,
       false,
-      resLength,
+      resLength
     );
 
     let i = 0;
@@ -1454,7 +1425,7 @@ export class BigInt {
     return res;
   }
 
-  // unsigned bitwise XOR
+  // unsigned bit XOR
   private static _xor(a: BigInt, b: BigInt): BigInt {
     let numPairs: i32;
     let resLength: i32;
@@ -1468,7 +1439,7 @@ export class BigInt {
     const res: BigInt = BigInt.getEmptyResultContainer(
       resLength,
       false,
-      resLength,
+      resLength
     );
 
     let i = 0;
@@ -1486,7 +1457,7 @@ export class BigInt {
 
   // UTILITY ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  countBits(): i32 {
+  private countBits(): i32 {
     if (this.n == 0) return 0;
     // initialize to bits in fully used digits
     let bits: i32 = (this.n - 1) * BigInt.p;
@@ -1504,7 +1475,11 @@ export class BigInt {
   }
 
   isZero(): boolean {
-    return this.n == 0;
+    return this == BigInt.fromI32(0);
+  }
+
+  isI32(): boolean {
+    return BigInt.fromI32(i32.MIN_VALUE) <= this && this <= BigInt.fromI32(i32.MAX_VALUE);
   }
 
   private static isPow2(b: u32): i32 {
@@ -1519,40 +1494,40 @@ export class BigInt {
   // SYNTAX SUGAR ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   // BigInt with value 0
-  static get ZERO(): BigInt {
-    return BigInt.fromUInt16(0);
+  static zero(): BigInt {
+    return BigInt.fromU16(0);
   }
 
   // BigInt with value 1
-  static get ONE(): BigInt {
-    return BigInt.fromUInt16(1);
+  private static get ONE(): BigInt {
+    return BigInt.fromU16(1);
   }
 
   // BigInt with value -1
-  static get NEG_ONE(): BigInt {
-    const res: BigInt = BigInt.fromUInt16(1);
+  private static get NEG_ONE(): BigInt {
+    const res: BigInt = BigInt.fromU16(1);
     res.isNeg = true;
     return res;
   }
 
-  static eq<T, U>(left: T, right: U): boolean {
+  static equals<T, U>(left: T, right: U): boolean {
     const a: BigInt = BigInt.from(left);
-    return a.eq(right);
+    return a.equals(right);
   }
 
   @operator("==")
   private static eqOp(left: BigInt, right: BigInt): boolean {
-    return left.eq(right);
+    return left.equals(right);
   }
 
-  static ne<T, U>(left: T, right: U): boolean {
+  static notEqual<T, U>(left: T, right: U): boolean {
     const a: BigInt = BigInt.from(left);
-    return a.ne(right);
+    return a.notEqual(right);
   }
 
   @operator("!=")
   private static neOp(left: BigInt, right: BigInt): boolean {
-    return left.ne(right);
+    return left.notEqual(right);
   }
 
   static lt<T, U>(left: T, right: U): boolean {
@@ -1565,14 +1540,14 @@ export class BigInt {
     return left.lt(right);
   }
 
-  static lte<T, U>(left: T, right: U): boolean {
+  static le<T, U>(left: T, right: U): boolean {
     const a: BigInt = BigInt.from(left);
-    return a.lte(right);
+    return a.le(right);
   }
 
   @operator("<=")
   private static lteOp(left: BigInt, right: BigInt): boolean {
-    return left.lte(right);
+    return left.le(right);
   }
 
   static gt<T, U>(left: T, right: U): boolean {
@@ -1585,44 +1560,44 @@ export class BigInt {
     return left.gt(right);
   }
 
-  static gte<T, U>(left: T, right: U): boolean {
+  static ge<T, U>(left: T, right: U): boolean {
     const a: BigInt = BigInt.from(left);
-    return a.gte(right);
+    return a.ge(right);
   }
 
   @operator(">=")
   private static gteOp(left: BigInt, right: BigInt): boolean {
-    return left.gte(right);
+    return left.ge(right);
   }
 
-  static add<T, U>(left: T, right: U): BigInt {
+  static plus<T, U>(left: T, right: U): BigInt {
     const a: BigInt = BigInt.from(left);
-    return a.add(right);
+    return a.plus(right);
   }
 
   @operator("+")
   private static addOp(left: BigInt, right: BigInt): BigInt {
-    return left.add(right);
+    return left.plus(right);
   }
 
-  static sub<T, U>(left: T, right: U): BigInt {
+  static minus<T, U>(left: T, right: U): BigInt {
     const a: BigInt = BigInt.from(left);
-    return a.sub(right);
+    return a.minus(right);
   }
 
   @operator("-")
   private static subOp(left: BigInt, right: BigInt): BigInt {
-    return left.sub(right);
+    return left.minus(right);
   }
 
-  static mul<T, U>(left: T, right: U): BigInt {
+  static times<T, U>(left: T, right: U): BigInt {
     const a: BigInt = BigInt.from(left);
-    return a.mul(right);
+    return a.times(right);
   }
 
   @operator("*")
   private static mulOp(left: BigInt, right: BigInt): BigInt {
-    return left.mul(right);
+    return left.times(right);
   }
 
   static div<T, U>(left: T, right: U): BigInt {
@@ -1631,7 +1606,7 @@ export class BigInt {
   }
 
   @operator("/")
-  static divOp(left: BigInt, right: BigInt): BigInt {
+  private static divOp(left: BigInt, right: BigInt): BigInt {
     return left.div(right);
   }
 
@@ -1653,52 +1628,52 @@ export class BigInt {
   // note: the right-hand operand must be a positive integer that fits in an i32
   @operator("**")
   private static powOp(left: BigInt, right: BigInt): BigInt {
-    return left.pow(right.toInt32());
+    return left.pow(right.toI32());
   }
 
   // note: the right-hand operand must be a positive integer that fits in an i32
   @operator("<<")
   private static leftShift(left: BigInt, right: BigInt): BigInt {
-    return left.leftShift(right.toInt32());
+    return left.leftShift(right.toI32());
   }
 
   // note: the right-hand operand must be a positive integer that fits in an i32
   @operator(">>")
   private static rightShift(left: BigInt, right: BigInt): BigInt {
-    return left.rightShift(right.toInt32());
+    return left.rightShift(right.toI32());
   }
 
-  static bitwiseNot<T>(a: T): BigInt {
-    return BigInt.from(a).bitwiseNot();
+  static bitNot<T>(a: T): BigInt {
+    return BigInt.from(a).bitNot();
   }
 
-  static bitwiseAnd<T, U>(a: T, b: U): BigInt {
+  static bitAnd<T, U>(a: T, b: U): BigInt {
     const left: BigInt = BigInt.from(a);
-    return left.bitwiseAnd(b);
+    return left.bitAnd(b);
   }
 
   @operator("&")
-  private static bitwiseAndOp(a: BigInt, b: BigInt): BigInt {
-    return a.bitwiseAnd(b);
+  private static bitAndOp(a: BigInt, b: BigInt): BigInt {
+    return a.bitAnd(b);
   }
 
-  static bitwiseOr<T, U>(a: T, b: U): BigInt {
+  static bitOr<T, U>(a: T, b: U): BigInt {
     const left: BigInt = BigInt.from(a);
-    return left.bitwiseOr(b);
+    return left.bitOr(b);
   }
 
   @operator("|")
-  private static bitwiseOrOp(a: BigInt, b: BigInt): BigInt {
-    return a.bitwiseOr(b);
+  private static bitOrOp(a: BigInt, b: BigInt): BigInt {
+    return a.bitOr(b);
   }
 
-  static bitwiseXor<T, U>(a: T, b: U): BigInt {
+  static bitXor<T, U>(a: T, b: U): BigInt {
     const left: BigInt = BigInt.from(a);
-    return left.bitwiseXor(b);
+    return left.bitXor(b);
   }
 
   @operator("^")
-  private static bitwiseXorOp(a: BigInt, b: BigInt): BigInt {
-    return a.bitwiseXor(b);
+  private static bitXorOp(a: BigInt, b: BigInt): BigInt {
+    return a.bitXor(b);
   }
 }

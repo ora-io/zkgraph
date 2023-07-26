@@ -1,6 +1,11 @@
-import { Bytes, ByteArray } from "../../lib/common/type";
+import { Bytes, ByteArray, BigInt } from "../../lib/common/type";
+// import { uint32ArrayToUint8Array } from "../../lib/utils/conversion";
 
 export function testBytesWithByteArray(): void {
+  // const bigint = BigInt.fromI32(4294705147);
+  // const uint8Array = uint32ArrayToUint8Array(bigint.digits);
+  // console.log(uint8Array.toString());
+
   const longArray = new ByteArray(5);
   longArray[0] = 251;
   longArray[1] = 255;

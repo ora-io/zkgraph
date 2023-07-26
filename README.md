@@ -23,12 +23,12 @@ After clone your project, you need to create `config.js` file at root folder bas
 ```js
 // ./config.js
 export const config = {
-  // Etherum JSON RPC provider URL:
-  // (Please note the provider must support debug_getRawReceipts RPC method.)
+  // Update your Etherum JSON RPC provider URL here.
+  // Please note that the provider must support debug_getRawReceipts RPC method.
+  // Recommended provider: ANKR.
   JsonRpcProviderUrl: "https://{URL}",
-  ZkwasmProviderUrl: "https://zkwasm-explorer.delphinuslab.com:8090",
-  CompilerServerEndpoint: "http://node.hyperoracle.io:8000/compile",
   UserPrivateKey: "0x{PRIVATE_KEY}",
+  // ...and other configs.
 };
 ```
 
@@ -89,6 +89,12 @@ npm run setup
 npm run prove -- --inputgen {block_id} {expected_state}
 npm run prove -- --pretest {block_id} {expected_state}
 npm run prove -- --prove {block_id} {expected_state}
+```
+
+### Verifier Contract Interface
+
+```AggregatorVerifier
+https://github.com/DelphinusLab/halo2aggregator-s/blob/main/sol/contracts/AggregatorVerifier.sol#L40
 ```
 
 ## Develop

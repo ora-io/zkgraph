@@ -1,154 +1,121 @@
 import { BigInt, ByteArray, Bytes } from "../../lib/common/type";
+import { uint8ArrayToUint32Array } from "../../lib/utils/conversion";
 
-// Test some BigInt methods.
 export function testBigInt(): void {
-  const minusFiveBytes = new ByteArray(2);
-  minusFiveBytes[0] = 251;
-  minusFiveBytes[1] = 255;
-  const minusFive = BigInt.fromSignedBytes(Bytes.fromByteArray(minusFiveBytes));
-  assert(minusFive == BigInt.fromI32(-5));
-  assert(!minusFive.isZero() && minusFive.isI32());
-  assert(minusFiveBytes.toU32() == 65_531);
-  assert(minusFiveBytes.toI32() == -5);
+  // fromString, toString
+  let bigint = BigInt.fromString(I32.MAX_VALUE.toString());
+  assert(bigint.toString() == I32.MAX_VALUE.toString(), "BigInt fromString and toString failed");
+  bigint = BigInt.fromString("9999999999999999999999999999999999999999999999999"); // definitely larger than I64.MAX_VALUE
+  assert(bigint.toString() == "9999999999999999999999999999999999999999999999999", "BigInt big int failed");
+  bigint = BigInt.fromString("-999999999999999999999999999999999999999999999999"); // definitely smaller than I64.MIN_VALUE
+  assert(bigint.toString() == "-999999999999999999999999999999999999999999999999", "BigInt small int failed");
 
-  const fiveBytes = new ByteArray(2);
-  fiveBytes[0] = 5;
-  fiveBytes[1] = 0;
-  const five = BigInt.fromSignedBytes(Bytes.fromByteArray(fiveBytes));
-  assert(!five.isZero() && five.isI32());
-  assert(five == BigInt.fromI32(5));
-  assert(five != minusFive);
-  assert(
-    five ==
-      BigInt.fromUnsignedBytes(Bytes.fromUint8Array(fiveBytes.subarray(0, 1))),
-  );
-  assert(fiveBytes.toU32() == 5);
-  assert(fiveBytes.toI32() == 5);
+  // fromBytes, fromBytesBigEndian
+  bigint = BigInt.fromBytes(ByteArray.fromI32(I32.MAX_VALUE));
+  assert(bigint.toString() == I32.MAX_VALUE.toString(), "BigInt fromBytes (ByteArray) failed");
+  bigint = BigInt.fromBytes(ByteArray.fromI32(I32.MIN_VALUE), true);
+  assert(bigint.toString() == I32.MIN_VALUE.toString(), "BigInt fromBytes (ByteArray negative) failed");
+  bigint = BigInt.fromBytes(Bytes.fromU32(U32.MAX_VALUE));
+  assert(bigint.toString() == U32.MAX_VALUE.toString(), "BigInt fromBytes (Bytes) failed");
+  bigint = BigInt.fromBytesBigEndian(Bytes.fromU32(U32.MAX_VALUE));
+  assert(bigint.toString() == U32.MAX_VALUE.toString(), "BigInt fromBytes (Bytes negative) failed");
 
-  const x = new ByteArray(1);
-  x[0] = 255;
-  assert(
-    BigInt.fromUnsignedBytes(Bytes.fromByteArray(x)) == BigInt.fromI32(255),
-  );
+  // fromI32, toI32, fromU32, toU32
+  bigint = BigInt.fromI32(I32.MAX_VALUE);
+  assert(bigint.toI32() == I32.MAX_VALUE, "BigInt fromI32 and toI32 failed");
+  bigint = BigInt.fromI32(I32.MIN_VALUE);
+  assert(bigint.toI32() == I32.MIN_VALUE, "BigInt fromI32 and toI32 (negative) failed");
+  bigint = BigInt.fromU32(U32.MAX_VALUE);
+  assert(bigint.toU32() == U32.MAX_VALUE, "BigInt fromU32 and toU32 failed");
+  bigint = BigInt.fromU32(U32.MIN_VALUE);
+  assert(bigint.toU32() == U32.MIN_VALUE, "BigInt fromU32 and toU32 (negative) failed");
 
-  const zero = BigInt.fromSignedBytes(Bytes.fromByteArray(new ByteArray(0)));
-  assert(zero.isZero() && zero.isI32());
-  assert(zero != five);
-  assert(zero != minusFive);
-  assert(minusFive < zero && minusFive <= zero);
-  assert(five > zero && five >= zero);
+  // fromU64, toU64, fromI64, toI64
+  bigint = BigInt.fromU64(U64.MAX_VALUE);
+  assert(bigint.toU64() == U64.MAX_VALUE, "BigInt fromU64 and toU64 failed");
+  bigint = BigInt.fromU64(U64.MIN_VALUE);
+  assert(bigint.toU64() == U64.MIN_VALUE, "BigInt fromU64 and toU64 (negative) failed");
+  bigint = BigInt.fromI64(I64.MAX_VALUE);
+  assert(bigint.toI64() == I64.MAX_VALUE, "BigInt fromI64 and toI64 failed");
+  bigint = BigInt.fromI64(I64.MIN_VALUE);
+  assert(bigint.toI64() == I64.MIN_VALUE, "BigInt fromI64 and toI64 (negative) failed");
 
-  let aI32 = 77_123_455;
-  let a = BigInt.fromI32(aI32);
-  assert(a == a && a.isI32() && a.toI32() == aI32);
+  // zero
+  bigint = BigInt.zero();
+  assert(bigint.toI32() == 0, "BigInt zero failed");
 
-  let bI32 = 48_294_181;
-  let b = BigInt.fromI32(bI32);
-  assert(b == b && b.isI32() && b.toI32() == bI32);
-  assert(b < a && b <= a);
+  // toHex, toHexString
+  bigint = BigInt.fromI32(I32.MAX_VALUE);
+  assert(bigint.toHex() == I32.MAX_VALUE.toString(16), "BigInt toHex failed");
+  assert(bigint.toHexString() == I32.MAX_VALUE.toString(16), "BigInt toHexString failed");
+  assert(bigint.toHexString("0x") == "0x" + I32.MAX_VALUE.toString(16), "BigInt toHexString (with prefix) failed");
 
-  aI32 = 9_292_928;
-  a = BigInt.fromI32(9_292_928);
-  assert(a == a && a.isI32() && a.toI32() == aI32);
-  assert(a < b && a <= b);
+  // isZero, isI32
+  bigint = BigInt.fromI32(I32.MAX_VALUE);
+  assert(!bigint.isZero(), "BigInt isZero failed");
+  bigint = BigInt.zero();
+  assert(bigint.isZero(), "BigInt isZero failed");
+  bigint = BigInt.fromI32(I32.MAX_VALUE);
+  assert(bigint.isI32(), "BigInt isI32 failed");
+  bigint = BigInt.fromString(U32.MAX_VALUE.toString());
+  assert(!bigint.isI32(), "BigInt isI32 failed");
 
-  bI32 = -9_717_735;
-  b = BigInt.fromI32(bI32);
-  assert(b == b && b.isI32() && b.toI32() == bI32);
-  assert(b < a && b <= a);
+  // plus, minus, times, div, mod, equals, notEqual, lt, le, gt, ge, neg
+  // positive
+  bigint = BigInt.fromString("18446744073709551616"); // 2^64 (U64.MAX_VALUE + 1)
+  assert(bigint.plus(BigInt.fromString("1")).toString() == "18446744073709551617", "BigInt plus failed");
+  assert(bigint.minus(BigInt.fromString("1")).toString() == "18446744073709551615", "BigInt minus failed");
+  assert(bigint.times(BigInt.fromString("2")).toString() == "36893488147419103232", "BigInt times failed");
+  assert(bigint.div(BigInt.fromString("2")).toString() == "9223372036854775808", "BigInt div failed");
+  assert(bigint.mod(BigInt.fromString("2")).toString() == "0", "BigInt mod failed");
+  assert(bigint.equals(BigInt.fromString("18446744073709551616")), "BigInt equals failed");
+  assert(bigint.notEqual(BigInt.fromString("18446744073709551617")), "BigInt notEqual failed");
+  assert(bigint.lt(BigInt.fromString("18446744073709551617")), "BigInt lt failed");
+  assert(bigint.le(BigInt.fromString("18446744073709551617")), "BigInt le failed");
+  assert(bigint.gt(BigInt.fromString("18446744073709551615")), "BigInt gt failed");
+  assert(bigint.ge(BigInt.fromString("18446744073709551615")), "BigInt ge failed");
+  assert(bigint.neg().toString() == "-18446744073709551616", "BigInt neg failed");
+  // negative
+  bigint = BigInt.fromString("-9223372036854775809"); // -2^63 - 1 (I64.MIN_VALUE - 1)
+  assert(bigint.plus(BigInt.fromString("1")).toString() == "-9223372036854775808", "BigInt plus failed");
+  assert(bigint.minus(BigInt.fromString("1")).toString() == "-9223372036854775810", "BigInt minus failed");
+  assert(bigint.times(BigInt.fromString("2")).toString() == "-18446744073709551618", "BigInt times failed");
+  assert(bigint.div(BigInt.fromString("2")).toString() == "-4611686018427387904", "BigInt div failed");
+  assert(bigint.mod(BigInt.fromString("2")).toString() == "-1", "BigInt mod failed");
+  assert(bigint.equals(BigInt.fromString("-9223372036854775809")), "BigInt equals failed");
+  assert(bigint.notEqual(BigInt.fromString("-9223372036854775808")), "BigInt notEqual failed");
+  assert(bigint.lt(BigInt.fromString("-9223372036854775808")), "BigInt lt failed");
+  assert(bigint.le(BigInt.fromString("-9223372036854775808")), "BigInt le failed");
+  assert(bigint.gt(BigInt.fromString("-9223372036854775810")), "BigInt gt failed");
+  assert(bigint.ge(BigInt.fromString("-9223372036854775810")), "BigInt ge failed");
+  assert(bigint.neg().toString() == "9223372036854775809", "BigInt neg failed");
 
-  aI32 = 53_499_369;
-  a = BigInt.fromI32(aI32);
-  assert(a == a && a.isI32() && a.toI32() == aI32);
-  assert(b < a && b <= a);
+  // abs, pow, sqrt, bitOr, bitAnd, leftShift, rightShift
+  // positive
+  bigint = BigInt.fromString("18446744073709551616"); // 2^64 (U64.MAX_VALUE + 1)
+  assert(bigint.abs().toString() == "18446744073709551616", "BigInt abs failed");
+  assert(bigint.pow(2).toString() == "340282366920938463463374607431768211456", "BigInt pow failed");
+  assert(bigint.sqrt().toString() == "4294967296", "BigInt sqrt failed");
+  assert(bigint.bitOr(BigInt.fromString("1")).toString() == "18446744073709551617", "BigInt bitOr failed");
+  assert(bigint.bitAnd(BigInt.fromString("1")).toString() == "0", "BigInt bitAnd failed");
+  assert(bigint.leftShift(1).toString() == "36893488147419103232", "BigInt leftShift failed");
+  assert(bigint.rightShift(1).toString() == "9223372036854775808", "BigInt rightShift failed");
+  // negative
+  bigint = BigInt.fromString("-9223372036854775809"); // -2^63 - 1 (I64.MIN_VALUE - 1)
+  assert(bigint.abs().toString() == "9223372036854775809", "BigInt abs failed");
+  assert(bigint.pow(2).toString() == "85070591730234615884290395931651604481", "BigInt pow failed");
+  assert(bigint.bitOr(BigInt.fromString("1")).toString() == "-9223372036854775809", "BigInt bitOr failed");
+  assert(bigint.bitAnd(BigInt.fromString("1")).toString() == "1", "BigInt bitAnd failed");
+  assert(bigint.leftShift(1).toString() == "-18446744073709551618", "BigInt leftShift failed");
+  assert(bigint.rightShift(1).toString() == "-4611686018427387905", "BigInt rightShift failed");
 
-  bI32 = 10_242_178;
-  b = BigInt.fromI32(bI32);
-  assert(b == b && b.isI32() && b.toI32() == bI32);
-  assert(b < a && b <= a);
+  // copy, bitNot, bitXor, isNegative, isOdd
+  bigint = BigInt.fromString("18446744073709551616"); // 2^64 (U64.MAX_VALUE + 1)
+  assert(bigint.copy().toString() == "18446744073709551616", "BigInt copy failed");
+  assert(bigint.bitNot().toString() == "-18446744073709551617", "BigInt bitNot failed");
+  assert(bigint.bitXor(BigInt.fromString("1")).toString() == "18446744073709551617", "BigInt bitXor failed");
+  assert(!bigint.isNegative, "BigInt isNegative failed");
+  assert(!bigint.isOdd(), "BigInt isOdd failed");
 
-  a = BigInt.fromI32(1000);
-  b = BigInt.fromI32(900);
-  assert(b < a && b <= a);
-
-  a = BigInt.fromI32(123);
-  b = BigInt.fromI32(124);
-  assert(a < b && a <= b);
-  assert(b > a && b >= a);
-
-  a = BigInt.fromI32(I32.MIN_VALUE);
-  b = BigInt.fromI32(I32.MAX_VALUE);
-  assert(a < b && a <= b);
-  assert(b > a && b >= a);
-  assert(a.toI32() == -2_147_483_648);
-  assert(b.toI32() == 2_147_483_647);
-
-  a = BigInt.fromU32(U32.MIN_VALUE);
-  b = BigInt.fromU32(U32.MAX_VALUE);
-  let c = BigInt.fromU32(0);
-  assert(a < b && a <= b, `a: ${a.toU32()}, b: ${b.toU32()}`);
-  assert(b > a && b >= a, `a: ${a.toU32()}, b: ${b.toU32()}`);
-  assert(a.toU32() == 0, `Actual value ${a.toU32()}`);
-  assert(b.toU32() == 4_294_967_295, `Actual value ${b.toU32()}`);
-  assert(c.toU32() == 0, `Actual value ${c.toU32()}`);
-
-  a = BigInt.fromI64(I64.MIN_VALUE);
-  b = BigInt.fromI64(I64.MAX_VALUE);
-  c = BigInt.fromI64(0);
-  assert(a < b && a <= b, `a: ${a.toU64()}, b: ${b.toU64()}`);
-  assert(b > a && b >= a, `a: ${a.toU64()}, b: ${b.toU64()}`);
-  assert(a.toI64() == -9_223_372_036_854_775_808, `Actual value ${a.toI64()}`);
-  assert(b.toI64() == 9_223_372_036_854_775_807, `Actual value ${b.toI64()}`);
-  assert(c.toI64() == 0, `Actual value ${c.toI64()}`);
-
-  a = BigInt.fromU64(U64.MIN_VALUE);
-  b = BigInt.fromU64(U64.MAX_VALUE);
-  c = BigInt.fromU64(0);
-  assert(a < b && a <= b, `a: ${a.toU64()}, b: ${b.toU64()}`);
-  assert(b > a && b >= a, `a: ${a.toU64()}, b: ${b.toU64()}`);
-  assert(a.toU64() == 0, `Actual value ${a.toU64()}`);
-  assert(b.toU64() == 18_446_744_073_709_551_615, `Actual value ${b.toU64()}`);
-  assert(c.toU64() == 0, `Actual value ${c.toU64()}`);
-
-  // This is 8071860 in binary.
-  const blockNumber = new ByteArray(3);
-  blockNumber[0] = 180;
-  blockNumber[1] = 42;
-  blockNumber[2] = 123;
-  const blockNumberBigInt = BigInt.fromByteArray(blockNumber);
-  const latestBlock = BigInt.fromI32(8_200_001);
-  assert(!blockNumberBigInt.gt(latestBlock));
-
-  const longArray = new ByteArray(5);
-  longArray[0] = 251;
-  longArray[1] = 255;
-  longArray[2] = 251;
-  longArray[3] = 255;
-  longArray[4] = 0;
-  assert(longArray.toU32() == 4_294_705_147);
-  assert(longArray.toI32() == 4_294_705_147);
-
-  const bytes = Bytes.fromHexString("0x56696b746f726961");
-  assert((bytes[0] = 0x56));
-  assert((bytes[1] = 0x69));
-  assert((bytes[2] = 0x6b));
-  assert((bytes[3] = 0x74));
-  assert((bytes[4] = 0x6f));
-  assert((bytes[5] = 0x72));
-  assert((bytes[6] = 0x69));
-  assert((bytes[7] = 0x61));
-
-  assert(ByteArray.fromI32(1) == ByteArray.fromI32(1));
-  assert(ByteArray.fromI32(1) != ByteArray.fromI32(2));
-
-  // ERROR TS2322: Type 'sdk/type/ByteArray' is not assignable to type 'sdk/type/Bytes'.
-  // assert(
-  //   Bytes.fromUTF8('Hello, World!') == ByteArray.fromHexString('0x48656c6c6f2c20576f726c6421'),
-  // );
-  assert(
-    Bytes.fromUTF8("Hello, World!").equals(
-      ByteArray.fromHexString("0x48656c6c6f2c20576f726c6421"),
-    ),
-  );
   console.log("✅ Test BigInt");
 }

@@ -14,17 +14,22 @@ import { rlpDecodeAndEventFilter } from "./common/api_helper.js";
 import {
   fromHexString,
   toHexString,
+  toHexStringBytes32Reverse,
   trimPrefix,
   logDivider,
   currentNpmScriptName,
   logReceiptAndEvents,
+  logLoadingAnimation,
 } from "./common/utils.js";
 import { ZKWASMMock } from "./common/zkwasm_mock.js";
 import { config } from "../config.js";
 import { zkwasm_prove } from "./requests/zkwasm_prove.js";
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
-import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
+import {
+  waitTaskStatus,
+  zkwasm_taskdetails,
+} from "./requests/zkwasm_taskdetails.js";
 import { instantiateWasm, setupZKWasmMock } from "./common/bundle.js";
 
 program.version("1.0.0");
@@ -93,10 +98,10 @@ let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
 
 // Log receipt number from block, and filtered events
 logReceiptAndEvents(
-    rawreceiptList,
-    blockid,
-    matchedEventOffsets,
-    filteredEventList
+  rawreceiptList,
+  blockid,
+  matchedEventOffsets,
+  filteredEventList
 );
 
 // may remove
@@ -108,16 +113,15 @@ let wasmPath;
 
 // Set value for inputs
 if (currentNpmScriptName() === "prove-local") {
-  wasmPath = config.LocalWasmBinPath
+  wasmPath = config.LocalWasmBinPath;
 
   // Generate inputs
   privateInputStr =
     formatVarLenInput(toHexString(rawReceipts)) +
     formatVarLenInput(toHexString(new Uint8Array(matchedEventOffsets.buffer)));
   publicInputStr = formatVarLenInput(expectedStateStr);
-
 } else if (currentNpmScriptName() === "prove") {
-  wasmPath = config.WasmBinPath
+  wasmPath = config.WasmBinPath;
 
   // Get block
   const simpleblock = await provider.getBlock(blockid).catch(() => {
@@ -160,8 +164,9 @@ if (currentNpmScriptName() === "prove-local") {
     if (isSetUpSuccess) {
       console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
 
+      const taskId = response.data.result.id;
       console.log(
-        `[+] PROVE TASK STARTED. TASK ID: ${response.data.result.id}`,
+        `[+] PROVE TASK STARTED. TASK ID: ${taskId}`,
         "\n"
       );
 
@@ -170,23 +175,74 @@ if (currentNpmScriptName() === "prove-local") {
         "\n"
       );
 
+      const loading = logLoadingAnimation();
+
       const taskResult = await waitTaskStatus(
-        response.data.result.id,
+        taskId,
         ["Done", "Fail"],
         2000,
         0
       ); //TODO: timeout
 
-      const taskStatus = taskResult === "Done" ? "SUCCESS" : "FAILED";
+      if (taskResult === "Done") {
+        loading.stopAndClear();
 
-      console.log(
-        `[${taskStatus === "SUCCESS" ? "+" : "-"}] PROVE ${taskStatus}`,
-        "\n"
-      );
+        console.log("[+] PROVE SUCCESS!", "\n");
+
+        const [detailResponse, _, __] = await zkwasm_taskdetails(
+          taskId
+        );
+
+        // write proof to file as txt
+        console.log("[+] Proof written to `build` folder.\n");
+        const instances = toHexStringBytes32Reverse(
+          detailResponse.data.result.data[0].instances
+        );
+        const proof = toHexStringBytes32Reverse(
+          detailResponse.data.result.data[0].proof
+        );
+        const aux = toHexStringBytes32Reverse(
+          detailResponse.data.result.data[0].aux
+        );
+        writeFileSync(
+          `build/proof_${taskId}.txt`,
+          "Instances:\n" +
+            instances +
+            "\n\nProof transcripts:\n" +
+            proof +
+            "\n\nAux data:\n" +
+            aux +
+            "\n"
+        );
+
+        logDivider();
+
+        process.exit(0);
+      } else {
+        loading.stopAndClear();
+
+        console.log("[-] PROVE FAILED.", "\n");
+
+        const [detailResponse, _, __] = await zkwasm_taskdetails(
+          response.data.result.id
+        );
+        console.log(
+          `[-] ${detailResponse.data.result.data[0].internal_message}`,
+          "\n"
+        );
+
+        logDivider();
+
+        process.exit(1);
+      }
     } else {
       console.log(`[*] IMAGE MD5: ${md5}`, "\n");
       // Log status
       console.log(`[-] ${errorMessage}`, "\n");
+
+      logDivider();
+
+      process.exit(1);
     }
   }
 }
@@ -205,7 +261,7 @@ switch (options.inputgen || options.test) {
     mock.set_private_input(privateInputStr);
     mock.set_public_input(publicInputStr);
     setupZKWasmMock(mock);
-    const {zkmain} = await instantiateWasm(wasmPath);
+    const { zkmain } = await instantiateWasm(wasmPath);
     zkmain();
     console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
     break;

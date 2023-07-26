@@ -2,7 +2,7 @@ import { readFileSync } from "fs";
 import fs from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
 import { config } from "../config.js";
-import { logDivider } from "./common/utils.js";
+import { logDivider, logLoadingAnimation } from "./common/utils.js";
 import { zkwasm_setup } from "./requests/zkwasm_setup.js";
 import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
 import path from "path";
@@ -35,7 +35,13 @@ if (isSetUpSuccess) {
 
     console.log("[*] Please wait for image set up... (estimated: 1-5 min)", "\n");
 
+    const loading = logLoadingAnimation();
+
     const taskResult = await waitTaskStatus(response.data.result.id, ['Done', 'Fail'], 2000, 0); //TODO: timeout
+
+    if (taskResult === "Done" || taskResult === "Fail") {
+      loading.stopAndClear();
+    }
 
     const taskStatus = (taskResult === "Done") ? "SUCCESS" : "FAILED"
 

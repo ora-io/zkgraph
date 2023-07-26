@@ -7,7 +7,8 @@ export const config = {
   UserPrivateKey: "0x{PRIVATE_KEY}",
 
   ZkwasmProviderUrl: "https://zkwasm-explorer.delphinuslab.com:8090",
-  CompilerServerEndpoint: "http://node.hyperoracle.io:8000/compile",
+  CompilerServerEndpoint: "https://compiler.hyperoracle.io/compile",
+
   WasmBinPath: "build/zkgraph_full.wasm",
   LocalWasmBinPath: "build/zkgraph_local.wasm"
 };
