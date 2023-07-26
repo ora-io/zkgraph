@@ -38,12 +38,13 @@ program
   .argument("<block id>", "Block number (or block hash) as runtime context")
   .argument("<expected state>", "State output of the zkgraph execution")
   .option("-i, --inputgen", "Generate input")
-  .option("-t, --test", "Run in test Mode");
+  .option("-t, --test", "Run in test Mode")
+  .option("-p, --prove", "Run in prove Mode");
 
-// If it's prove with full mode, add --prove option
-if (currentNpmScriptName() === "prove") {
-  program.option("-p, --prove", "Run in prove Mode");
-}
+// // If it's prove with full mode, add --prove option
+// if (currentNpmScriptName() === "prove") {
+//   program.option("-p, --prove", "Run in prove Mode");
+// }
 
 program.parse(process.argv);
 
@@ -144,8 +145,30 @@ if (currentNpmScriptName() === "prove-local") {
     formatVarLenInput(toHexString(rawReceipts)) +
     formatHexStringInput(block.receiptsRoot);
 
+  
+}
+
+switch (options.inputgen || options.test || options.prove) {
+  // Input generation mode
+  case options.inputgen === true:
+    console.log("[+] ZKGRAPH STATE OUTPUT:", expectedStateStr, "\n");
+    console.log("[+] PRIVATE INPUT FOR ZKWASM:", "\n" + privateInputStr, "\n");
+    console.log("[+] PUBLIC INPUT FOR ZKWASM:", "\n" + publicInputStr, "\n");
+    break;
+
+  // Test mode
+  case options.test === true:
+    const mock = new ZKWASMMock();
+    mock.set_private_input(privateInputStr);
+    mock.set_public_input(publicInputStr);
+    setupZKWasmMock(mock);
+    const { zkmain } = await instantiateWasm(wasmPath);
+    zkmain();
+    console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
+    break;
+   
   // Prove mode
-  if (options.prove === true) {
+  case options.prove === true:
     const compiledWasmBuffer = readFileSync(wasmPath);
     const privateInputArray = privateInputStr.trim().split(" ");
     const publicInputArray = publicInputStr.trim().split(" ");
@@ -244,27 +267,6 @@ if (currentNpmScriptName() === "prove-local") {
 
       process.exit(1);
     }
-  }
-}
-
-switch (options.inputgen || options.test) {
-  // Input generation mode
-  case options.inputgen === true:
-    console.log("[+] ZKGRAPH STATE OUTPUT:", expectedStateStr, "\n");
-    console.log("[+] PRIVATE INPUT FOR ZKWASM:", "\n" + privateInputStr, "\n");
-    console.log("[+] PUBLIC INPUT FOR ZKWASM:", "\n" + publicInputStr, "\n");
-    break;
-
-  // Test mode
-  case options.test === true:
-    const mock = new ZKWASMMock();
-    mock.set_private_input(privateInputStr);
-    mock.set_public_input(publicInputStr);
-    setupZKWasmMock(mock);
-    const { zkmain } = await instantiateWasm(wasmPath);
-    zkmain();
-    console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
-    break;
 }
 
 logDivider();
