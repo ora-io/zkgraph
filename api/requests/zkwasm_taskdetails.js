@@ -51,7 +51,7 @@ export async function waitTaskStatus(taskId, statuslist, interval, timeout=0){
             if (error != null){
                 let [errMsg, isRetry] = handleAxiosError(error)
                 if (isRetry){
-                    console.log(errMsg)
+                    console.log(errMsg, 'Retry.')
                     setTimeout(checkStatus, interval)
                 } else { // stop
                     reject(errMsg)

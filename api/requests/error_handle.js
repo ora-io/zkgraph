@@ -6,22 +6,22 @@ export function handleAxiosError(error){
             errMsg = "Can't connect to " + error.hostname
             break
         case 'ERR_BAD_RESPONSE':
-            errMsg = `ERR_BAD_RESPONSE: ${error.response.status} ${error.response.statusText}.`
-            isRetry = true
+            switch(error.response.status){
+                case 500:
+                    errMsg =error.response.data
+                    break
+                case 502:
+                    isRetry = true
+                default:
+                    errMsg = `ERR_BAD_RESPONSE: ${error.response.status} ${error.response.statusText}.`
+                    break
+            }
             break
         case 'ERR_BAD_REQUEST':
             errMsg = `ERR_BAD_REQUEST: ${error.response.status} ${error.response.statusText}.`
             break
         default:
-            switch(Math.floor(error.response.status / 100)){
-                case 4:
-                case 5:
-                    errMsg = `HTTP ERROR: ${error.response.status} ${error.response.statusText}.`
-                    break
-                default:
-                    errMsg = error
-                    break
-            }
+            errMsg = `HTTP ERROR: ${error.response.status} ${error.response.statusText}.`
             break
     }
     return [errMsg, isRetry]
