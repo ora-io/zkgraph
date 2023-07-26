@@ -2,17 +2,21 @@ import { readFileSync } from "fs";
 import fs from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
 import { config } from "../config.js";
-import { logDivider, logLoadingAnimation } from "./common/utils.js";
+import { logDivider, logLoadingAnimation, currentNpmScriptName } from "./common/utils.js";
 import { zkwasm_setup } from "./requests/zkwasm_setup.js";
 import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
 import path from "path";
 
-const wasmPath = config.WasmBinPath
-const compiledWasmBuffer = readFileSync(wasmPath);
+let wasmPath;
+if (currentNpmScriptName() === "setup-local") {
+    wasmPath = config.LocalWasmBinPath
+} else if (currentNpmScriptName() === "setup") {
+    wasmPath = config.WasmBinPath
+}
 
 // Message and form data
-const name = path.basename(config.WasmBinPath); // only use in zkwasm, can diff from local files
-const md5 = ZkWasmUtil.convertToMd5(compiledWasmBuffer).toUpperCase();
+const name = path.basename(wasmPath); // only use in zkwasm, can diff from local files
+const md5 = ZkWasmUtil.convertToMd5(readFileSync(wasmPath)).toUpperCase();
 const image = fs.createReadStream(wasmPath);
 const prikey = config.UserPrivateKey
 const description_url_encoded = "";

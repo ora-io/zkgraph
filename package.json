@@ -2,6 +2,7 @@
   "name": "zkgraph",
   "scripts": {
     "compile-local": "node api/compile.js",
+    "setup-local": "node api/setup.js",
     "exec-local": "node api/exec.js",
     "prove-local": "node api/prove.js",
     "compile": "node api/compile.js",
