@@ -110,9 +110,10 @@ export function uint8ArrayToUint32Array(
   for (let i = 0; i < length; i++) {
     const firstIndex = hex.length - (i + 1) * 7;
     const lastIndex = hex.length - i * 7;
-    u32Array[i] = <u32>(
-      parseInt(hex.slice(firstIndex > 0 ? firstIndex : 0, lastIndex), 16)
-    );
+    // u32Array[i] = <u32>(
+    //   parseInt(hex.slice(firstIndex > 0 ? firstIndex : 0, lastIndex), 16)
+    // );
+    u32Array[i] = u32.parse(hex.slice(firstIndex > 0 ? firstIndex : 0, lastIndex), 16);
   }
   return u32Array;
 }

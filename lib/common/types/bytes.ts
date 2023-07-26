@@ -222,11 +222,10 @@ export class ByteArray extends Uint8Array {
       // The .wat diff is using I8.parseInt has an additional i32.extend8_s (Unknown opcode 192 (0xC0) in zkwasm).
       // output[i / 2] = I8.parseInt(hex.substr(i, 2), 16);
 
-      // ERROR TS2339: Property 'parse' does not exist on type '~lib/builtins/i32'.
-      // output[i / 2] = i32.parse(hex.substr(i, 2), 16);
-
       // @deprecated — Converts a string to an integer of this type. Please use "i32.parse" method.
-      output[i / 2] = I32.parseInt(hex.substr(i, 2), 16);
+      // output[i / 2] = I32.parseInt(hex.substr(i, 2), 16);
+
+      output[i / 2] = i32.parse(hex.substr(i, 2), 16);
     }
     return output;
   }
@@ -240,15 +239,6 @@ export class ByteArray extends Uint8Array {
     const utf8 = String.UTF8.encode(str);
     return changetype<ByteArray>(ByteArray.wrap(utf8));
   }
-
-  /**
-   * Provable on zkWASM.
-   *
-   * WASM cost: 0 lines of wat.
-   */
-  // static fromBigInt(bigInt: BigInt): ByteArray {
-  //   return changetype<ByteArray>(typeConversion.uint32ArrayToUint8Array(bigInt.digits));
-  // }
 
   /**
    * Provable on zkWASM.
