@@ -72,6 +72,12 @@ export class BigInt {
     throw new TypeError("Unsupported generic type " + nameof<T>(val));
   }
 
+  /**
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 2096 line of wat.
+   */
   static fromString(bigInteger: string, radix: i32 = 10): BigInt {
     if (radix < 2 || radix > 16) {
       throw new RangeError("BigInt only reads strings of radix 2 through 16");
@@ -215,6 +221,12 @@ export class BigInt {
     );;
   }
 
+  /**
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 744 line of wat.
+   */
   static fromBytesBigEndian(bytes: Uint8Array, isNegative: boolean = false): BigInt {
     let digits = typeConversion.uint8ArrayToUint32Array(bytes, false);
     return BigInt.fromDigits(
@@ -412,10 +424,20 @@ export class BigInt {
     return this.compareTo(BigInt.from(other)) > 0;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 156 lines of wat.
+   */
   ge<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) >= 0;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 156 lines of wat.
+   */
   gte<T>(other: T): boolean {
     return this.ge(other);
   }
@@ -431,6 +453,10 @@ export class BigInt {
     } else {
       return this.magCompareTo(other);
     }
+  }
+
+  static compare(a: BigInt, b: BigInt): i32 {
+    return a.compareTo(b);
   }
 
   private magCompareTo(other: BigInt): i32 {
@@ -1009,6 +1035,11 @@ export class BigInt {
   // DIVISION //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // handles sign and allows for easy replacement of algorithm in future update
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1925 lines of wat.
+   */
   div<T>(other: T): BigInt {
     return this._div(BigInt.from(other));
   }
