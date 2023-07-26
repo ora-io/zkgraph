@@ -155,8 +155,8 @@ More info and API reference can be found in [Hyper Oracle zkGraph docs](https://
 ## Lib Dev Tips
 
 1. Don't use `I8.parseInt` because it will be compiled to `i32.extend8_s (aka. Unknown opcode 192 (0xC0) in WASM)`.
-2. Don't use template literals (`${}`), for example when throwing errors, because it will be compiled to too many WASM instructions (~1000 diff).
-3. Don't use `FC extensions` opcodes (`<u32>parseInt(...)`), because it will be compiled to `Unknown opcode 252 (0xFC) in WASM`.
+2. Try not to use template literals (`${}`), for example when throwing errors, because it will be compiled to too many WASM instructions (~1000 diff).
+3. Try not to use `FC extensions` opcodes (`<u32>parseInt(...)`, `f64`, or `Math`), because it will be compiled to `Unknown opcode 252 (0xFC) in WASM`, and generates too many instructions.
 
 References: [WebAssembly Opcodes](https://pengowray.github.io/wasm-ops/).
 
