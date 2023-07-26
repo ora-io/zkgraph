@@ -1,11 +1,6 @@
-import { Bytes, ByteArray, BigInt } from "../../lib/common/type";
-// import { uint32ArrayToUint8Array } from "../../lib/utils/conversion";
+import { Bytes, ByteArray } from "../../lib/common/type";
 
 export function testBytesWithByteArray(): void {
-  // const bigint = BigInt.fromI32(4294705147);
-  // const uint8Array = uint32ArrayToUint8Array(bigint.digits);
-  // console.log(uint8Array.toString());
-
   const longArray = new ByteArray(5);
   longArray[0] = 251;
   longArray[1] = 255;
@@ -40,4 +35,60 @@ export function testBytesFromUTF8(): void {
     assert(bytes[i] == str.charCodeAt(i));
   }
   console.log("✅ Test Bytes from UTF8");
+}
+
+export function testBytesAddedFunctions() : void {
+  // Normal slice
+  let bytes = Bytes.fromHexString("0x56696b746f726961").slice(0, 4);
+  assert(bytes.length == 4, `Bytes length ${bytes.length} is not 4`);
+  assert(bytes[0] == 0x56);
+  assert(bytes[1] == 0x69);
+  assert(bytes[2] == 0x6b);
+  assert(bytes[3] == 0x74);
+  // Copy slice
+  bytes = Bytes.fromHexString("0x56696b746f726961").slice();
+  assert(bytes.length == 8, `Bytes length ${bytes.length} is not 8`);
+  assert(bytes[0] == 0x56);
+  assert(bytes[1] == 0x69);
+  assert(bytes[2] == 0x6b);
+  assert(bytes[3] == 0x74);
+  assert(bytes[4] == 0x6f);
+  assert(bytes[5] == 0x72);
+  assert(bytes[6] == 0x69);
+  assert(bytes[7] == 0x61);
+  // Just start index
+  bytes = Bytes.fromHexString("0x56696b746f726961").slice(4);
+  assert(bytes.length == 4, `Bytes length ${bytes.length} is not 4`);
+  assert(bytes[0] == 0x6f);
+  assert(bytes[1] == 0x72);
+  assert(bytes[2] == 0x69);
+  assert(bytes[3] == 0x61);
+  // Start > end
+  bytes = Bytes.fromHexString("0x56696b746f726961").slice(9, 4);
+  assert(bytes.length == 4, `Bytes length ${bytes.length} is not 4`);
+  assert(bytes[0] == 0x0);
+  assert(bytes[1] == 0x0);
+  assert(bytes[2] == 0x0);
+  assert(bytes[3] == 0x0);
+  // end === -1
+  bytes = Bytes.fromHexString("0x56696b746f726961").slice(4, -1);
+  assert(bytes.length == 4, `Bytes length ${bytes.length} is not 4`);
+  assert(bytes[0] == 0x6f);
+  assert(bytes[1] == 0x72);
+  assert(bytes[2] == 0x69);
+  assert(bytes[3] == 0x61);
+
+  // padStart, padEnd
+  bytes = Bytes.fromHexString("0x56696b746f726961").padStart(10, 0x00);
+  assert(bytes.length == 10, `Bytes length ${bytes.length} is not 10`);
+  assert(bytes[0] == 0x00);
+  assert(bytes[1] == 0x00);
+  assert(bytes[2] == 0x56);
+  bytes = Bytes.fromHexString("0x56696b746f726961").padEnd(10, 0x00);
+  assert(bytes.length == 10, `Bytes length ${bytes.length} is not 10`);
+  assert(bytes[7] == 0x61);
+  assert(bytes[8] == 0x00);
+  assert(bytes[9] == 0x00);
+
+  console.log("✅ Test Bytes added functions");
 }
