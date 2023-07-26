@@ -1,10 +1,11 @@
 import axios from "axios";
 import url from "./url.js";
+import { handleAxiosError } from "./error_handle.js";
 
 export async function zkwasm_taskdetails(
     taskId
     ){
-    let isSetUpSuccess = true;
+    // let isSetUpSuccess = true;
 
     let requestConfig = {
       method: "get",
@@ -15,14 +16,24 @@ export async function zkwasm_taskdetails(
       },
     };
 
-    let errorMessage = "";
+    let errorMessage = null;
     const response = await axios.request(requestConfig).catch((error) => {
-        isSetUpSuccess = false;
-        errorMessage = error.response.data;
+        // isSetUpSuccess = false;
+        // console.log(error.message)
+
+        // if (error.code == 'ENOTFOUND'){
+        //     errorMessage = "Can't connect to " + error.hostname;
+        // }else{
+        //     console.log(error)
+        //     errorMessage = error.code;
+        // }
+        errorMessage = error
+        // errorMessage = error.response.data;//todo: is this usefull?
     });
-    return [response, isSetUpSuccess, errorMessage]
+    return [response, errorMessage]
 }
 
+// TODO: timeout
 export async function waitTaskStatus(taskId, statuslist, interval, timeout=0){
     // let done = false;
     // setInterval(() => {
@@ -33,28 +44,44 @@ export async function waitTaskStatus(taskId, statuslist, interval, timeout=0){
     //     }
     // }, interval)
     // var [response, isSetUpSuccess, errorMessage] = await zkwasm_taskdetails(taskId)
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const checkStatus = async () => {
-            var [response, isSetUpSuccess, errorMessage] = await zkwasm_taskdetails(taskId)
-            const status = response.data.result.data[0].status; // Call function A to check data status
-            var matched=false
-            for (var i in statuslist){
-                if (status == statuslist[i]) {
-                    matched = true
-                    break
+            var [response, error] = await zkwasm_taskdetails(taskId)
+            
+            if (error != null){
+                let [errMsg, isRetry] = handleAxiosError(error)
+                if (isRetry){
+                    console.log(errMsg)
+                    setTimeout(checkStatus, interval)
+                } else { // stop
+                    reject(errMsg)
                 }
-            }
-            if (matched){
-                resolve(status); // Resolve the promise when the status is 'done'
-            }else{
-                setTimeout(checkStatus, interval); // Call checkStatus function again after a 1-second delay
+            } else {
+                const status = response.data.result.data[0].status; // Call function A to check data status
+                var matched=false
+                for (var i in statuslist){
+                    if (status == statuslist[i]) {
+                        matched = true
+                        break
+                    }
+                }
+                if (matched){
+                    resolve(response.data.result.data[0]); // Resolve the promise when the status is matched
+                }else{
+                    setTimeout(checkStatus, interval); // Call checkStatus function again after a 1-second delay
+                }
             }
           }
       
           checkStatus(); // Start checking the data status
         });
 }
-// let a = await waitTaskStatus('64b10bf0f0e3eee93f6e4e99', ['Done'], 1000);
-// console.log(a)
-// var [response, isSetUpSuccess, errorMessage] =await zkwasm_taskdetails('64b10bf0f0e3eee93f6e4e99')
+
+// try{
+// let a = await waitTaskStatus('64c0c2bbf0e3eee93f75c260', ['Done', 'Fail'], 100);
+//     console.log(a)
+// }catch(error) {
+//     console.log(error)
+// }
+// var [response, errorMessage] =await zkwasm_taskdetails('64c0c2bbf0e3eee93f75c260')
 // console.log(response.data.result.data[0].status)

@@ -28,7 +28,6 @@ import { readFileSync, writeFileSync } from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
 import {
   waitTaskStatus,
-  zkwasm_taskdetails,
 } from "./requests/zkwasm_taskdetails.js";
 import { instantiateWasm, setupZKWasmMock } from "./common/bundle.js";
 
@@ -184,8 +183,9 @@ switch (options.inputgen || options.test || options.prove) {
       privateInputArray
     );
 
+    console.log(`[*] IMAGE MD5: ${md5}`, "\n");
     if (isSetUpSuccess) {
-      console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
+    //   console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
 
       const taskId = response.data.result.id;
       console.log(
@@ -200,32 +200,35 @@ switch (options.inputgen || options.test || options.prove) {
 
       const loading = logLoadingAnimation();
 
-      const taskResult = await waitTaskStatus(
-        taskId,
-        ["Done", "Fail"],
-        2000,
-        0
-      ); //TODO: timeout
+      let taskDetails;
+      try{
+        taskDetails = await waitTaskStatus(
+            taskId,
+            ["Done", "Fail"],
+            3000,
+            0
+          ); //TODO: timeout
+    } catch(error) {
+        loading.stopAndClear();
+        console.error(error)
+        process.exit(1);
+    }
 
-      if (taskResult === "Done") {
+      if (taskDetails.status === "Done") {
         loading.stopAndClear();
 
         console.log("[+] PROVE SUCCESS!", "\n");
 
-        const [detailResponse, _, __] = await zkwasm_taskdetails(
-          taskId
-        );
-
         // write proof to file as txt
         console.log("[+] Proof written to `build` folder.\n");
         const instances = toHexStringBytes32Reverse(
-          detailResponse.data.result.data[0].instances
+            taskDetails.instances
         );
         const proof = toHexStringBytes32Reverse(
-          detailResponse.data.result.data[0].proof
+            taskDetails.proof
         );
         const aux = toHexStringBytes32Reverse(
-          detailResponse.data.result.data[0].aux
+            taskDetails.aux
         );
         writeFileSync(
           `build/proof_${taskId}.txt`,
@@ -246,11 +249,8 @@ switch (options.inputgen || options.test || options.prove) {
 
         console.log("[-] PROVE FAILED.", "\n");
 
-        const [detailResponse, _, __] = await zkwasm_taskdetails(
-          response.data.result.id
-        );
         console.log(
-          `[-] ${detailResponse.data.result.data[0].internal_message}`,
+          `[-] ${taskDetails.internal_message}`,
           "\n"
         );
 
@@ -259,7 +259,6 @@ switch (options.inputgen || options.test || options.prove) {
         process.exit(1);
       }
     } else {
-      console.log(`[*] IMAGE MD5: ${md5}`, "\n");
       // Log status
       console.log(`[-] ${errorMessage}`, "\n");
 

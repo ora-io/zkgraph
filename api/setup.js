@@ -32,6 +32,7 @@ let [response, isSetUpSuccess, errorMessage] = await zkwasm_setup(name, md5, ima
     avator_url,
     circuit_size)
 
+
 if (isSetUpSuccess) {
     console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
 
@@ -41,11 +42,16 @@ if (isSetUpSuccess) {
 
     const loading = logLoadingAnimation();
 
-    const taskResult = await waitTaskStatus(response.data.result.id, ['Done', 'Fail'], 2000, 0); //TODO: timeout
-
-    if (taskResult === "Done" || taskResult === "Fail") {
-      loading.stopAndClear();
+    let taskResult
+    try{
+        taskResult = await waitTaskStatus(response.data.result.id, ['Done', 'Fail'], 3000, 0); //TODO: timeout
+    } catch(error) {
+        loading.stopAndClear();
+        console.error(error)
+        process.exit(1);
     }
+    
+    loading.stopAndClear();
 
     const taskStatus = (taskResult === "Done") ? "SUCCESS" : "FAILED"
 

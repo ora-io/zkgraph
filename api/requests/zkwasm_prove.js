@@ -2,6 +2,7 @@ import axios from "axios";
 import url from "./url.js";
 import { Wallet } from "ethers";
 import { computeAddress } from "ethers/lib/utils.js";
+import { handleAxiosError } from "./error_handle.js";
 
 export async function zkwasm_prove(
     user_privatekey,
@@ -53,9 +54,10 @@ export async function zkwasm_prove(
     };
 
     let errorMessage = "";
+    let _;
     const response = await axios.request(requestConfig).catch((error) => {
+        [errorMessage, _] = handleAxiosError(error)
         isSetUpSuccess = false;
-        errorMessage = error.response.data;
     });
     return [response, isSetUpSuccess, errorMessage]
 }

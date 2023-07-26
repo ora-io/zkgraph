@@ -4,6 +4,7 @@ import url from "./url.js";
 import { Wallet } from "ethers";
 import { ZkWasmUtil } from "zkwasm-service-helper";
 import { computeAddress } from "ethers/lib/utils.js";
+import { handleAxiosError } from "./error_handle.js";
 
 export async function zkwasm_setup(
     name,
@@ -53,9 +54,11 @@ export async function zkwasm_setup(
     };
 
     let errorMessage = "";
+    let _;
     const response = await axios.request(requestConfig).catch((error) => {
+        [errorMessage, _] = handleAxiosError(error)
         isSetUpSuccess = false;
-        errorMessage = error.response.data;
+        // errorMessage = error.response.data;
     });
     return [response, isSetUpSuccess, errorMessage]
 }
