@@ -8,10 +8,15 @@ export class BigInt {
   private d: Uint32Array; // digits
   private n: i32 = 0; // digits used
   private isNeg: boolean; // sign
+/**
+  * Provable on zkWASM.
+  *
+  * WASM cost: 6 lines of wat.
+  */
   get isNegative(): boolean {
     return this.isNeg;
   }
-  get digits(): Uint32Array {
+  private get digits(): Uint32Array {
     return this.d;
   }
 
@@ -129,6 +134,11 @@ export class BigInt {
     return res;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 93 lines of wat.
+   */
   static fromU32(val: u32): BigInt {
     const res = new BigInt(BigInt.precision, false);
     let i = 0;
@@ -141,6 +151,11 @@ export class BigInt {
     return res;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 99 lines of wat.
+   */
   static fromU64(val: u64): BigInt {
     const res = new BigInt(BigInt.precision, false);
     let i = 0;
@@ -162,6 +177,11 @@ export class BigInt {
     return res;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 93 lines of wat.
+   */
   static fromI32(val: i32): BigInt {
     const isNeg: boolean = val < 0;
     const res = new BigInt(BigInt.precision, isNeg);
@@ -176,6 +196,11 @@ export class BigInt {
     return res;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 99 lines of wat.
+   */
   static fromI64(val: i64): BigInt {
     const isNeg: boolean = val < 0;
     const res = new BigInt(BigInt.precision, isNeg);
@@ -213,6 +238,11 @@ export class BigInt {
     return res;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 568 lines of wat.
+   */
   static fromBytes(bytes: Uint8Array, isNegative: boolean = false): BigInt {
     let digits = typeConversion.uint8ArrayToUint32Array(bytes);
     return BigInt.fromDigits(
@@ -236,16 +266,31 @@ export class BigInt {
   }
 
   // O(N)
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 113 lines of wat.
+   */
   copy(): BigInt {
     return BigInt.fromDigits(this.d, this.isNeg, this.n);
   }
 
   // O(N)
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 123 lines of wat.
+   */
   neg(): BigInt {
     return BigInt.fromDigits(this.d, this.n > 0 && !this.isNeg, this.n);
   }
 
   // O(N)
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 110 lines of wat.
+   */
   abs(): BigInt {
     return BigInt.fromDigits(this.d, false, this.n);
   }
@@ -287,6 +332,11 @@ export class BigInt {
 
   // OUTPUT /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1177 lines of wat.
+   */
   toString(radix: i32 = 10): string {
     if (radix < 2 || radix > 16) {
       throw new RangeError("BigInt only prints strings in radix 2 through 16");
@@ -311,10 +361,20 @@ export class BigInt {
     return res;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1177 lines of wat.
+   */
   toHex(): string {
     return this.toString(16);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1192 lines of wat.
+   */
   toHexString(prefix: string = ""): string {
     if (prefix !== "") {
       return prefix + this.toHex();
@@ -322,6 +382,11 @@ export class BigInt {
     return this.toHex();
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1735 lines of wat.
+   */
   toI32(): i32 {
     if (this.n <= 1) {
       return this.n == 0 ? <i32>0 : <i32>this.d[0] * (this.isNeg ? -1 : 1);
@@ -340,6 +405,11 @@ export class BigInt {
     return result;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 2166 lines of wat.
+   */
   toI64(): i64 {
     if (this.n <= 1) {
       return this.n == 0 ? <i64>0 : <i64>this.d[0] * (this.isNeg ? -1 : 1);
@@ -358,6 +428,11 @@ export class BigInt {
     return result;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1710 lines of wat.
+   */
   toU32(): u32 {
     if (this.isNeg) {
       throw new Error("Cannot cast negative integer to u32");
@@ -374,6 +449,11 @@ export class BigInt {
     return U32.parseInt(this.toString());
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1882 lines of wat.
+   */
   toU64(): u64 {
     if (this.isNeg) {
       throw new Error("Cannot cast negative integer to u64");
@@ -392,6 +472,11 @@ export class BigInt {
 
   // COMPARISON OPERATORS //////////////////////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 155 lines of wat.
+   */
   equals<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) == 0;
   }
@@ -400,6 +485,11 @@ export class BigInt {
     return this.equals(other);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 155 lines of wat.
+   */
   notEqual<T>(other: T): boolean {
     return !this.equals(BigInt.from(other));
   }
@@ -408,10 +498,20 @@ export class BigInt {
     return this.notEqual(other);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 155 lines of wat.
+   */
   lt<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) < 0;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 155 lines of wat.
+   */
   le<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) <= 0;
   }
@@ -420,6 +520,11 @@ export class BigInt {
     return this.le(other);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 155 lines of wat.
+   */
   gt<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) > 0;
   }
@@ -427,17 +532,12 @@ export class BigInt {
   /**
    * Provable on zkWASM.
    *
-   * WASM cost: 156 lines of wat.
+   * WASM cost: 155 lines of wat.
    */
   ge<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) >= 0;
   }
 
-  /**
-   * Provable on zkWASM.
-   *
-   * WASM cost: 156 lines of wat.
-   */
   gte<T>(other: T): boolean {
     return this.ge(other);
   }
@@ -455,6 +555,11 @@ export class BigInt {
     }
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 155 lines of wat.
+   */
   static compare(a: BigInt, b: BigInt): i32 {
     return a.compareTo(b);
   }
@@ -473,7 +578,13 @@ export class BigInt {
 
   // CORE MATH OPERATIONS //////////////////////////////////////////////////////////////////////////////////////////////
 
-  // signed addition
+  /**
+   * signed addition
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 816 lines of wat.
+   */
   plus<T>(other: T): BigInt {
     const addend: BigInt = BigInt.from(other);
     if (this.isNeg == addend.isNeg) {
@@ -489,7 +600,13 @@ export class BigInt {
     return this.plus(other);
   }
 
-  // signed subtraction
+  /**
+   * signed subtraction
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 819 lines of wat.
+   */
   minus<T>(other: T): BigInt {
     const subtrahend: BigInt = BigInt.from(other);
     if (this.isNeg != subtrahend.isNeg) {
@@ -768,14 +885,26 @@ export class BigInt {
     return res;
   }
 
-  // left bit shift
+  /**
+   * Left bit shift
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 227 lines of wat.
+   */
   leftShift(k: i32): BigInt {
     if (k == 0) return this.copy();
     if (k < 0) return this.rightShiftByAbsolute(k);
     return this.leftShiftByAbsolute(k);
   }
 
-  // signed right bit shift
+  /**
+   * Signed right bit shift
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 591 lines of wat.
+   */
   rightShift(k: i32): BigInt {
     if (k == 0) return this.copy();
     if (k < 0) return this.leftShiftByAbsolute(k);
@@ -833,7 +962,13 @@ export class BigInt {
 
   // MULTIPLICATION ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // chooses best multiplication algorithm for situation and handles sign
+  /**
+   * Chooses best multiplication algorithm for situation and handles sign
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 498 lines of wat.
+   */
   times<T>(other: T): BigInt {
     const multiplier: BigInt = BigInt.from(other);
     let res: BigInt;
@@ -906,6 +1041,11 @@ export class BigInt {
 
   // EXPONENTIATION ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1308 lines of wat.
+   */
   pow(k: i32): BigInt {
     if (k < 0) {
       throw new RangeError("BigInt does not support negative exponentiation");
@@ -923,6 +1063,11 @@ export class BigInt {
     return res;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 672 lines of wat.
+   */
   square(): BigInt {
     const digitsNeeded: i32 = this.n + this.n + 1;
     if (digitsNeeded < BigInt.maxComba) {
@@ -1008,16 +1153,35 @@ export class BigInt {
     return res;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 3735 lines of wat.
+   */
   sqrt(): BigInt {
     if (this.isNeg)
       throw new RangeError("Square root of negative numbers is not supported");
     if (this.n == 0) return this.copy();
 
     // rely on built in sqrt if possible
-    if (this.le(BigInt.fromU64(<u64>F64.MAX_SAFE_INTEGER))) {
-      const fVal: f64 = <f64>this.toU64();
-      const fSqrt: f64 = Math.floor(Math.sqrt(fVal));
-      return BigInt.fromU64(<u64>fSqrt);
+    // Disable this optimization due to Unknown opcode 252 error in zkWASM
+    // if (this.le(BigInt.fromU64(<u64>F64.MAX_SAFE_INTEGER))) {
+    //   const fVal: f64 = <f64>this.toU64();
+    //   const fSqrt: f64 = Math.floor(Math.sqrt(fVal));
+    //   return BigInt.fromU64(<u64>fSqrt);
+    // }
+
+    // Rely on just sqrt of U64 if possible
+    if (this.lt(BigInt.fromU64(U64.MAX_VALUE))) {
+      const xU64 = this.toU64();
+      // Note: This will add 1 to xU64 then overflow if condition is set to lte.
+      let zU64 = (xU64 + 1) / 2;
+      let yU64 = xU64;
+      while (zU64 < yU64) {
+        yU64 = zU64;
+        zU64 = (xU64 / zU64 + zU64) / 2;
+      }
+      return BigInt.fromU64(yU64);
     }
 
     // Newton Raphson iteration
@@ -1045,6 +1209,12 @@ export class BigInt {
   }
 
   // handles sign and allows for easy replacement of algorithm in future update
+  /**
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1906 line of wat.
+   */
   mod<T>(other: T): BigInt {
     return this._divRemainder(BigInt.from(other));
   }
@@ -1312,6 +1482,11 @@ export class BigInt {
 
   // bit OPERATIONS ////////////////////////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 1925 lines of wat.
+   */
   @operator.prefix("~")
   bitNot(): BigInt {
     if (this.isNeg) {
@@ -1322,6 +1497,11 @@ export class BigInt {
     return this._addOne(true);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 894 lines of wat.
+   */
   bitAnd<T>(other: T): BigInt {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let a: BigInt = this;
@@ -1346,6 +1526,11 @@ export class BigInt {
     return a._andNot(b1);
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 894 lines of wat.
+   */
   bitOr<T>(other: T): BigInt {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let a: BigInt = this;
@@ -1371,6 +1556,11 @@ export class BigInt {
     }
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 661 lines of wat.
+   */
   bitXor<T>(other: T): BigInt {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let a: BigInt = this;
@@ -1501,14 +1691,29 @@ export class BigInt {
     return bits;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 23 lines of wat.
+   */
   isOdd(): boolean {
     return this.n > 0 && (this.d[0] & 1) == 1;
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 195 lines of wat.
+   */
   isZero(): boolean {
-    return this == BigInt.fromI32(0);
+    return this == BigInt.zero();
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 174 lines of wat.
+   */
   isI32(): boolean {
     return BigInt.fromI32(i32.MIN_VALUE) <= this && this <= BigInt.fromI32(i32.MAX_VALUE);
   }
@@ -1524,7 +1729,13 @@ export class BigInt {
 
   // SYNTAX SUGAR ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // BigInt with value 0
+  /**
+   * BigInt with value 0
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 44 line of wat.
+   */
   static zero(): BigInt {
     return BigInt.fromU16(0);
   }
