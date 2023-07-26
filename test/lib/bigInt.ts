@@ -116,6 +116,7 @@ export function testBigInt(): void {
   assert(bigint.bitXor(BigInt.fromString("1")).toString() == "18446744073709551617", "BigInt bitXor failed");
   assert(!bigint.isNegative, "BigInt isNegative failed");
   assert(!bigint.isOdd(), "BigInt isOdd failed");
+  assert(bigint.square().toString() == "340282366920938463463374607431768211456", "BigInt square failed");
 
   console.log("✅ Test BigInt");
 }
