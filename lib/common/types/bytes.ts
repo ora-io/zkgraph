@@ -673,6 +673,12 @@ export class Bytes extends ByteArray {
     return PtrDeref.read(changetype<usize>(this));
   }
 
+  /**
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 50 line of wat.
+   */
   slice(start: i32, end: i32 = -1): Bytes {
     end = end == -1 ? this.length : end;
     return Bytes.fromU8Array(super.slice(start, end));
@@ -705,16 +711,22 @@ export class Bytes extends ByteArray {
   }
 
   // Disabled due to the existence of implementation of ByteArray
-  toU32(): u32 {
-    assert(this.length <= 4);
-    var rst: u32 = 0;
-    for (var i = 0; i < min(4, this.length); i++) {
-      rst = rst << 8;
-      rst += this[i];
-    }
-    return rst;
-  }
+  // toU32(): u32 {
+  //   assert(this.length <= 4);
+  //   var rst: u32 = 0;
+  //   for (var i = 0; i < min(4, this.length); i++) {
+  //     rst = rst << 8;
+  //     rst += this[i];
+  //   }
+  //   return rst;
+  // }
 
+  /**
+   *
+   * Provable on zkWASM.
+   *
+   * WASM cost: 82 line of wat.
+   */
   padStart (targetLength: i32, padDigit: u8 = 0): Bytes {
     return this.padTo(targetLength, true, padDigit)
   }
@@ -748,19 +760,19 @@ export class Bytes extends ByteArray {
   }
 
   // Disabled due to the existence of implementation of ByteArray
-  @operator("==")
-  __opeq(right: Bytes): bool {
-    if (this.length != right.length) {
-      // console.log(this.length.toString() + '---' + right.length.toString());
-      return false;
-    }
-    for (var i = 0; i < this.length; i++) {
-      if (this[i] != right[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
+  // @operator("==")
+  // __opeq(right: Bytes): bool {
+  //   if (this.length != right.length) {
+  //     // console.log(this.length.toString() + '---' + right.length.toString());
+  //     return false;
+  //   }
+  //   for (var i = 0; i < this.length; i++) {
+  //     if (this[i] != right[i]) {
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // }
   // --------------------------------------
 
   /**
