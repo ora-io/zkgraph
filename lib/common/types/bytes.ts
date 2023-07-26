@@ -725,21 +725,29 @@ export class Bytes extends ByteArray {
     return rst;
   }
 
-  padTo(
-    total_length: i32,
-    is_positon_pre: bool = true,
-    paddingChar: u8 = 0
+  padStart (targetLength: i32, padDigit: u8 = 0): Bytes {
+    return this.padTo(targetLength, true, padDigit)
+  }
+
+  padEnd (targetLength: i32, padDigit: u8 = 0): Bytes {
+    return this.padTo(targetLength, false, padDigit)
+  }
+
+  private padTo(
+    targetLength: i32,
+    isPadStart: bool = true,
+    padDigit: u8 = 0
   ): Bytes {
-    if (total_length <= this.length) return this;
+    if (targetLength <= this.length) return this;
 
     // Prepare padding bytes
-    let _padding = new Bytes(total_length - this.length);
-    if (paddingChar != 0) {
-      _padding.fill(paddingChar);
+    let _padding = new Bytes(targetLength - this.length);
+    if (padDigit != 0) {
+      _padding.fill(padDigit);
     }
     // Concat
     let rst: ByteArray;
-    if (is_positon_pre) {
+    if (isPadStart) {
       // pre-padding
       rst = _padding.concat(this);
     } else {
