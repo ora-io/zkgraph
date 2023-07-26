@@ -26,9 +26,7 @@ import { config } from "../config.js";
 import { zkwasm_prove } from "./requests/zkwasm_prove.js";
 import { readFileSync, writeFileSync } from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
-import {
-  waitTaskStatus,
-} from "./requests/zkwasm_taskdetails.js";
+import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
 import { instantiateWasm, setupZKWasmMock } from "./common/bundle.js";
 
 program.version("1.0.0");
@@ -143,8 +141,6 @@ if (currentNpmScriptName() === "prove-local") {
   privateInputStr =
     formatVarLenInput(toHexString(rawReceipts)) +
     formatHexStringInput(block.receiptsRoot);
-
-  
 }
 
 switch (options.inputgen || options.test || options.prove) {
@@ -165,7 +161,7 @@ switch (options.inputgen || options.test || options.prove) {
     zkmain();
     console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
     break;
-   
+
   // Prove mode
   case options.prove === true:
     const compiledWasmBuffer = readFileSync(wasmPath);
@@ -185,13 +181,10 @@ switch (options.inputgen || options.test || options.prove) {
 
     console.log(`[*] IMAGE MD5: ${md5}`, "\n");
     if (isSetUpSuccess) {
-    //   console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
+      //   console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
 
       const taskId = response.data.result.id;
-      console.log(
-        `[+] PROVE TASK STARTED. TASK ID: ${taskId}`,
-        "\n"
-      );
+      console.log(`[+] PROVE TASK STARTED. TASK ID: ${taskId}`, "\n");
 
       console.log(
         "[*] Please wait for proof generation... (estimated: 1-5 min)",
@@ -201,18 +194,16 @@ switch (options.inputgen || options.test || options.prove) {
       const loading = logLoadingAnimation();
 
       let taskDetails;
-      try{
-        taskDetails = await waitTaskStatus(
-            taskId,
-            ["Done", "Fail"],
-            3000,
-            0
-          ); //TODO: timeout
-    } catch(error) {
+      taskDetails = await waitTaskStatus(
+        taskId,
+        ["Done", "Fail"],
+        3000,
+        0
+      ).catch((error) => {
         loading.stopAndClear();
-        console.error(error)
+        console.error(error);
         process.exit(1);
-    }
+      });
 
       if (taskDetails.status === "Done") {
         loading.stopAndClear();
@@ -221,15 +212,9 @@ switch (options.inputgen || options.test || options.prove) {
 
         // write proof to file as txt
         console.log("[+] Proof written to `build` folder.\n");
-        const instances = toHexStringBytes32Reverse(
-            taskDetails.instances
-        );
-        const proof = toHexStringBytes32Reverse(
-            taskDetails.proof
-        );
-        const aux = toHexStringBytes32Reverse(
-            taskDetails.aux
-        );
+        const instances = toHexStringBytes32Reverse(taskDetails.instances);
+        const proof = toHexStringBytes32Reverse(taskDetails.proof);
+        const aux = toHexStringBytes32Reverse(taskDetails.aux);
         writeFileSync(
           `build/proof_${taskId}.txt`,
           "Instances:\n" +
@@ -249,10 +234,7 @@ switch (options.inputgen || options.test || options.prove) {
 
         console.log("[-] PROVE FAILED.", "\n");
 
-        console.log(
-          `[-] ${taskDetails.internal_message}`,
-          "\n"
-        );
+        console.log(`[-] ${taskDetails.internal_message}`, "\n");
 
         logDivider();
 
