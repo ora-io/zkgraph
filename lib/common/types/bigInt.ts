@@ -113,13 +113,6 @@ export class BigInt {
     }
     res.isNeg = isNegative;
     res.trimLeadingZeros();
-    // log res.digits
-    let log = "";
-    for (let i = 0; i < res.d.length; i++) {
-      log += res.d[i].toString(16);
-      log += " ";
-    }
-    console.log("fromString 32: " + log);
     return res;
   }
 
@@ -216,12 +209,6 @@ export class BigInt {
 
   static fromBytes(bytes: Uint8Array, isNegative: boolean = false): BigInt {
     let digits = typeConversion.uint8ArrayToUint32Array(bytes);
-    let log = "fromBytes  32: ";
-    for (let i = 0; i < digits.length; i++) {
-      log += digits[i].toString(16);
-      log += " ";
-    }
-    console.log(log);
     return BigInt.fromDigits(
       digits,
       isNegative,
@@ -230,17 +217,10 @@ export class BigInt {
 
   static fromBytesBigEndian(bytes: Uint8Array, isNegative: boolean = false): BigInt {
     let digits = typeConversion.uint8ArrayToUint32Array(bytes, false);
-    const res = BigInt.fromDigits(
+    return BigInt.fromDigits(
       digits,
       isNegative,
     );
-    let log = "fromBytesBigEndian32: ";
-    for (let i = 0; i < res.d.length; i++) {
-      log += res.d[i].toString(16);
-      log += " ";
-    }
-    console.log(log);
-    return res;
   }
 
   // O(N)
