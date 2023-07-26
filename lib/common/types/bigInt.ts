@@ -384,8 +384,16 @@ export class BigInt {
     return this.compareTo(BigInt.from(other)) == 0;
   }
 
+  eq<T>(other: T): boolean {
+    return this.equals(other);
+  }
+
   notEqual<T>(other: T): boolean {
     return !this.equals(BigInt.from(other));
+  }
+
+  ne<T>(other: T): boolean {
+    return this.notEqual(other);
   }
 
   lt<T>(other: T): boolean {
@@ -396,12 +404,20 @@ export class BigInt {
     return this.compareTo(BigInt.from(other)) <= 0;
   }
 
+  lte<T>(other: T): boolean {
+    return this.le(other);
+  }
+
   gt<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) > 0;
   }
 
   ge<T>(other: T): boolean {
     return this.compareTo(BigInt.from(other)) >= 0;
+  }
+
+  gte<T>(other: T): boolean {
+    return this.ge(other);
   }
 
   private compareTo(other: BigInt): i32 {
@@ -443,6 +459,10 @@ export class BigInt {
     }
   }
 
+  add<T>(other: T): BigInt {
+    return this.plus(other);
+  }
+
   // signed subtraction
   minus<T>(other: T): BigInt {
     const subtrahend: BigInt = BigInt.from(other);
@@ -453,6 +473,10 @@ export class BigInt {
     } else {
       return subtrahend._sub(this, !this.isNeg);
     }
+  }
+
+  sub<T>(other: T): BigInt {
+    return this.minus(other);
   }
 
   // unsigned addition
@@ -796,6 +820,10 @@ export class BigInt {
     }
     res.isNeg = this.isNeg != multiplier.isNeg && res.n > 0;
     return res;
+  }
+
+  mul<T>(other: T): BigInt {
+    return this.times(other);
   }
 
   // unsigned multiplication that returns at most maxDigits
