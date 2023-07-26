@@ -2,17 +2,21 @@ import { readFileSync } from "fs";
 import fs from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
 import { config } from "../config.js";
-import { logDivider, logLoadingAnimation } from "./common/utils.js";
+import { logDivider, logLoadingAnimation, currentNpmScriptName } from "./common/utils.js";
 import { zkwasm_setup } from "./requests/zkwasm_setup.js";
 import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
 import path from "path";
 
-const wasmPath = config.WasmBinPath
-const compiledWasmBuffer = readFileSync(wasmPath);
+let wasmPath;
+if (currentNpmScriptName() === "setup-local") {
+    wasmPath = config.LocalWasmBinPath
+} else if (currentNpmScriptName() === "setup") {
+    wasmPath = config.WasmBinPath
+}
 
 // Message and form data
-const name = path.basename(config.WasmBinPath); // only use in zkwasm, can diff from local files
-const md5 = ZkWasmUtil.convertToMd5(compiledWasmBuffer).toUpperCase();
+const name = path.basename(wasmPath); // only use in zkwasm, can diff from local files
+const md5 = ZkWasmUtil.convertToMd5(readFileSync(wasmPath)).toUpperCase();
 const image = fs.createReadStream(wasmPath);
 const prikey = config.UserPrivateKey
 const description_url_encoded = "";
@@ -28,6 +32,7 @@ let [response, isSetUpSuccess, errorMessage] = await zkwasm_setup(name, md5, ima
     avator_url,
     circuit_size)
 
+
 if (isSetUpSuccess) {
     console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
 
@@ -37,11 +42,16 @@ if (isSetUpSuccess) {
 
     const loading = logLoadingAnimation();
 
-    const taskResult = await waitTaskStatus(response.data.result.id, ['Done', 'Fail'], 2000, 0); //TODO: timeout
-
-    if (taskResult === "Done" || taskResult === "Fail") {
-      loading.stopAndClear();
+    let taskResult
+    try{
+        taskResult = await waitTaskStatus(response.data.result.id, ['Done', 'Fail'], 3000, 0); //TODO: timeout
+    } catch(error) {
+        loading.stopAndClear();
+        console.error(error)
+        process.exit(1);
     }
+    
+    loading.stopAndClear();
 
     const taskStatus = (taskResult === "Done") ? "SUCCESS" : "FAILED"
 
