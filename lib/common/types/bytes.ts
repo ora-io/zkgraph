@@ -677,10 +677,22 @@ export class Bytes extends ByteArray {
    *
    * Provable on zkWASM.
    *
-   * WASM cost: 50 line of wat.
+   * WASM cost: 133 line of wat.
    */
-  slice(start: i32, end: i32 = -1): Bytes {
-    end = end == -1 ? this.length : end;
+  slice(start: i32 = 0, end: i32 = this.length): Bytes {
+    const len = this.length;
+
+    // Original Bytes is empty.
+    if (len === 0) return Bytes.empty();
+
+    // Handle last index
+    if (end === -1) end = len;
+
+    // Handle error inputs
+    if (start >= end) {
+      return Bytes.empty();
+    }
+
     return Bytes.fromU8Array(super.slice(start, end));
   }
 
@@ -725,12 +737,17 @@ export class Bytes extends ByteArray {
    *
    * Provable on zkWASM.
    *
-   * WASM cost: 82 line of wat.
+   * WASM cost: 65 line of wat.
    */
   padStart (targetLength: i32, padDigit: u8 = 0): Bytes {
     return this.padTo(targetLength, true, padDigit)
   }
 
+  /**
+   * Provable on zkWASM.
+   *
+   * WASM cost: 65 line of wat.
+   */
   padEnd (targetLength: i32, padDigit: u8 = 0): Bytes {
     return this.padTo(targetLength, false, padDigit)
   }
@@ -756,7 +773,7 @@ export class Bytes extends ByteArray {
       // post-padding
       rst = this.concat(_padding);
     }
-    return rst as Bytes;
+    return changetype<Bytes>(rst);
   }
 
   // Disabled due to the existence of implementation of ByteArray
