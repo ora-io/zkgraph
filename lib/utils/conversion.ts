@@ -5,10 +5,8 @@
 // Need optimization for zkWASM
 // For this implementation, we use the `as-bigint` lib by Polywrap
 // (https://github.com/polywrap/as-bigint)
-import { BigInt, ByteArray } from "../common/type";
+import { ByteArray } from "../common/type";
 // TODO: Remove third-party dependency
-import { BigInt as ASBigInt } from "../extlib/asBigInt";
-
 export function bytesToString(bytes: Uint8Array): string {
   let str = "";
   for (let i = 0; i < bytes.length; i++) {
@@ -24,14 +22,6 @@ export function bytesToHex(bytes: Uint8Array): string {
     hex += byte;
   }
   return "0x" + hex;
-}
-
-export function bigIntToString(bigInt: Uint8Array): string {
-  return bigIntToASBigInt(changetype<BigInt>(bigInt)).toString();
-}
-
-export function bigIntToHex(bigInt: Uint8Array): string {
-  return bigIntToASBigInt(changetype<BigInt>(bigInt)).toString(16);
 }
 
 export function stringToH160(s: string): Uint8Array {
@@ -91,7 +81,47 @@ export function bytesToBase58(n: Uint8Array): string {
 
 /**
  * Helper function to convert a BigInt to an ASBigInt for using `as-bigint` lib.
+ * Convert Uint8Array to Uint32Array (with digit mask that restrict each element to be Uint28)
  */
-export function bigIntToASBigInt(bigInt: BigInt): ASBigInt {
-  return ASBigInt.fromInt64(bigInt.toI64());
+export function uint8ArrayToUint32Array(
+  u8Array: Uint8Array,
+  littleEndian: bool = true,
+): Uint32Array {
+  let u8ArrayCopy: Uint8Array;
+
+  if (littleEndian) {
+    u8ArrayCopy = u8Array.slice();
+    u8ArrayCopy.reverse();
+  } else {
+    // trim leading zeros
+    let i = 0;
+    while (u8Array[i] == 0) i++;
+    u8ArrayCopy = u8Array.slice(i);
+  }
+
+  let hex = "";
+  for (let i = 0; i < u8ArrayCopy.length; i++) {
+    let byte = (u8ArrayCopy[i] < 16 ? "0" : "") + u8ArrayCopy[i].toString(16);
+    hex += byte;
+  }
+
+  const length = (hex.length + 6) / 7;
+  const u32Array = new Uint32Array(length);
+  for (let i = 0; i < length; i++) {
+    const firstIndex = hex.length - (i + 1) * 7;
+    const lastIndex = hex.length - i * 7;
+    // u32Array[i] = <u32>(
+    //   parseInt(hex.slice(firstIndex > 0 ? firstIndex : 0, lastIndex), 16)
+    // );
+    u32Array[i] = u32.parse(
+      hex.slice(firstIndex > 0 ? firstIndex : 0, lastIndex),
+      16,
+    );
+  }
+  return u32Array;
 }
+
+// TODO: depended by ByteArray.fromBigInt
+// export function uint32ArrayToUint8Array(u32Array: Uint32Array): Uint8Array {
+
+// }

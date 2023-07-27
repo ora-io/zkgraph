@@ -1,4 +1,5 @@
-import { ByteArray, Address, Bytes, BigInt } from "../../lib/common/type";
+import { ByteArray, Address, Bytes } from "../../lib/common/type";
+import { uint8ArrayToUint32Array } from "../../lib/utils/conversion";
 
 export function testUtils(): void {
   // ByteArray Utils Test
@@ -20,16 +21,16 @@ export function testUtils(): void {
 
   assert(addressFromString == addressFromBytes, "Address.fromString()");
 
-  // BigInt Utils Test
-  let bigInt = BigInt.fromString("1234567890");
-
-  assert(bigInt.toString() == "1234567890", "BigInt.toString()");
-
-  assert(bigInt.toHex() == "499602d2", "BigInt.toHex()");
-
-  assert(bigInt.toHexString() == "499602d2", "BigInt.toHexString()");
-
-  assert(bigInt.toHexString("0x") == "0x499602d2", "BigInt.toHexString()");
+  // uint8ArrayToUint32Array Test
+  let uint8Array = new Uint8Array(4);
+  uint8Array[0] = 0x12;
+  uint8Array[1] = 0x34;
+  uint8Array[2] = 0x56;
+  uint8Array[3] = 0x78;
+  let uint32Array = uint8ArrayToUint32Array(uint8Array);
+  assert(uint32Array.length == 2, "uint8ArrayToUint32Array()");
+  assert(uint32Array[0] == 0x8563412, "uint8ArrayToUint32Array()");
+  assert(uint32Array[1] == 0x7, "uint8ArrayToUint32Array()");
 
   console.log("✅ Test Utils");
 }

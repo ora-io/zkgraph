@@ -22,6 +22,14 @@ async function instantiate(module, imports = {}) {
         // lib/common/zkwasm/wasm_input(i32) => i64
         return zkwasmmock.wasm_input(x) || 0n;
       },
+      js_log(arg) {
+        // to compatible with c-wasm
+        console.log(arg);
+      },
+      js_log_u64(arg) {
+        // to compatible with c-wasm
+        console.log(arg);
+      },
     }),
   };
   const { exports } = await WebAssembly.instantiate(module, adaptedImports);
@@ -123,8 +131,28 @@ async function instantiate(module, imports = {}) {
   }
   return adaptedExports;
 }
-export const { memory, asmain, zkmain } = await (async (url) =>
-  instantiate(
+// export const { memory, asmain, zkmain } = await (async (url) =>
+//   instantiate(
+//     await (async () => {
+//       try {
+//         return await globalThis.WebAssembly.compileStreaming(
+//           globalThis.fetch(url),
+//         );
+//       } catch {
+//         return globalThis.WebAssembly.compile(
+//           await (await import("node:fs/promises")).readFile(url),
+//         );
+//       }
+//     })(),
+//     {},
+//   ))(new URL("../../build/zkgraph_full.wasm", import.meta.url));
+
+export const instantiateWasm = async (wasmpath) => {
+  // update this when move bundle.js
+  let curPathToRoot = "../../";
+
+  let url = new URL(curPathToRoot + wasmpath, import.meta.url);
+  return instantiate(
     await (async () => {
       try {
         return await globalThis.WebAssembly.compileStreaming(
@@ -137,4 +165,5 @@ export const { memory, asmain, zkmain } = await (async (url) =>
       }
     })(),
     {},
-  ))(new URL("../../build/zkgraph_local.wasm", import.meta.url));
+  );
+};

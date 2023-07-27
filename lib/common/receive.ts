@@ -1,5 +1,6 @@
 import { handleEvents } from "../../src/mapping";
-import { Event, Bytes, PtrDeref } from "./type";
+import { Event, Bytes } from "./type";
+import { PtrDeref } from "./types/bytes";
 
 /**
  *

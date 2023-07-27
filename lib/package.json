@@ -1,0 +1,16 @@
+{
+  "name": "@hyperoracle/zkgraph-lib",
+  "version": "0.0.1",
+  "description": "AssemblyScript library for writing zkGraph for Hyper Oracle",
+  "main": "index.ts",
+  "module": "index.ts",
+  "types": "index.ts",
+  "ascMain": "index.ts",
+  "dependencies": {
+    "assemblyscript": "0.19.10"
+  },
+  "scripts": {
+    "publish": "npm publish"
+  },
+  "homepage": "https://github.com/hyperoracle/zkgraph/tree/master/lib"
+}

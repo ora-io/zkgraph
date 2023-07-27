@@ -2,7 +2,19 @@
 
 ## Getting Started
 
-To create your zkGraph project based on this template, click `Use this template`, and `Creating a new repository`.
+To create your zkGraph project based on this template:
+
+Option 1:
+
+Click `Use this template`, and `Creating a new repository`.
+
+Option 2:
+
+Use `gh` cli
+
+```bash
+gh repo create zkgraph-new --public --template="https://github.com/hyperoracle/zkgraph.git"
+```
 
 ### Configuration
 
@@ -11,9 +23,12 @@ After clone your project, you need to create `config.js` file at root folder bas
 ```js
 // ./config.js
 export const config = {
-  // Etherum JSON RPC provider URL:
-  // (Please note the provider must support debug_getRawReceipts RPC method.)
+  // Update your Etherum JSON RPC provider URL here.
+  // Please note that the provider must support debug_getRawReceipts RPC method.
+  // Recommended provider: ANKR.
   JsonRpcProviderUrl: "https://{URL}",
+  UserPrivateKey: "0x{PRIVATE_KEY}",
+  // ...and other configs.
 };
 ```
 
@@ -49,11 +64,44 @@ npm run compile-local
 npm run exec-local -- {block_id}
 ```
 
-### Prove Local (input generation / pre-test)
+### Set Up Local Image
+
+```bash
+npm run setup-local
+```
+
+### Prove Local Image (input generation / pre-test / prove)
 
 ```bash
 npm run prove-local -- --inputgen {block_id} {expected_state}
 npm run prove-local -- --pretest {block_id} {expected_state}
+npm run prove-local -- --prove {block_id} {expected_state}
+```
+
+### Compile (with Compile Server)
+
+```bash
+npm run compile
+```
+
+### Set Up Image (Link Compiled with Compiler Server)
+
+```bash
+npm run setup
+```
+
+### Prove Full Image (Link Compiled with Compiler Server)
+
+```bash
+npm run prove -- --inputgen {block_id} {expected_state}
+npm run prove -- --pretest {block_id} {expected_state}
+npm run prove -- --prove {block_id} {expected_state}
+```
+
+### Verifier Contract Interface
+
+```AggregatorVerifier
+https://github.com/DelphinusLab/halo2aggregator-s/blob/main/sol/contracts/AggregatorVerifier.sol#L40
 ```
 
 ## Develop
@@ -114,8 +162,8 @@ More info and API reference can be found in [Hyper Oracle zkGraph docs](https://
 ## Lib Dev Tips
 
 1. Don't use `I8.parseInt` because it will be compiled to `i32.extend8_s (aka. Unknown opcode 192 (0xC0) in WASM)`.
-2. Don't use template literals (`${}`), for example when throwing errors, because it will be compiled to too many WASM instructions (~1000 diff).
-3. Don't use `FC extensions` opcodes, because it will be compiled to `Unknown opcode 252 (0xFC) in WASM`.
+2. Try not to use template literals (`${}`), for example when throwing errors, because it will be compiled to too many WASM instructions (~1000 diff).
+3. Try not to use `FC extensions` opcodes (`<u32>parseInt(...)`, `f64`, or `Math`), because it will be compiled to `Unknown opcode 252 (0xFC) in WASM`, and generates too many instructions.
 
 References: [WebAssembly Opcodes](https://pengowray.github.io/wasm-ops/).
 
@@ -123,7 +171,7 @@ References: [WebAssembly Opcodes](https://pengowray.github.io/wasm-ops/).
 
 This repo has the following folders relevant to zkGraph development:
 
-- `bundle-js`: APIs (the scripts in `package.json`) for compile, execute, prove, and deploy zkGraph for testing locally.
+- `api`: APIs (the scripts in `package.json`) for compile, execute, prove, and deploy zkGraph for testing locally, and fully with zkWASM node.
 - `example`: Example zkGraphs.
 - `lib`: AssemblyScript library for zkGraph development, with data structure such as Bytes, ByteArray and BigInt.
 - `src`: Where your actual zkGraph should be in. Contains `mapping.ts` and `zkgraph.yaml`.
