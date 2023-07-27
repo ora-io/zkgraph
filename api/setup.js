@@ -15,7 +15,7 @@ let wasmPath;
 let cirSz;
 if (currentNpmScriptName() === "setup-local") {
   wasmPath = config.LocalWasmBinPath;
-  cirSz = 19
+  cirSz = 20
 } else if (currentNpmScriptName() === "setup") {
   wasmPath = config.WasmBinPath;
   cirSz = 22
