@@ -57,6 +57,8 @@ export async function zkwasm_setup(
     let _;
     const response = await axios.request(requestConfig).catch((error) => {
         [errorMessage, _] = handleAxiosError(error)
+        console.log(error)
+        console.log("zkwasm_setup error, please retry.")
         isSetUpSuccess = false;
         // errorMessage = error.response.data;
     });
