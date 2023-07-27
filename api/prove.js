@@ -34,7 +34,7 @@ program.version("1.0.0");
 program
   .argument("<block id>", "Block number (or block hash) as runtime context")
   .argument("<expected state>", "State output of the zkgraph execution")
-  .option("-i, --inputgen", "Generate input")
+  .option("-i, --inputgen", "Run in input generation Mode")
   .option("-t, --test", "Run in test Mode")
   .option("-p, --prove", "Run in prove Mode");
 
@@ -47,6 +47,11 @@ program.parse(process.argv);
 
 const args = program.args;
 const options = program.opts();
+
+if ( ! (options.inputgen || options.test || options.prove) ){
+    console.error("error: missing running mode (-i / -t / -p)\n")
+    program.help()
+}
 
 switch (options.inputgen || options.test || options.prove) {
   // Input generation mode
