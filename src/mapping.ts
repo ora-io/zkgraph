@@ -1,9 +1,6 @@
 //@ts-ignore
 import { require } from "../lib/common/zkwasm";
-import { Bytes, Event, BigInt, ByteArray } from "../lib/common/type";
-// @ts-ignore
-@external("env", "js_log")
-export declare function js_log(x: i32): void
+import { Bytes, Event, BigInt } from "../lib/common/type";
 
 var esig_sync = Bytes.fromHexString('0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1');
 var esig_swap = Bytes.fromHexString('0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822');
