@@ -64,12 +64,20 @@ npm run compile-local
 npm run exec-local -- {block_id}
 ```
 
-### Prove Local (input generation / pre-test)
+### Set Up Local Image
+
+```bash
+npm run setup-local
+```
+
+### Prove Local Image (input generation / pre-test / prove)
 
 ```bash
 npm run prove-local -- --inputgen {block_id} {expected_state}
 npm run prove-local -- --pretest {block_id} {expected_state}
+npm run prove-local -- --prove {block_id} {expected_state}
 ```
+
 
 ### Compile (with Compile Server)
 
@@ -77,13 +85,13 @@ npm run prove-local -- --pretest {block_id} {expected_state}
 npm run compile
 ```
 
-### Set Up Image (with zkWASM Node)
+### Set Up Image (Link Compiled with Compiler Server)
 
 ```bash
 npm run setup
 ```
 
-### Prove (with zkWASM Node)
+### Prove Full Image (Link Compiled with Compiler Server)
 
 ```bash
 npm run prove -- --inputgen {block_id} {expected_state}
