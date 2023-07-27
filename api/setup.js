@@ -12,10 +12,13 @@ import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
 import path from "path";
 
 let wasmPath;
+let cirSz;
 if (currentNpmScriptName() === "setup-local") {
   wasmPath = config.LocalWasmBinPath;
+  cirSz = 19
 } else if (currentNpmScriptName() === "setup") {
   wasmPath = config.WasmBinPath;
+  cirSz = 22
 }
 
 // Message and form data
@@ -25,7 +28,7 @@ const image = fs.createReadStream(wasmPath);
 const prikey = config.UserPrivateKey;
 const description_url_encoded = "";
 const avator_url = "";
-const circuit_size = 22;
+const circuit_size = cirSz;
 
 // Log script name
 console.log(">> SET UP", "\n");
