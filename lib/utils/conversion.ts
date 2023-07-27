@@ -85,12 +85,12 @@ export function bytesToBase58(n: Uint8Array): string {
  */
 export function uint8ArrayToUint32Array(
   u8Array: Uint8Array,
-  littleEndian: bool = true
+  littleEndian: bool = true,
 ): Uint32Array {
   let u8ArrayCopy: Uint8Array;
 
   if (littleEndian) {
-    u8ArrayCopy= u8Array.slice();
+    u8ArrayCopy = u8Array.slice();
     u8ArrayCopy.reverse();
   } else {
     // trim leading zeros
@@ -113,7 +113,10 @@ export function uint8ArrayToUint32Array(
     // u32Array[i] = <u32>(
     //   parseInt(hex.slice(firstIndex > 0 ? firstIndex : 0, lastIndex), 16)
     // );
-    u32Array[i] = u32.parse(hex.slice(firstIndex > 0 ? firstIndex : 0, lastIndex), 16);
+    u32Array[i] = u32.parse(
+      hex.slice(firstIndex > 0 ? firstIndex : 0, lastIndex),
+      16,
+    );
   }
   return u32Array;
 }

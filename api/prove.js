@@ -48,9 +48,9 @@ program.parse(process.argv);
 const args = program.args;
 const options = program.opts();
 
-if ( ! (options.inputgen || options.test || options.prove) ){
-    console.error("error: missing running mode (-i / -t / -p)\n")
-    program.help()
+if (!(options.inputgen || options.test || options.prove)) {
+  console.error("error: missing running mode (-i / -t / -p)\n");
+  program.help();
 }
 
 switch (options.inputgen || options.test || options.prove) {
@@ -90,13 +90,13 @@ let rawreceiptList = await getRawReceipts(provider, blockid);
 const [filteredRawReceiptList, filteredEventList] = rlpDecodeAndEventFilter(
   rawreceiptList,
   fromHexString(source_address),
-  source_esigs.map((esig) => fromHexString(esig))
+  source_esigs.map((esig) => fromHexString(esig)),
 );
 
 // Gen Offsets
 let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
   filteredRawReceiptList,
-  filteredEventList
+  filteredEventList,
 );
 
 // Log receipt number from block, and filtered events
@@ -104,7 +104,7 @@ logReceiptAndEvents(
   rawreceiptList,
   blockid,
   matchedEventOffsets,
-  filteredEventList
+  filteredEventList,
 );
 
 // may remove
@@ -135,7 +135,7 @@ if (currentNpmScriptName() === "prove-local") {
     () => {
       console.log("[-] ERROR: Failed to getBlockByNumber()", "\n");
       process.exit(1);
-    }
+    },
   );
 
   // Generate inputs
@@ -181,7 +181,7 @@ switch (options.inputgen || options.test || options.prove) {
       prikey,
       md5,
       publicInputArray,
-      privateInputArray
+      privateInputArray,
     );
 
     console.log(`[*] IMAGE MD5: ${md5}`, "\n");
@@ -193,15 +193,14 @@ switch (options.inputgen || options.test || options.prove) {
 
       console.log(
         "[*] Please wait for proof generation... (estimated: 1-5 min)",
-        "\n"
+        "\n",
       );
 
       const loading = logLoadingAnimation();
 
       let taskDetails;
       try {
-        taskDetails = await waitTaskStatus(taskId, ["Done", "Fail"],
-         3000, 0); //TODO: timeout
+        taskDetails = await waitTaskStatus(taskId, ["Done", "Fail"], 3000, 0); //TODO: timeout
       } catch (error) {
         loading.stopAndClear();
         console.error(error);
@@ -214,7 +213,7 @@ switch (options.inputgen || options.test || options.prove) {
         console.log("[+] PROVE SUCCESS!", "\n");
 
         // write proof to file as txt
-        let outputProofFile = `build/proof_${taskId}.txt`
+        let outputProofFile = `build/proof_${taskId}.txt`;
         console.log(`[+] Proof written to ${outputProofFile} .\n`);
         const instances = toHexStringBytes32Reverse(taskDetails.instances);
         const proof = toHexStringBytes32Reverse(taskDetails.proof);
@@ -227,7 +226,7 @@ switch (options.inputgen || options.test || options.prove) {
             proof +
             "\n\nAux data:\n" +
             aux +
-            "\n"
+            "\n",
         );
 
         logDivider();

@@ -6,6 +6,6 @@ export class Event {
     public topic1: Bytes,
     public topic2: Bytes,
     public topic3: Bytes,
-    public data: Bytes
+    public data: Bytes,
   ) {}
 }

@@ -78,7 +78,6 @@ npm run prove-local -- --pretest {block_id} {expected_state}
 npm run prove-local -- --prove {block_id} {expected_state}
 ```
 
-
 ### Compile (with Compile Server)
 
 ```bash

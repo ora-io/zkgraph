@@ -8,9 +8,9 @@ export async function getRawReceipts(ethersProvider, blockid) {
 }
 
 export async function getBlockByNumber(ethersProvider, blockNumber) {
-    const fullBlock = await ethersProvider.send(
-        'eth_getBlockByNumber',
-        [ethers.utils.hexValue(blockNumber), false]
-    )
-    return fullBlock;
+  const fullBlock = await ethersProvider.send("eth_getBlockByNumber", [
+    ethers.utils.hexValue(blockNumber),
+    false,
+  ]);
+  return fullBlock;
 }

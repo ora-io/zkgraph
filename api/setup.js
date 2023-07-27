@@ -15,10 +15,10 @@ let wasmPath;
 let cirSz;
 if (currentNpmScriptName() === "setup-local") {
   wasmPath = config.LocalWasmBinPath;
-  cirSz = 20
+  cirSz = 20;
 } else if (currentNpmScriptName() === "setup") {
   wasmPath = config.WasmBinPath;
-  cirSz = 22
+  cirSz = 22;
 }
 
 // Message and form data
@@ -40,7 +40,7 @@ let [response, isSetUpSuccess, errorMessage] = await zkwasm_setup(
   prikey,
   description_url_encoded,
   avator_url,
-  circuit_size
+  circuit_size,
 );
 
 if (isSetUpSuccess) {
@@ -48,7 +48,7 @@ if (isSetUpSuccess) {
 
   console.log(
     `[+] SET UP TASK STARTED. TASK ID: ${response.data.result.id}`,
-    "\n"
+    "\n",
   );
 
   console.log("[*] Please wait for image set up... (estimated: 1-5 min)", "\n");
@@ -61,7 +61,7 @@ if (isSetUpSuccess) {
       response.data.result.id,
       ["Done", "Fail"],
       3000,
-      0
+      0,
     ); //TODO: timeout
   } catch (error) {
     loading.stopAndClear();
@@ -75,7 +75,7 @@ if (isSetUpSuccess) {
 
   console.log(
     `[${taskStatus === "SUCCESS" ? "+" : "-"}] SET UP ${taskStatus}`,
-    "\n"
+    "\n",
   );
 
   logDivider();

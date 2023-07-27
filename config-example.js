@@ -10,5 +10,5 @@ export const config = {
   CompilerServerEndpoint: "https://compiler.hyperoracle.io/compile",
 
   WasmBinPath: "build/zkgraph_full.wasm",
-  LocalWasmBinPath: "build/zkgraph_local.wasm"
+  LocalWasmBinPath: "build/zkgraph_local.wasm",
 };

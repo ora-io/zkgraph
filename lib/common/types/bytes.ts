@@ -747,8 +747,8 @@ export class Bytes extends ByteArray {
    *
    * WASM cost: 65 line of wat.
    */
-  padStart (targetLength: i32, padDigit: u8 = 0): Bytes {
-    return this.padTo(targetLength, true, padDigit)
+  padStart(targetLength: i32, padDigit: u8 = 0): Bytes {
+    return this.padTo(targetLength, true, padDigit);
   }
 
   /**
@@ -756,14 +756,14 @@ export class Bytes extends ByteArray {
    *
    * WASM cost: 65 line of wat.
    */
-  padEnd (targetLength: i32, padDigit: u8 = 0): Bytes {
-    return this.padTo(targetLength, false, padDigit)
+  padEnd(targetLength: i32, padDigit: u8 = 0): Bytes {
+    return this.padTo(targetLength, false, padDigit);
   }
 
   private padTo(
     targetLength: i32,
     isPadStart: bool = true,
-    padDigit: u8 = 0
+    padDigit: u8 = 0,
   ): Bytes {
     if (targetLength <= this.length) return this;
 
@@ -894,7 +894,7 @@ export class Address extends Bytes {
       throw new Error(
         // `Bytes of length ${b.length} can not be converted to 20 byte addresses`
         // Don't use ${} in error message for better performance in zkWASM
-        `Bytes of length of (not 20) can not be converted to 20 byte addresses`
+        `Bytes of length of (not 20) can not be converted to 20 byte addresses`,
       );
     }
     return changetype<Address>(b);

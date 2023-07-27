@@ -5,5 +5,5 @@ import { Bytes, Event, BigInt, ByteArray } from "../lib/common/type";
 // @external("env", "js_log")
 // export declare function js_log(x: i32): void
 export function handleEvents(events: Event[]): Bytes {
-    return Bytes.fromHexString("Hello zkGraph!");
+  return Bytes.fromHexString("Hello zkGraph!");
 }

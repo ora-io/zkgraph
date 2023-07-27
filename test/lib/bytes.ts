@@ -37,7 +37,7 @@ export function testBytesFromUTF8(): void {
   console.log("✅ Test Bytes from UTF8");
 }
 
-export function testBytesAddedFunctions() : void {
+export function testBytesAddedFunctions(): void {
   // Normal slice
   let bytes = Bytes.fromHexString("0x56696b746f726961").slice(0, 4);
   assert(bytes.length == 4, `Bytes length ${bytes.length} is not 4`);
