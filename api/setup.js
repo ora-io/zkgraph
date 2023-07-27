@@ -52,9 +52,9 @@ if (isSetUpSuccess) {
 
   const loading = logLoadingAnimation();
 
-  let taskResult;
+  let taskDetails;
   try {
-    taskResult = await waitTaskStatus(
+    taskDetails = await waitTaskStatus(
       response.data.result.id,
       ["Done", "Fail"],
       3000,
@@ -68,7 +68,7 @@ if (isSetUpSuccess) {
 
   loading.stopAndClear();
 
-  const taskStatus = taskResult === "Done" ? "SUCCESS" : "FAILED";
+  const taskStatus = taskDetails.status === "Done" ? "SUCCESS" : "FAILED";
 
   console.log(
     `[${taskStatus === "SUCCESS" ? "+" : "-"}] SET UP ${taskStatus}`,
