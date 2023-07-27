@@ -214,12 +214,13 @@ switch (options.inputgen || options.test || options.prove) {
         console.log("[+] PROVE SUCCESS!", "\n");
 
         // write proof to file as txt
-        console.log("[+] Proof written to `build` folder.\n");
+        let outputProofFile = `build/proof_${taskId}.txt`
+        console.log(`[+] Proof written to ${outputProofFile} .\n`);
         const instances = toHexStringBytes32Reverse(taskDetails.instances);
         const proof = toHexStringBytes32Reverse(taskDetails.proof);
         const aux = toHexStringBytes32Reverse(taskDetails.aux);
         writeFileSync(
-          `build/proof_${taskId}.txt`,
+          outputProofFile,
           "Instances:\n" +
             instances +
             "\n\nProof transcripts:\n" +
