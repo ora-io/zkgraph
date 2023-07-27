@@ -615,6 +615,10 @@ export class ByteArray extends Uint8Array {
     return true;
   }
 
+  eq(other: ByteArray): boolean {
+    return this.equals(other);
+  }
+
   /**
    * Provable on zkWASM.
    *
@@ -623,6 +627,10 @@ export class ByteArray extends Uint8Array {
   @operator("!=")
   notEqual(other: ByteArray): boolean {
     return !(this == other);
+  }
+
+  ne(other: ByteArray): boolean {
+    return this.notEqual(other);
   }
 }
 
