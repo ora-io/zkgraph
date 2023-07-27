@@ -52,16 +52,19 @@ if (isSetUpSuccess) {
 
   const loading = logLoadingAnimation();
 
-  let taskResult = await waitTaskStatus(
-    response.data.result.id,
-    ["Done", "Fail"],
-    3000,
-    0
-  ).catch((error) => {
+  let taskResult;
+  try {
+    taskResult = await waitTaskStatus(
+      response.data.result.id,
+      ["Done", "Fail"],
+      3000,
+      0
+    ); //TODO: timeout
+  } catch (error) {
     loading.stopAndClear();
     console.error(error);
     process.exit(1);
-  });
+  }
 
   loading.stopAndClear();
 

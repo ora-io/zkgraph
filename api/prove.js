@@ -194,16 +194,14 @@ switch (options.inputgen || options.test || options.prove) {
       const loading = logLoadingAnimation();
 
       let taskDetails;
-      taskDetails = await waitTaskStatus(
-        taskId,
-        ["Done", "Fail"],
-        3000,
-        0
-      ).catch((error) => {
+      try {
+        taskDetails = await waitTaskStatus(taskId, ["Done", "Fail"],
+         3000, 0); //TODO: timeout
+      } catch (error) {
         loading.stopAndClear();
         console.error(error);
         process.exit(1);
-      });
+      }
 
       if (taskDetails.status === "Done") {
         loading.stopAndClear();
