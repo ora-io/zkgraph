@@ -58,7 +58,7 @@ export async function zkwasm_setup(
     [errorMessage, _] = handleAxiosError(error);
     if (errorMessage != "Error: Image already exists!") {
       console.log(error);
-      console.log("zkwasm_setup error, please retry.");
+      console.log("Error in zkwasm_setup. Please retry.");
     }
     isSetUpSuccess = false;
     // errorMessage = error.response.data;
