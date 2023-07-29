@@ -78,6 +78,9 @@ if (isSetUpSuccess) {
     "\n",
   );
 
+  // Log extra new line before divider.
+  console.log();
+
   taskPrettyPrint(taskDetails, '[*] ')
 
   logDivider();

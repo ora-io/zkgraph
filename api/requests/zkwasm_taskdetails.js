@@ -88,11 +88,11 @@ function millToHumanReadable(mill){
 }
 
 export function taskPrettyPrint(resData, prefix = ''){
-    console.log(`${prefix}task submit time: ${resData.submit_time}`)
-    console.log(`${prefix}process started: ${resData.process_started}`)
-    console.log(`${prefix}process finished: ${resData.process_finished}`)
-    console.log(`${prefix}pending time: ${millToHumanReadable(new Date(resData.process_started) - new Date(resData.submit_time))}`)
-    console.log(`${prefix}running time: ${millToHumanReadable(new Date(resData.process_finished) - new Date(resData.process_started))}`)
+    console.log(`${prefix}Task submit time: ${resData.submit_time}`)
+    console.log(`${prefix}Process started: ${resData.process_started}`)
+    console.log(`${prefix}Process finished: ${resData.process_finished}`)
+    console.log(`${prefix}Pending time: ${millToHumanReadable(new Date(resData.process_started) - new Date(resData.submit_time))}`)
+    console.log(`${prefix}Running time: ${millToHumanReadable(new Date(resData.process_finished) - new Date(resData.process_started))}`)
 }
 
 
