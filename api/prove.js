@@ -26,7 +26,7 @@ import { config } from "../config.js";
 import { zkwasm_prove } from "./requests/zkwasm_prove.js";
 import { readFileSync, writeFileSync } from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
-import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
+import { waitTaskStatus, taskPrettyPrint } from "./requests/zkwasm_taskdetails.js";
 import { instantiateWasm, setupZKWasmMock } from "./common/bundle.js";
 
 program.version("1.0.0");
@@ -228,6 +228,8 @@ switch (options.inputgen || options.test || options.prove) {
             aux +
             "\n",
         );
+
+        taskPrettyPrint(taskDetails, '[*] ')
 
         logDivider();
 

@@ -81,9 +81,25 @@ export async function waitTaskStatus(
   });
 }
 
+function millToHumanReadable(mill){
+    let min = Math.floor(mill / 60000)
+    let sec = (mill % 60000) / 1000
+    return `${min} min ${sec} sec`
+}
+
+export function taskPrettyPrint(resData, prefix = ''){
+    console.log(`${prefix}task submit time: ${resData.submit_time}`)
+    console.log(`${prefix}process started: ${resData.process_started}`)
+    console.log(`${prefix}process finished: ${resData.process_finished}`)
+    console.log(`${prefix}pending time: ${millToHumanReadable(new Date(resData.process_started) - new Date(resData.submit_time))}`)
+    console.log(`${prefix}running time: ${millToHumanReadable(new Date(resData.process_finished) - new Date(resData.process_started))}`)
+}
+
+
 // try{
 // let a = await waitTaskStatus('64c0c2bbf0e3eee93f75c260', ['Done', 'Fail'], 100);
-//     console.log(a)
+// // console.log(a)
+// taskPrettyPrint(a, '[*] ')
 // }catch(error) {
 //     console.log(error)
 // }
