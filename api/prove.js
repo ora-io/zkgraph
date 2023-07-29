@@ -231,6 +231,9 @@ switch (options.inputgen || options.test || options.prove) {
 
         taskPrettyPrint(taskDetails, '[*] ')
 
+        // Log extra new line before divider.
+        console.log();
+
         logDivider();
 
         process.exit(0);
