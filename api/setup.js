@@ -8,7 +8,10 @@ import {
   currentNpmScriptName,
 } from "./common/utils.js";
 import { zkwasm_setup } from "./requests/zkwasm_setup.js";
-import { waitTaskStatus, taskPrettyPrint } from "./requests/zkwasm_taskdetails.js";
+import {
+  waitTaskStatus,
+  taskPrettyPrint,
+} from "./requests/zkwasm_taskdetails.js";
 import path from "path";
 
 let wasmPath;
@@ -81,7 +84,7 @@ if (isSetUpSuccess) {
   // Log extra new line before divider.
   console.log();
 
-  taskPrettyPrint(taskDetails, '[*] ')
+  taskPrettyPrint(taskDetails, "[*] ");
 
   logDivider();
 
