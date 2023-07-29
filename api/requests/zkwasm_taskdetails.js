@@ -81,20 +81,27 @@ export async function waitTaskStatus(
   });
 }
 
-function millToHumanReadable(mill){
-    let min = Math.floor(mill / 60000)
-    let sec = (mill % 60000) / 1000
-    return `${min} min ${sec} sec`
+function millToHumanReadable(mill) {
+  let min = Math.floor(mill / 60000);
+  let sec = (mill % 60000) / 1000;
+  return `${min} min ${sec} sec`;
 }
 
-export function taskPrettyPrint(resData, prefix = ''){
-    console.log(`${prefix}Task submit time: ${resData.submit_time}`)
-    console.log(`${prefix}Process started: ${resData.process_started}`)
-    console.log(`${prefix}Process finished: ${resData.process_finished}`)
-    console.log(`${prefix}Pending time: ${millToHumanReadable(new Date(resData.process_started) - new Date(resData.submit_time))}`)
-    console.log(`${prefix}Running time: ${millToHumanReadable(new Date(resData.process_finished) - new Date(resData.process_started))}`)
+export function taskPrettyPrint(resData, prefix = "") {
+  console.log(`${prefix}Task submit time: ${resData.submit_time}`);
+  console.log(`${prefix}Process started: ${resData.process_started}`);
+  console.log(`${prefix}Process finished: ${resData.process_finished}`);
+  console.log(
+    `${prefix}Pending time: ${millToHumanReadable(
+      new Date(resData.process_started) - new Date(resData.submit_time),
+    )}`,
+  );
+  console.log(
+    `${prefix}Running time: ${millToHumanReadable(
+      new Date(resData.process_finished) - new Date(resData.process_started),
+    )}`,
+  );
 }
-
 
 // try{
 // let a = await waitTaskStatus('64c0c2bbf0e3eee93f75c260', ['Done', 'Fail'], 100);

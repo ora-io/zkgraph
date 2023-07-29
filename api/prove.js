@@ -26,7 +26,10 @@ import { config } from "../config.js";
 import { zkwasm_prove } from "./requests/zkwasm_prove.js";
 import { readFileSync, writeFileSync } from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
-import { waitTaskStatus, taskPrettyPrint } from "./requests/zkwasm_taskdetails.js";
+import {
+  waitTaskStatus,
+  taskPrettyPrint,
+} from "./requests/zkwasm_taskdetails.js";
 import { instantiateWasm, setupZKWasmMock } from "./common/bundle.js";
 
 program.version("1.0.0");
@@ -229,7 +232,10 @@ switch (options.inputgen || options.test || options.prove) {
             "\n",
         );
 
-        taskPrettyPrint(taskDetails, '[*] ')
+        taskPrettyPrint(taskDetails, "[*] ");
+
+        // Log extra new line before divider.
+        console.log();
 
         // Log extra new line before divider.
         console.log();

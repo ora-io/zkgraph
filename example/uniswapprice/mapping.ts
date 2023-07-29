@@ -50,7 +50,7 @@ export function handleEvents(events: Event[]): Bytes {
     require(false);
     return Bytes.empty(); // Omit compile error, never goes here
   } else {
-    let price0 = calcPrice(lastSyncEvent)ź
+    let price0 = calcPrice(lastSyncEvent);
 
     // console.log("Current price is: " + (price0.toI64() / 10**price_decimals).toString() + "." + (price0.toI64() % 10**price_decimals).toString())
 
