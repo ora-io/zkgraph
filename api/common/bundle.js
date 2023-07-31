@@ -14,18 +14,6 @@ async function instantiate(module, imports = {}) {
         text = __liftString(text >>> 0);
         console.log(text);
       },
-      // FIXME - if you use provider connected to Goerli Testnet and run
-      // `npm run exec-local -- 9438792` then it returns the following error
-      // since `x` below is not defined
-      //
-      // ```
-      // [-] zkwasm require condition is false
-      // file:///Users/luke/code/github/ltfschoen/zkgraph/api/common/zkwasm_mock.js:79
-      //       throw Error("Abort execution");
-      //             ^
-      // Error: Abort execution
-      // ```
-
       require(x) {
         // sdk/zkwasm/require1(i32) => i64
         ZKWASMMock.require(x);
