@@ -18,18 +18,29 @@ gh repo create zkgraph-new --public --template="https://github.com/hyperoracle/z
 
 ### Configuration
 
-After clone your project, you need to create `config.js` file at root folder based on `config-example.js`
+After cloning your project, you need to create `config.js` file at root folder based on `config-example.js`
+
+Generate an environment file by running `cp .env-example .env`.
+
+If you wish to use ANKR to create JSON RPC requests to the Ethereum Goerli Testnet then go to https://www.ankr.com/rpc/ and click "Base Goerli Testnet" and then copy the "HTTPS Endpoint" value and paste it as the value of `URL_ANKR_JSON_RPC_GOERLI` in the .env file.
+
+Lastly paste the private key of an Ethereum address that has Goerli Testnet Eth as the value of `PRIVATE_KEY_GOERLI` in the .env file. To obtain Goerli Testnet Eth refer to [this article](https://www.coingecko.com/learn/goerli-eth).
 
 ```js
 // ./config.js
 export const config = {
-  // Update your Etherum JSON RPC provider URL here.
+  // Update your Ethereum JSON RPC provider URL here.
   // Please note that the provider must support debug_getRawReceipts RPC method.
   // Recommended provider: ANKR.
-  JsonRpcProviderUrl: "https://{URL}",
-  UserPrivateKey: "0x{PRIVATE_KEY}",
+  JsonRpcProviderUrl: "https://{URL_ANKR_JSON_RPC_GOERLI}",
+  UserPrivateKey: "0x{PRIVATE_KEY_GOERLI}",
   // ...and other configs.
 };
+```
+
+> To check if the provider supports the [`debug_getRawReceipts`](https://github.com/ethereum/go-ethereum/pull/24773) JSON RPC method, check if the following returns a response `{"jsonrpc":"2.0","id":42,"result":["...}`. In the example below the argument is the block hash (i.e. 0x3bb580f7645e2bdeb34b226f1b559d22a4a1ba5e2474504e294088389923ebd0) of a block number (i.e. 9438739) on the Goerli Testnet where the provider JSON RPC endpoint was obtained from https://ethereum-goerli-rpc.allthatnode.com
+```bash
+curl -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"debug_getRawReceipts","params":["0x3bb580f7645e2bdeb34b226f1b559d22a4a1ba5e2474504e294088389923ebd0"],"id":42}' https://ethereum-goerli-rpc.allthatnode.com
 ```
 
 Then run:
@@ -63,6 +74,8 @@ npm run compile-local
 ```bash
 npm run exec-local -- {block_id}
 ```
+
+Note: If using Ethereum Goerli Testnet then replace the `block_id` above with a block from https://goerli.etherscan.io/blocks
 
 ### Set Up Local Image
 

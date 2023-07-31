@@ -84,7 +84,7 @@ if (currentNpmScriptName() === "compile-local") {
   // Compile Locally
   localCompile(config.LocalWasmBinPath, watPath);
 } else if (currentNpmScriptName() === "compile") {
-  // Test Compile Erro with Local Compile
+  // Test Compile Error with Local Compile
   localCompile("build/tmp.wasm", "build/tmp.wat");
 
   // Only Call Compile Server When No Local Compile Errors

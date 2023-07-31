@@ -67,6 +67,7 @@ let wasmPath;
 
 let asmain_exported;
 if (currentNpmScriptName() === "exec-local") {
+  // e.g. build/zkgraph_local.wasm
   wasmPath = config.LocalWasmBinPath;
   const { asmain } = await instantiateWasm(wasmPath);
   asmain_exported = asmain;
@@ -76,7 +77,6 @@ if (currentNpmScriptName() === "exec-local") {
   asmain_exported = asmain;
   __as_start();
 }
-
 // Execute zkgraph that would call mapping.ts
 let state = asmain_exported(rawReceipts, matchedEventOffsets);
 
