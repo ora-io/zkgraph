@@ -8,6 +8,8 @@ export const config = {
 
   ZkwasmProviderUrl: "https://zkwasm-explorer.delphinuslab.com:8090",
   CompilerServerEndpoint: "https://compiler.hyperoracle.io/compile",
+  PinataEndpoint: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+  PinataJWT: "eyJhbGc...",
 
   WasmBinPath: "build/zkgraph_full.wasm",
   LocalWasmBinPath: "build/zkgraph_local.wasm",

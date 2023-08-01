@@ -78,6 +78,12 @@ npm run prove-local -- --pretest {block_id} {expected_state}
 npm run prove-local -- --prove {block_id} {expected_state}
 ```
 
+### Upload Local zkGraph (Code and Local Image)
+
+```bash
+npm run upload-local -- [zkgraph_name]
+```
+
 ### Compile (with Compile Server)
 
 ```bash
@@ -96,6 +102,12 @@ npm run setup
 npm run prove -- --inputgen {block_id} {expected_state}
 npm run prove -- --pretest {block_id} {expected_state}
 npm run prove -- --prove {block_id} {expected_state}
+```
+
+### Upload zkGraph (Code and Full Image)
+
+```bash
+npm run upload -- [zkgraph_name]
 ```
 
 ### Verifier Contract Interface
