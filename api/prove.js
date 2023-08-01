@@ -237,9 +237,6 @@ switch (options.inputgen || options.test || options.prove) {
         // Log extra new line before divider.
         console.log();
 
-        // Log extra new line before divider.
-        console.log();
-
         logDivider();
 
         process.exit(0);
