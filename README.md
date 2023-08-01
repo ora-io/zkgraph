@@ -61,7 +61,7 @@ npm run compile-local
 ### Execute Locally
 
 ```bash
-npm run exec-local -- {block_id}
+npm run exec-local -- <block_id>
 ```
 
 ### Set Up Local Image
@@ -73,9 +73,9 @@ npm run setup-local
 ### Prove Local Image (input generation / pre-test / prove)
 
 ```bash
-npm run prove-local -- --inputgen {block_id} {expected_state}
-npm run prove-local -- --pretest {block_id} {expected_state}
-npm run prove-local -- --prove {block_id} {expected_state}
+npm run prove-local -- --inputgen <block_id> <expected_state>
+npm run prove-local -- --pretest <block_id> <expected_state>
+npm run prove-local -- --prove <block_id> <expected_state>
 ```
 
 ### Upload Local zkGraph (Code and Local Image)
@@ -99,9 +99,9 @@ npm run setup
 ### Prove Full Image (Link Compiled with Compiler Server)
 
 ```bash
-npm run prove -- --inputgen {block_id} {expected_state}
-npm run prove -- --pretest {block_id} {expected_state}
-npm run prove -- --prove {block_id} {expected_state}
+npm run prove -- --inputgen <block_id> <expected_state>
+npm run prove -- --pretest <block_id> <expected_state>
+npm run prove -- --prove <block_id> <expected_state>
 ```
 
 ### Upload zkGraph (Code and Full Image)
