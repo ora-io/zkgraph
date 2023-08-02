@@ -78,6 +78,12 @@ npm run prove-local -- --pretest <block_id> <expected_state>
 npm run prove-local -- --prove <block_id> <expected_state>
 ```
 
+### Deploy Verification Contract for Local Image
+
+```bash
+npm run deploy-local -- <network name>
+```
+
 ### Upload Local zkGraph (Code and Local Image)
 
 ```bash
@@ -102,6 +108,12 @@ npm run setup
 npm run prove -- --inputgen <block_id> <expected_state>
 npm run prove -- --pretest <block_id> <expected_state>
 npm run prove -- --prove <block_id> <expected_state>
+```
+
+### Deploy Verification Contract for Full Image
+
+```bash
+npm run deploy -- <network name>
 ```
 
 ### Upload zkGraph (Code and Full Image)
