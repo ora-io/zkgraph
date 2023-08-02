@@ -252,6 +252,7 @@ switch (options.inputgen || options.test || options.prove) {
         process.exit(1);
       }
     } else {
+      console.log(`[-] PROVE CANNOT BE STARTED.`, "\n");
       // Log status
       console.log(`[-] ${errorMessage}`, "\n");
 
