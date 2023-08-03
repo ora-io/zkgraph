@@ -48,7 +48,9 @@ sh test.sh
 
 ## Commands
 
-The workflow of local zkGraph development is: `Develop` (code in /src) -> `Compile` (to get compiled wasm image) -> `Execute` (to get expected output) -> `Prove` (to generate input and pre-test for actual proving) -> `Deploy`.
+The workflow of local zkGraph development must follow: `Develop` (code in /src) -> `Compile` (get compiled wasm image) -> `Execute` (get expected output) -> `Prove` (generate input and pre-test for actual proving) -> `Deploy` (deploy verification contract) -> `Verify` (verify proof on-chain).
+
+To upload and publish your zkGraph, you should `Upload` (upload code to IPFS), and then `Publish` (register zkGraph on onchain zkGraph Registry).
 
 If you encounter any problem, please refer to the [test.sh](./test.sh) for the example usage of the commands.
 
@@ -81,7 +83,7 @@ npm run prove-local -- --prove <block_id> <expected_state>
 ### Deploy Verification Contract for Local Image
 
 ```bash
-npm run deploy-local -- <network name>
+npm run deploy-local -- <network_name (goerli / sepolia)>
 ```
 
 ### Upload Local zkGraph (Code and Local Image)
@@ -113,7 +115,7 @@ npm run prove -- --prove <block_id> <expected_state>
 ### Deploy Verification Contract for Full Image
 
 ```bash
-npm run deploy -- <network name>
+npm run deploy -- <network_name (goerli / sepolia)>
 ```
 
 ### Upload zkGraph (Code and Full Image)
