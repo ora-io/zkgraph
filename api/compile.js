@@ -46,9 +46,8 @@ const remoteCompile = async (wasmPath, watPath) => {
 
   // Set up form data
   let data = new FormData();
-  data.append("file", fs.createReadStream(mappingPath));
-  data.append("source_address", source_address);
-  data.append("source_sigs_array", concatHexStrings(source_esigs));
+  data.append("asFile", fs.createReadStream(mappingPath));
+  data.append("yamlFile", fs.createReadStream(configPath));
 
   // Set up request config
   let requestConfig = {
@@ -118,7 +117,7 @@ if (isCompilationSuccess) {
   process.exit(0);
 } else {
   // Log status
-  console.log("\n" + "[-] ERROR WHEN COMPILING." + "\n");
+  console.log("[-] ERROR WHEN COMPILING." + "\n");
 
   logDivider();
 
