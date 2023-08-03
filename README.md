@@ -124,11 +124,13 @@ npm run deploy -- <network_name (goerli / sepolia)>
 npm run upload -- [zkgraph_name]
 ```
 
-### Verifier Contract Interface
+### Verify Proof Onchain
 
-```AggregatorVerifier
-https://github.com/DelphinusLab/halo2aggregator-s/blob/main/sol/contracts/AggregatorVerifier.sol#L40
+```bash
+npm run verify -- <verifier_deployed_network_name> <verifier_contract_address> <prove_task_id>
 ```
+
+See also: [Verifier Contract Interface](https://github.com/DelphinusLab/halo2aggregator-s/blob/main/sol/contracts/AggregatorVerifier.sol#L40).
 
 ## Develop
 
