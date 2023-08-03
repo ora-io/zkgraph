@@ -13,7 +13,7 @@
     "prove": "node api/prove.js",
     "upload": "node api/upload.js",
     "deploy": "node api/deploy.js",
-    "verify": "",
+    "verify": "node api/verify.js",
     "format": "prettier --write -c **/*.{js,ts,md}",
     "lint": "prettier -c **/*.{js,ts,md}",
     "test-lib": "asc test/lib/test.ts -o build/lib/test.wasm --bindings esm && node test/lib/test.js"
@@ -21,6 +21,7 @@
   "type": "module",
   "dependencies": {
     "axios": "^1.4.0",
+    "bn.js": "^5.2.1",
     "commander": "^11.0.0",
     "ethers": "^5.7.2",
     "form-data": "^4.0.0",
