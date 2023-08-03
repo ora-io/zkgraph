@@ -54,7 +54,6 @@ export async function pinata_upload(
   let _;
   const response = await axios.request(requestConfig).catch((error) => {
     [errorMessage, _] = handleAxiosError(error);
-    console.log(error);
     isUploadSuccess = false;
   });
 
