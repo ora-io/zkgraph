@@ -130,6 +130,12 @@ npm run upload -- [zkgraph_name]
 npm run verify -- <verifier_deployed_network_name> <verifier_contract_address> <prove_task_id>
 ```
 
+### Publish and Register zkGraph Onchain
+
+```bash
+npm run publish -- <network_name (sepolia)> <verifier_contract_address> <destination_contract_address> <ipfs_hash> <bounty_reward_per_trigger>
+```
+
 See also: [Verifier Contract Interface](https://github.com/DelphinusLab/halo2aggregator-s/blob/main/sol/contracts/AggregatorVerifier.sol#L40).
 
 ## Develop

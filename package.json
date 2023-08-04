@@ -14,6 +14,7 @@
     "upload": "node api/upload.js",
     "deploy": "node api/deploy.js",
     "verify": "node api/verify.js",
+    "publish": "node api/publish.js",
     "format": "prettier --write -c **/*.{js,ts,md}",
     "lint": "prettier -c **/*.{js,ts,md}",
     "test-lib": "asc test/lib/test.ts -o build/lib/test.wasm --bindings esm && node test/lib/test.js"
