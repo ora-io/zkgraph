@@ -1,4 +1,5 @@
 import BN from "bn.js";
+import { BigNumber } from "ethers";
 
 export function fromHexString(hexString) {
   hexString = hexString.startsWith("0x") ? hexString.slice(2) : hexString;
@@ -153,8 +154,10 @@ export function parseArg(input) {
       let v;
       if(value.slice(0, 2) == "0x") {
           v = new BN(value.slice(2), 16);
+          v = BigNumber.from(v.toString());
       } else {
           v = new BN(value);
+          v = BigNumber.from(v.toString());
       }
       return [v];
   } else if(type == "bytes" || type == "bytes-packed") {
@@ -175,6 +178,7 @@ export function hexToBNs(hexString){
   let bytes = new Array(hexString.length/2);
   for (var i = 0; i < hexString.length; i += 2) {
       bytes[i] = new BN(hexString.slice(i, i+2), 16);
+      bytes[i] = BigNumber.from(bytes[i].toString());
   }
   return bytes;
 }
@@ -185,6 +189,7 @@ export function bytesToBN(data) {
   for (let i = 0; i < data.length; i += 32) {
       const chunk = data.slice(i, i + 32);
       let a = new BN(chunk,'le');
+      a = BigNumber.from(a.toString());
       bns.push(a);
       // do whatever
   }

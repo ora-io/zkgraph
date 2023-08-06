@@ -54,7 +54,7 @@ if (taskDetails.status !== "Done") {
 const instances = bytesToBN(taskDetails.instances);
 const proof = bytesToBN(taskDetails.proof)
 const aux = bytesToBN(taskDetails.aux);
-let arg = parseArgs(taskDetails.public_inputs).map((x) => x.toString(10));
+let arg = parseArgs(taskDetails.public_inputs).map((x) => x.toString());
 if (arg.length === 0) arg = [0];
 
 const provider = new providers.getDefaultProvider(targetNetwork.name.toLowerCase())
@@ -64,8 +64,11 @@ const contract = new Contract(
   provider
 );
 
-// npm run verify sepolia 0x3a5936ae4473c94c8d705aa3eef86c9a81840de7 64b4f96ff0e3eee93f700ea9
-// Error: invalid BigNumber value
+console.log(arg.length)
+console.log(arg)
+
+// npm run verify sepolia 0x1eAfA13CfbFAC3110fE43f1058f6d30449AC8fd8 64d0115ff0e3eee93f7e4bf7
+// Error: too many target instances
 const tx = await contract.verify(proof, instances, aux, [arg]).catch((err) => {
   console.log(`[-] VERIFICATION FAILED.`, "\n");
   console.log(`[*] Error: ${err.reason}`, "\n");
@@ -74,3 +77,4 @@ const tx = await contract.verify(proof, instances, aux, [arg]).catch((err) => {
 });
 
 console.log(`[+] VERIFICATION SUCCESS!`, "\n");
+process.exit(0);
