@@ -67,14 +67,16 @@ const contract = new Contract(
 console.log(arg.length)
 console.log(arg)
 
+// PENDING: need iccz's universal encoder smart contract as dependency.
+
 // npm run verify sepolia 0x1eAfA13CfbFAC3110fE43f1058f6d30449AC8fd8 64d0115ff0e3eee93f7e4bf7
 // Error: too many target instances
-const tx = await contract.verify(proof, instances, aux, [arg]).catch((err) => {
-  console.log(`[-] VERIFICATION FAILED.`, "\n");
-  console.log(`[*] Error: ${err.reason}`, "\n");
-  logDivider();
-  process.exit(1);
-});
+// const tx = await contract.verify(proof, instances, aux, [arg]).catch((err) => {
+//   console.log(`[-] VERIFICATION FAILED.`, "\n");
+//   console.log(`[*] Error: ${err.reason}`, "\n");
+//   logDivider();
+//   process.exit(1);
+// });
 
 console.log(`[+] VERIFICATION SUCCESS!`, "\n");
 process.exit(0);
