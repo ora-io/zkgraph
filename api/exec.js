@@ -44,6 +44,8 @@ const [filteredRawReceiptList, filteredEventList] = rlpDecodeAndEventFilter(
   fromHexString(source_address),
   source_esigs.map((esig) => fromHexString(esig)),
 );
+console.log('filteredRawReceiptList', filteredRawReceiptList)
+console.log('filteredEventList', filteredEventList)
 
 // Gen Offsets
 let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
@@ -77,6 +79,7 @@ if (currentNpmScriptName() === "exec-local") {
   asmain_exported = asmain;
   __as_start();
 }
+
 // Execute zkgraph that would call mapping.ts
 let state = asmain_exported(rawReceipts, matchedEventOffsets);
 

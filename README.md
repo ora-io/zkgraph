@@ -38,7 +38,7 @@ export const config = {
 };
 ```
 
-> To check if the provider supports the [`debug_getRawReceipts`](https://github.com/ethereum/go-ethereum/pull/24773) JSON RPC method, check if the following returns a response `{"jsonrpc":"2.0","id":42,"result":["...}`. In the example below the argument is the block hash (i.e. 0x3bb580f7645e2bdeb34b226f1b559d22a4a1ba5e2474504e294088389923ebd0) of a block number (i.e. 9438739) on the Goerli Testnet where the provider JSON RPC endpoint was obtained from https://ethereum-goerli-rpc.allthatnode.com
+> To check if the provider supports the [`debug_getRawReceipts`](https://github.com/ethereum/go-ethereum/pull/24773) JSON RPC method, check if the following returns a response `{"jsonrpc":"2.0","id":42,"result":["...}`. In the example below the argument is the block hash (i.e. 0x3bb580f7645e2bdeb34b226f1b559d22a4a1ba5e2474504e294088389923ebd0) of a block number (i.e. 9438739) on the Goerli Testnet where the provider JSON RPC endpoint was obtained from https://www.allthatnode.com/ethereum.dsrv
 ```bash
 curl -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"debug_getRawReceipts","params":["0x3bb580f7645e2bdeb34b226f1b559d22a4a1ba5e2474504e294088389923ebd0"],"id":42}' https://ethereum-goerli-rpc.allthatnode.com
 ```
@@ -74,6 +74,8 @@ npm run compile-local
 ```bash
 npm run exec-local -- {block_id}
 ```
+
+Note: If using Ethereum Mainnet endpoint then its block 17633573 emits the event `Sync(uint112,uint112)` as specified in src/zkgraph.yaml so when you run `npm run exec-local -- 17633573` it outputs that 1 event matched. The same block number on another network like Goerli may not have emitted that event, so it may be necessary to find a block where it did (if at all) or deploy your own smart contract to a network that emits an event and then add that event to src/zkgraph.yaml with it configured to use that network.
 
 Note: If using Ethereum Goerli Testnet then replace the `block_id` above with a block from https://goerli.etherscan.io/blocks
 
