@@ -121,7 +121,7 @@ npm run deploy -- <network_name (goerli / sepolia)>
 ### Upload zkGraph (Code and Full Image)
 
 ```bash
-npm run upload -- [zkgraph_name]
+npm run upload
 ```
 
 ### Verify Proof Onchain

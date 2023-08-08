@@ -2,17 +2,15 @@ import { program } from "commander";
 import { config } from "../config.js";
 import { currentNpmScriptName, logDivider } from "./common/utils.js";
 import { pinata_upload } from "./requests/pinata_upload.js";
+import { loadZKGraphName } from "./common/config_utils.js";
 
 program.version("1.0.0");
-program.argument("[zkgraph name]", "Name of published zkgraph", "zkGraph");
-program.parse(process.argv);
-const args = program.args;
 
 // Log script name
 console.log(">> UPLOAD", "\n");
 
 // zkGraph Name
-const zkGraphName = args[0] === undefined ? "zkGraph" : args[0];
+const zkGraphName = loadZKGraphName("src/zkgraph.yaml") === null ? "zkGraph" : loadZKGraphName("src/zkgraph.yaml");
 
 // zkGraph Files Paths
 let wasmPath;
