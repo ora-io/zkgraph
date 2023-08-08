@@ -31,8 +31,6 @@ if (!validNetworkNames.includes(inputtedNetworkName.toLowerCase())) {
   logDivider();
   process.exit(1);
 }
-
-// Check user balance and expected balance
 const targetNetwork = testNets.find(
   (net) => net.name.toLowerCase() === inputtedNetworkName.toLowerCase()
 );
