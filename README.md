@@ -89,7 +89,7 @@ npm run deploy-local -- <network_name (goerli / sepolia)>
 ### Upload Local zkGraph (Code and Local Image)
 
 ```bash
-npm run upload-local -- [zkgraph_name]
+npm run upload-local
 ```
 
 ### Compile (with Compile Server)
