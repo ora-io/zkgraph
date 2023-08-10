@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.1
 name: ex_hello
 description: Demo graph for zkAutomation. Use greeting string as the trigger payload.
 repository: https://github.com/hyperoracle/zkgraph

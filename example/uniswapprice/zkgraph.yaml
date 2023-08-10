@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.1
 name: ex_autoprice
 description: Demo graph for zkAutomation. Calculate ETH/USDC price as the trigger payload whenever price > theshold.
 repository: https://github.com/hyperoracle/zkgraph
