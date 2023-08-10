@@ -16,11 +16,11 @@
     "verify": "node api/verify.js",
     "publish": "node api/publish.js",
     "format": "prettier --write -c **/*.{js,ts,md}",
-    "lint": "prettier -c **/*.{js,ts,md}",
-    "test-lib": "asc test/lib/test.ts -o build/lib/test.wasm --bindings esm && node test/lib/test.js"
+    "lint": "prettier -c **/*.{js,ts,md}"
   },
   "type": "module",
   "dependencies": {
+    "@hyperoracle/zkgraph-lib": "^0.0.4",
     "axios": "^1.4.0",
     "bn.js": "^5.2.1",
     "commander": "^11.0.0",

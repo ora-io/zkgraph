@@ -1,6 +1,6 @@
 //@ts-ignore
-import { require } from "../lib/common/zkwasm";
-import { Bytes, Event, BigInt } from "../lib/common/type";
+import { require } from "@hyperoracle/zkgraph-lib";
+import { Bytes, Event, BigInt } from "@hyperoracle/zkgraph-lib";
 
 export function handleEvents(events: Event[]): Bytes {
   let state = new Bytes(0);
