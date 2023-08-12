@@ -6,6 +6,7 @@ import { zkwasm_imagedetails } from "./requests/zkwasm_imagedetails.js";
 import Web3EthContract from "web3-eth-contract";
 
 // npm run verify sepolia 64d1e997f0e3eee93f7f63ed
+// npm run verify goerli 64d09a94f0e3eee93f7e8e04
 
 program.version("1.0.0");
 program
