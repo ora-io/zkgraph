@@ -127,7 +127,7 @@ npm run upload
 ### Verify Proof Onchain
 
 ```bash
-npm run verify -- <verifier_deployed_network_name> <verifier_contract_address> <prove_task_id>
+npm run verify -- <verifier_deployed_network_name> <prove_task_id>
 ```
 
 ### Publish and Register zkGraph Onchain

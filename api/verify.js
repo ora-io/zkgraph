@@ -1,22 +1,17 @@
 import { program } from "commander";
-import {
-  logDivider,
-  parseArgs,
-  bytesToBN,
-} from "./common/utils.js";
+import { logDivider, parseArgs, bytesToBN } from "./common/utils.js";
 import { testNets, contract_abi } from "./common/constants.js";
 import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
-import { providers, Contract } from "ethers";
+import { zkwasm_imagedetails } from "./requests/zkwasm_imagedetails.js";
+import Web3EthContract from "web3-eth-contract";
+
+// npm run verify sepolia 64d1e997f0e3eee93f7f63ed
 
 program.version("1.0.0");
 program
   .argument(
     "<network name>",
     "Name of deployed network for verification contract"
-  )
-  .argument(
-    "<deployed contract address>",
-    "Contract address of deployed verification contract address"
   )
   .argument("<prove task id>", "Task id of prove task");
 program.parse(process.argv);
@@ -27,8 +22,7 @@ console.log(">> VERIFY PROOF ONCHAIN", "\n");
 
 // Inputs from command line
 const inputtedNetworkName = args[0];
-const deployedContractAddress = args[1];
-const taskId = args[2];
+const taskId = args[1];
 
 // Check if network name is valid
 const validNetworkNames = testNets.map((net) => net.name.toLowerCase());
@@ -50,33 +44,38 @@ if (taskDetails.status !== "Done") {
   process.exit(1);
 }
 
+// Get deployed contract address of verification contract.
+const imageId = taskDetails.md5;
+const [imageStatus, error] = await zkwasm_imagedetails(imageId);
+const imageDeployment = imageStatus.data.result[0].deployment;
+const deployedContractInfo = imageDeployment.find(x => x.chain_id === targetNetwork.value)
+if (!deployedContractInfo) {
+  console.log(`[-] DEPLOYED CONTRACT ADDRESS ON TARGET NETWORK IS NOT FOUND. EXITING...`, "\n");
+  logDivider();
+  process.exit(1);
+}
+const deployedContractAddress = deployedContractInfo.address;
+
 // Inputs for verification
 const instances = bytesToBN(taskDetails.instances);
-const proof = bytesToBN(taskDetails.proof)
+const proof = bytesToBN(taskDetails.proof);
 const aux = bytesToBN(taskDetails.aux);
-let arg = parseArgs(taskDetails.public_inputs).map((x) => x.toString());
+let arg = parseArgs(taskDetails.public_inputs).map((x) => x.toString(10));
 if (arg.length === 0) arg = [0];
 
-const provider = new providers.getDefaultProvider(targetNetwork.name.toLowerCase())
-const contract = new Contract(
-  deployedContractAddress,
-  contract_abi.abi,
-  provider
-);
+Web3EthContract.setProvider("https://rpc.ankr.com/eth_goerli");
+let contract = new Web3EthContract(contract_abi.abi, deployedContractAddress);
 
-console.log(arg.length)
-console.log(arg)
-
-// PENDING: need iccz's universal encoder smart contract as dependency.
-
-// npm run verify sepolia 0x1eAfA13CfbFAC3110fE43f1058f6d30449AC8fd8 64d0115ff0e3eee93f7e4bf7
-// Error: too many target instances
-// const tx = await contract.verify(proof, instances, aux, [arg]).catch((err) => {
-//   console.log(`[-] VERIFICATION FAILED.`, "\n");
-//   console.log(`[*] Error: ${err.reason}`, "\n");
-//   logDivider();
-//   process.exit(1);
-// });
+try {
+  let result = await contract.methods
+    .verify(proof, instances, aux, [arg])
+    .call();
+} catch (err) {
+  console.log(`[-] VERIFICATION FAILED.`, "\n");
+  console.log(`[*] Error: ${err}`, "\n");
+  logDivider();
+  process.exit(1);
+}
 
 console.log(`[+] VERIFICATION SUCCESS!`, "\n");
 process.exit(0);
