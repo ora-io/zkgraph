@@ -115,7 +115,7 @@ npm run prove -- --prove <block_id> <expected_state>
 ### Deploy Verification Contract for Full Image
 
 ```bash
-npm run deploy -- <network_name (goerli / sepolia)>
+npm run deploy -- [network_name (sepolia (default) / goerli)]
 ```
 
 ### Upload zkGraph (Code and Full Image)

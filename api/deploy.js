@@ -13,14 +13,20 @@ import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
 
 program.version("1.0.0");
 program.argument(
-  "<network name>",
-  "Name of deployed network for verification contract"
+  "[network name]",
+  "Name of deployed network for verification contract",
+  "sepolia"
 );
 program.parse(process.argv);
 const args = program.args;
 
 // Log script name
 console.log(">> DEPLOY VERIFICATION CONTRACT", "\n");
+
+if (args[0] == null) {
+  args[0] = "sepolia";
+  console.log(`[*] Network name not provided. Using default: ${args[0]}.`, "\n");
+}
 
 // Check if network name is valid
 const inputtedNetworkName = args[0];
