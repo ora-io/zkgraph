@@ -16,11 +16,8 @@ import {
   toHexString,
   toHexStringBytes32Reverse,
   trimPrefix,
-  logDivider,
-  currentNpmScriptName,
-  logReceiptAndEvents,
-  logLoadingAnimation,
 } from "./common/utils.js";
+import { currentNpmScriptName, logDivider, logLoadingAnimation, logReceiptAndEvents } from "./common/log_utils.js";
 import { ZKWASMMock } from "./common/zkwasm_mock.js";
 import { config } from "../config.js";
 import { zkwasm_prove } from "./requests/zkwasm_prove.js";

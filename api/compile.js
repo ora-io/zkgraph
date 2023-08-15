@@ -1,10 +1,9 @@
 import { loadZKGraphConfig } from "./common/config_utils.js";
 import {
-  logDivider,
   concatHexStrings,
   fromHexString,
-  currentNpmScriptName,
 } from "./common/utils.js";
+import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
 import fs from "fs";
 import axios from "axios";

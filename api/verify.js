@@ -1,5 +1,6 @@
 import { program } from "commander";
-import { logDivider, parseArgs, bytesToBN } from "./common/utils.js";
+import { parseArgs, bytesToBN } from "./common/utils.js";
+import { logDivider } from "./common/log_utils.js";
 import { testNets, contract_abi } from "./common/constants.js";
 import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
 import { zkwasm_imagedetails } from "./requests/zkwasm_imagedetails.js";

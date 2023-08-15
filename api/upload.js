@@ -1,6 +1,6 @@
 import { program } from "commander";
 import { config } from "../config.js";
-import { currentNpmScriptName, logDivider } from "./common/utils.js";
+import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { pinata_upload } from "./requests/pinata_upload.js";
 import { loadZKGraphName } from "./common/config_utils.js";
 

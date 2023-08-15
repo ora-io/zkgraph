@@ -2,11 +2,7 @@ import { readFileSync } from "fs";
 import fs from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
 import { config } from "../config.js";
-import {
-  logDivider,
-  logLoadingAnimation,
-  currentNpmScriptName,
-} from "./common/utils.js";
+import { currentNpmScriptName, logDivider, logLoadingAnimation } from "./common/log_utils.js";
 import { zkwasm_setup } from "./requests/zkwasm_setup.js";
 import {
   waitTaskStatus,

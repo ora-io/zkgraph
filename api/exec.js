@@ -9,10 +9,8 @@ import { rlpDecodeAndEventFilter } from "./common/api_helper.js";
 import {
   fromHexString,
   toHexString,
-  logDivider,
-  currentNpmScriptName,
-  logReceiptAndEvents,
 } from "./common/utils.js";
+import { currentNpmScriptName, logDivider, logReceiptAndEvents } from "./common/log_utils.js";
 import { config } from "../config.js";
 import { instantiateWasm } from "./common/bundle.js";
 
