@@ -86,6 +86,8 @@ npm run prove-local -- --prove <block_id> <expected_state>
 npm run deploy-local -- <network_name (goerli / sepolia)>
 ```
 
+- `network_name`: load `dataDestinations.network` from `zkgraph.yaml` if not passed from command.
+
 ### Upload Local zkGraph (Code and Local Image)
 
 ```bash
@@ -115,8 +117,10 @@ npm run prove -- --prove <block_id> <expected_state>
 ### Deploy Verification Contract for Full Image
 
 ```bash
-npm run deploy -- [network_name (sepolia (default) / goerli)]
+npm run deploy -- [network_name (sepolia / goerli)]
 ```
+
+- `network_name`: load `dataDestinations.network` from `zkgraph.yaml` if not passed from command.
 
 ### Upload zkGraph (Code and Full Image)
 
@@ -133,7 +137,7 @@ npm run verify -- <verifier_deployed_network_name> <prove_task_id>
 ### Publish and Register zkGraph Onchain
 
 ```bash
-npm run publish -- <network_name (sepolia)> <verifier_contract_address> <destination_contract_address> <ipfs_hash> <bounty_reward_per_trigger>
+npm run publish -- <verifier_contract_address> <ipfs_hash> <bounty_reward_per_trigger>
 ```
 
 See also: [Verifier Contract Interface](https://github.com/DelphinusLab/halo2aggregator-s/blob/main/sol/contracts/AggregatorVerifier.sol#L40).

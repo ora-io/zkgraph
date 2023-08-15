@@ -5,24 +5,17 @@ import {
   addressFactory,
   abiFactory,
   AddressZero,
-  testNets,
 } from "./common/constants.js";
 import { config } from "../config.js";
-import { logDivider } from "./common/utils.js";
+import { loadZKGraphDestination } from "./common/config_utils.js";
+import { getTargetNetwork } from "./common/utils.js";
+import { logDivider } from "./common/log_utils.js";
 
 program.version("1.0.0");
 program
   .argument(
-    "<network name>",
-    "Name of network for publishing and registering zkGraph (same as verification contract)"
-  )
-  .argument(
     "<deployed contract address>",
     "Contract address of deployed verification contract address"
-  )
-  .argument(
-    "<destination contract address>",
-    "Contract address of destination contract address for zkAutomation triggered calls"
   )
   .argument("<ipfs hash>", "IPFS hash of uploaded zkGraph")
   .argument("<bounty reward per trigger>", "Bounty reward per trigger in ETH");
@@ -30,27 +23,18 @@ program.parse(process.argv);
 const args = program.args;
 
 // goerli
-const inputtedNetworkName = args[0];
+const inputtedNetworkName = loadZKGraphDestination("src/zkgraph.yaml")[0].network;
 // 0x0000000000000000000000000000000000000000
-const deployedContractAddress = args[1];
+const deployedContractAddress = args[0];
 // 0x0000000000000000000000000000000000000000
-const destinationContractAddress = args[2];
+const destinationContractAddress = loadZKGraphDestination("src/zkgraph.yaml")[0].destination.address;
 // Qmcpu8YNbHpjnEpxe5vUkz8TZYzv8oCbiUGj3a66rNngjQ
-const ipfsHash = args[3];
+const ipfsHash = args[1];
 
 // Check if network name is valid
-const validNetworkNames = testNets.map((net) => net.name.toLowerCase());
-if (!validNetworkNames.includes(inputtedNetworkName.toLowerCase())) {
-  console.log(`[-] NETWORK NAME IS INVALID.`, "\n");
-  console.log(`[*] Valid networks: ${validNetworkNames.join(", ")}.`, "\n");
-  logDivider();
-  process.exit(1);
-}
-const targetNetwork = testNets.find(
-  (net) => net.name.toLowerCase() === inputtedNetworkName.toLowerCase()
-);
+const targetNetwork = getTargetNetwork(inputtedNetworkName);
 
-let bountyRewardPerTrigger = args[4];
+let bountyRewardPerTrigger = args[2];
 // Check if bounty reward input is a valid number
 if (isNaN(bountyRewardPerTrigger)) {
   console.log(`[-] BOUNTY REWARD IS NOT A VALID NUMBER.`, "\n");

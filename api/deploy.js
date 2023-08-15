@@ -1,15 +1,14 @@
 import { program } from "commander";
 import { config } from "../config.js";
 import {
-  currentNpmScriptName,
-  logDivider,
-  logLoadingAnimation,
+  getTargetNetwork
 } from "./common/utils.js";
+import { currentNpmScriptName, logDivider, logLoadingAnimation } from "./common/log_utils.js";
 import { zkwasm_deploy, get_deployed } from "./requests/zkwasm_deploy.js";
-import { testNets } from "./common/constants.js";
 import { ZkWasmUtil } from "zkwasm-service-helper";
 import { readFileSync } from "fs";
 import { waitTaskStatus } from "./requests/zkwasm_taskdetails.js";
+import { loadZKGraphDestination } from "./common/config_utils.js";
 
 program.version("1.0.0");
 program.argument(
@@ -23,23 +22,14 @@ const args = program.args;
 // Log script name
 console.log(">> DEPLOY VERIFICATION CONTRACT", "\n");
 
+let targetNetwork;
+// Set default network name
 if (args[0] == null) {
-  args[0] = "sepolia";
-  console.log(`[*] Network name not provided. Using default: ${args[0]}.`, "\n");
+  const inputtedNetworkName = loadZKGraphDestination("src/zkgraph.yaml")[0].network;
+  targetNetwork = getTargetNetwork(inputtedNetworkName);
+} else {
+  targetNetwork = getTargetNetwork(args[0]);
 }
-
-// Check if network name is valid
-const inputtedNetworkName = args[0];
-const validNetworkNames = testNets.map((net) => net.name.toLowerCase());
-if (!validNetworkNames.includes(inputtedNetworkName.toLowerCase())) {
-  console.log(`[-] NETWORK NAME IS INVALID.`, "\n");
-  console.log(`[*] Valid networks: ${validNetworkNames.join(", ")}.`, "\n");
-  logDivider();
-  process.exit(1);
-}
-const targetNetwork = testNets.find(
-  (net) => net.name.toLowerCase() === inputtedNetworkName.toLowerCase()
-);
 
 // Get wasm path
 let wasmPath;
