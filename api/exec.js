@@ -11,7 +11,7 @@ import {
   toHexString,
   logDivider,
   currentNpmScriptName,
-  logReceiptAndEvents
+  logReceiptAndEvents,
 } from "./common/utils.js";
 import { config } from "../config.js";
 import { instantiateWasm } from "./common/bundle.js";
@@ -20,7 +20,7 @@ program.version("1.0.0");
 
 program.argument(
   "<block id>",
-  "Block number (or block hash) as runtime context"
+  "Block number (or block hash) as runtime context",
 );
 program.parse(process.argv);
 const args = program.args;
@@ -42,17 +42,22 @@ const rawreceiptList = await getRawReceipts(provider, blockid);
 const [filteredRawReceiptList, filteredEventList] = rlpDecodeAndEventFilter(
   rawreceiptList,
   fromHexString(source_address),
-  source_esigs.map((esig) => fromHexString(esig))
+  source_esigs.map((esig) => fromHexString(esig)),
 );
 
 // Gen Offsets
 let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
   filteredRawReceiptList,
-  filteredEventList
+  filteredEventList,
 );
 
 // Log
-logReceiptAndEvents(rawreceiptList, blockid, matchedEventOffsets, filteredEventList);
+logReceiptAndEvents(
+  rawreceiptList,
+  blockid,
+  matchedEventOffsets,
+  filteredEventList,
+);
 
 // may remove
 matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
@@ -62,14 +67,14 @@ let wasmPath;
 
 let asmain_exported;
 if (currentNpmScriptName() === "exec-local") {
-    wasmPath = config.LocalWasmBinPath
-    const { asmain } = await instantiateWasm(wasmPath)
-    asmain_exported = asmain
+  wasmPath = config.LocalWasmBinPath;
+  const { asmain } = await instantiateWasm(wasmPath);
+  asmain_exported = asmain;
 } else if (currentNpmScriptName() === "exec") {
-    wasmPath = config.WasmBinPath
-    const { asmain, __as_start } = await instantiateWasm(wasmPath)
-    asmain_exported = asmain
-    __as_start()
+  wasmPath = config.WasmBinPath;
+  const { asmain, __as_start } = await instantiateWasm(wasmPath);
+  asmain_exported = asmain;
+  __as_start();
 }
 
 // Execute zkgraph that would call mapping.ts

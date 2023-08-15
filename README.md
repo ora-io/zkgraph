@@ -48,7 +48,9 @@ sh test.sh
 
 ## Commands
 
-The workflow of local zkGraph development is: `Develop` (code in /src) -> `Compile` (to get compiled wasm image) -> `Execute` (to get expected output) -> `Prove` (to generate input and pre-test for actual proving) -> `Deploy`.
+The workflow of local zkGraph development must follow: `Develop` (code in /src) -> `Compile` (get compiled wasm image) -> `Execute` (get expected output) -> `Prove` (generate input and pre-test for actual proving) -> `Deploy` (deploy verification contract) -> `Verify` (verify proof on-chain).
+
+To upload and publish your zkGraph, you should `Upload` (upload code to IPFS), and then `Publish` (register zkGraph on onchain zkGraph Registry).
 
 If you encounter any problem, please refer to the [test.sh](./test.sh) for the example usage of the commands.
 
@@ -61,14 +63,33 @@ npm run compile-local
 ### Execute Locally
 
 ```bash
-npm run exec-local -- {block_id}
+npm run exec-local -- <block_id>
 ```
 
-### Prove Local (input generation / pre-test)
+### Set Up Local Image
 
 ```bash
-npm run prove-local -- --inputgen {block_id} {expected_state}
-npm run prove-local -- --pretest {block_id} {expected_state}
+npm run setup-local
+```
+
+### Prove Local Image (input generation / pre-test / prove)
+
+```bash
+npm run prove-local -- --inputgen <block_id> <expected_state>
+npm run prove-local -- --pretest <block_id> <expected_state>
+npm run prove-local -- --prove <block_id> <expected_state>
+```
+
+### Deploy Verification Contract for Local Image
+
+```bash
+npm run deploy-local -- <network_name (goerli / sepolia)>
+```
+
+### Upload Local zkGraph (Code and Local Image)
+
+```bash
+npm run upload-local
 ```
 
 ### Compile (with Compile Server)
@@ -77,25 +98,45 @@ npm run prove-local -- --pretest {block_id} {expected_state}
 npm run compile
 ```
 
-### Set Up Image (with zkWASM Node)
+### Set Up Image (Link Compiled with Compiler Server)
 
 ```bash
 npm run setup
 ```
 
-### Prove (with zkWASM Node)
+### Prove Full Image (Link Compiled with Compiler Server)
 
 ```bash
-npm run prove -- --inputgen {block_id} {expected_state}
-npm run prove -- --pretest {block_id} {expected_state}
-npm run prove -- --prove {block_id} {expected_state}
+npm run prove -- --inputgen <block_id> <expected_state>
+npm run prove -- --pretest <block_id> <expected_state>
+npm run prove -- --prove <block_id> <expected_state>
 ```
 
-### Verifier Contract Interface
+### Deploy Verification Contract for Full Image
 
-```AggregatorVerifier
-https://github.com/DelphinusLab/halo2aggregator-s/blob/main/sol/contracts/AggregatorVerifier.sol#L40
+```bash
+npm run deploy -- [network_name (sepolia (default) / goerli)]
 ```
+
+### Upload zkGraph (Code and Full Image)
+
+```bash
+npm run upload
+```
+
+### Verify Proof Onchain
+
+```bash
+npm run verify -- <verifier_deployed_network_name> <prove_task_id>
+```
+
+### Publish and Register zkGraph Onchain
+
+```bash
+npm run publish -- <network_name (sepolia)> <verifier_contract_address> <destination_contract_address> <ipfs_hash> <bounty_reward_per_trigger>
+```
+
+See also: [Verifier Contract Interface](https://github.com/DelphinusLab/halo2aggregator-s/blob/main/sol/contracts/AggregatorVerifier.sol#L40).
 
 ## Develop
 
@@ -127,7 +168,7 @@ export function handleEvents(events: Event[]): Bytes {
   if (events.length > 0) {
     state = events[0].address;
   }
-  require(state.length == 20 ? 1 : 0);
+  require(state.length == 20);
   return state;
 }
 ```
@@ -155,8 +196,8 @@ More info and API reference can be found in [Hyper Oracle zkGraph docs](https://
 ## Lib Dev Tips
 
 1. Don't use `I8.parseInt` because it will be compiled to `i32.extend8_s (aka. Unknown opcode 192 (0xC0) in WASM)`.
-2. Don't use template literals (`${}`), for example when throwing errors, because it will be compiled to too many WASM instructions (~1000 diff).
-3. Don't use `FC extensions` opcodes, because it will be compiled to `Unknown opcode 252 (0xFC) in WASM`.
+2. Try not to use template literals (`${}`), for example when throwing errors, because it will be compiled to too many WASM instructions (~1000 diff).
+3. Try not to use `FC extensions` opcodes (`<u32>parseInt(...)`, `f64`, or `Math`), because it will be compiled to `Unknown opcode 252 (0xFC) in WASM`, and generates too many instructions.
 
 References: [WebAssembly Opcodes](https://pengowray.github.io/wasm-ops/).
 

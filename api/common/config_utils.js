@@ -36,4 +36,9 @@ export function loadZKGraphConfig(fname) {
   return [source_address, source_esigs];
 }
 
+export function loadZKGraphName(fname) {
+  const config = loadYaml(fname);
+  return config.name;
+}
+
 export function applyZKGraphConfig(configObj) {} //placeholder

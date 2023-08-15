@@ -20,18 +20,18 @@ let isCompilationSuccess = true;
 let watPath;
 
 const localCompile = (wasmPath, watPath) => {
-    const commands = [
-        `npx asc lib/main_local.ts -t ${watPath} -O --noAssert -o ${wasmPath} --disable bulk-memory --use abort=lib/common/type/abort --exportRuntime --runtime stub`, // note: need --exportRuntime or --bindings esm; (--target release)
-      ];
+  const commands = [
+    `npx asc node_modules/@hyperoracle/zkgraph-lib/main_local.ts -t ${watPath} -O --noAssert -o ${wasmPath} --disable bulk-memory --use abort=node_modules/@hyperoracle/zkgraph-lib/common/type/abort --exportRuntime --runtime stub`, // note: need --exportRuntime or --bindings esm; (--target release)
+  ];
 
-      const combinedCommand = commands.join(" && ");
-      try {
-        execSync(combinedCommand, { encoding: "utf-8" });
-      } catch (error) {
-        // Handle or log the error here if required
-        isCompilationSuccess = false;
-      }
-}
+  const combinedCommand = commands.join(" && ");
+  try {
+    execSync(combinedCommand, { encoding: "utf-8" });
+  } catch (error) {
+    // Handle or log the error here if required
+    isCompilationSuccess = false;
+  }
+};
 
 const remoteCompile = async (wasmPath, watPath) => {
   // Constants
@@ -75,58 +75,52 @@ const remoteCompile = async (wasmPath, watPath) => {
     fs.writeFileSync(wasmPath, fromHexString(wasmModuleHex));
     fs.writeFileSync(watPath, wasmWat);
   }
-}
+};
 
 if (currentNpmScriptName() === "compile-local") {
   // Wat Path
-  watPath = config.LocalWasmBinPath.replace(/\.wasm/, ".wat")
+  watPath = config.LocalWasmBinPath.replace(/\.wasm/, ".wat");
 
   // Compile Locally
-  localCompile(config.LocalWasmBinPath, watPath)
-
+  localCompile(config.LocalWasmBinPath, watPath);
 } else if (currentNpmScriptName() === "compile") {
   // Test Compile Erro with Local Compile
-  localCompile("build/tmp.wasm", "build/tmp.wat")
+  localCompile("build/tmp.wasm", "build/tmp.wat");
 
   // Only Call Compile Server When No Local Compile Errors
-  if (isCompilationSuccess == true){
+  if (isCompilationSuccess == true) {
     // Wat Path
-    watPath = config.WasmBinPath.replace(/\.wasm/, ".wat")
+    watPath = config.WasmBinPath.replace(/\.wasm/, ".wat");
 
     // Compile with Remote Compile Server
-    await remoteCompile(config.WasmBinPath, watPath)
+    await remoteCompile(config.WasmBinPath, watPath);
   }
 }
 
 // Log Results
 if (isCompilationSuccess) {
-    // Log compiled file size by line count
-    const compiledFileContent = readFileSync(
-      watPath,
-      "utf-8"
-    );
-    const compiledFileLineCount = compiledFileContent.split("\n").length;
-    console.log(
-      "[*]",
-      compiledFileLineCount,
-      compiledFileLineCount > 1
-        ? "lines"
-        : "line",
-        `in ${watPath}`
-    );
+  // Log compiled file size by line count
+  const compiledFileContent = readFileSync(watPath, "utf-8");
+  const compiledFileLineCount = compiledFileContent.split("\n").length;
+  console.log(
+    "[*]",
+    compiledFileLineCount,
+    compiledFileLineCount > 1 ? "lines" : "line",
+    `in ${watPath}`,
+  );
 
-    // Log status
-    console.log("[+] Output written to `build` folder.");
-    console.log("[+] COMPILATION SUCCESS!", "\n");
+  // Log status
+  console.log("[+] Output written to `build` folder.");
+  console.log("[+] COMPILATION SUCCESS!", "\n");
 
-    logDivider();
+  logDivider();
 
-    process.exit(0);
-  } else {
-    // Log status
-    console.log("\n" + "[-] ERROR WHEN COMPILING." + "\n");
+  process.exit(0);
+} else {
+  // Log status
+  console.log("\n" + "[-] ERROR WHEN COMPILING." + "\n");
 
-    logDivider();
+  logDivider();
 
-    process.exit(1);
-  }
+  process.exit(1);
+}

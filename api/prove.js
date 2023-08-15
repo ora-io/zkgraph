@@ -28,7 +28,7 @@ import { readFileSync, writeFileSync } from "fs";
 import { ZkWasmUtil } from "zkwasm-service-helper";
 import {
   waitTaskStatus,
-  zkwasm_taskdetails,
+  taskPrettyPrint,
 } from "./requests/zkwasm_taskdetails.js";
 import { instantiateWasm, setupZKWasmMock } from "./common/bundle.js";
 
@@ -37,18 +37,24 @@ program.version("1.0.0");
 program
   .argument("<block id>", "Block number (or block hash) as runtime context")
   .argument("<expected state>", "State output of the zkgraph execution")
-  .option("-i, --inputgen", "Generate input")
-  .option("-t, --test", "Run in test Mode");
+  .option("-i, --inputgen", "Run in input generation Mode")
+  .option("-t, --test", "Run in test Mode")
+  .option("-p, --prove", "Run in prove Mode");
 
-// If it's prove with full mode, add --prove option
-if (currentNpmScriptName() === "prove") {
-  program.option("-p, --prove", "Run in prove Mode");
-}
+// // If it's prove with full mode, add --prove option
+// if (currentNpmScriptName() === "prove") {
+//   program.option("-p, --prove", "Run in prove Mode");
+// }
 
 program.parse(process.argv);
 
 const args = program.args;
 const options = program.opts();
+
+if (!(options.inputgen || options.test || options.prove)) {
+  console.error("error: missing running mode (-i / -t / -p)\n");
+  program.help();
+}
 
 switch (options.inputgen || options.test || options.prove) {
   // Input generation mode
@@ -87,13 +93,13 @@ let rawreceiptList = await getRawReceipts(provider, blockid);
 const [filteredRawReceiptList, filteredEventList] = rlpDecodeAndEventFilter(
   rawreceiptList,
   fromHexString(source_address),
-  source_esigs.map((esig) => fromHexString(esig))
+  source_esigs.map((esig) => fromHexString(esig)),
 );
 
 // Gen Offsets
 let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
   filteredRawReceiptList,
-  filteredEventList
+  filteredEventList,
 );
 
 // Log receipt number from block, and filtered events
@@ -101,7 +107,7 @@ logReceiptAndEvents(
   rawreceiptList,
   blockid,
   matchedEventOffsets,
-  filteredEventList
+  filteredEventList,
 );
 
 // may remove
@@ -132,7 +138,7 @@ if (currentNpmScriptName() === "prove-local") {
     () => {
       console.log("[-] ERROR: Failed to getBlockByNumber()", "\n");
       process.exit(1);
-    }
+    },
   );
 
   // Generate inputs
@@ -143,111 +149,9 @@ if (currentNpmScriptName() === "prove-local") {
   privateInputStr =
     formatVarLenInput(toHexString(rawReceipts)) +
     formatHexStringInput(block.receiptsRoot);
-
-  // Prove mode
-  if (options.prove === true) {
-    const compiledWasmBuffer = readFileSync(wasmPath);
-    const privateInputArray = privateInputStr.trim().split(" ");
-    const publicInputArray = publicInputStr.trim().split(" ");
-
-    // Message and form data
-    const md5 = ZkWasmUtil.convertToMd5(compiledWasmBuffer).toUpperCase();
-    const prikey = config.UserPrivateKey;
-
-    let [response, isSetUpSuccess, errorMessage] = await zkwasm_prove(
-      prikey,
-      md5,
-      publicInputArray,
-      privateInputArray
-    );
-
-    if (isSetUpSuccess) {
-      console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
-
-      const taskId = response.data.result.id;
-      console.log(
-        `[+] PROVE TASK STARTED. TASK ID: ${taskId}`,
-        "\n"
-      );
-
-      console.log(
-        "[*] Please wait for proof generation... (estimated: 1-5 min)",
-        "\n"
-      );
-
-      const loading = logLoadingAnimation();
-
-      const taskResult = await waitTaskStatus(
-        taskId,
-        ["Done", "Fail"],
-        2000,
-        0
-      ); //TODO: timeout
-
-      if (taskResult === "Done") {
-        loading.stopAndClear();
-
-        console.log("[+] PROVE SUCCESS!", "\n");
-
-        const [detailResponse, _, __] = await zkwasm_taskdetails(
-          taskId
-        );
-
-        // write proof to file as txt
-        console.log("[+] Proof written to `build` folder.\n");
-        const instances = toHexStringBytes32Reverse(
-          detailResponse.data.result.data[0].instances
-        );
-        const proof = toHexStringBytes32Reverse(
-          detailResponse.data.result.data[0].proof
-        );
-        const aux = toHexStringBytes32Reverse(
-          detailResponse.data.result.data[0].aux
-        );
-        writeFileSync(
-          `build/proof_${taskId}.txt`,
-          "Instances:\n" +
-            instances +
-            "\n\nProof transcripts:\n" +
-            proof +
-            "\n\nAux data:\n" +
-            aux +
-            "\n"
-        );
-
-        logDivider();
-
-        process.exit(0);
-      } else {
-        loading.stopAndClear();
-
-        console.log("[-] PROVE FAILED.", "\n");
-
-        const [detailResponse, _, __] = await zkwasm_taskdetails(
-          response.data.result.id
-        );
-        console.log(
-          `[-] ${detailResponse.data.result.data[0].internal_message}`,
-          "\n"
-        );
-
-        logDivider();
-
-        process.exit(1);
-      }
-    } else {
-      console.log(`[*] IMAGE MD5: ${md5}`, "\n");
-      // Log status
-      console.log(`[-] ${errorMessage}`, "\n");
-
-      logDivider();
-
-      process.exit(1);
-    }
-  }
 }
 
-switch (options.inputgen || options.test) {
+switch (options.inputgen || options.test || options.prove) {
   // Input generation mode
   case options.inputgen === true:
     console.log("[+] ZKGRAPH STATE OUTPUT:", expectedStateStr, "\n");
@@ -265,6 +169,97 @@ switch (options.inputgen || options.test) {
     zkmain();
     console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
     break;
+
+  // Prove mode
+  case options.prove === true:
+    const compiledWasmBuffer = readFileSync(wasmPath);
+    const privateInputArray = privateInputStr.trim().split(" ");
+    const publicInputArray = publicInputStr.trim().split(" ");
+
+    // Message and form data
+    const md5 = ZkWasmUtil.convertToMd5(compiledWasmBuffer).toUpperCase();
+    const prikey = config.UserPrivateKey;
+
+    let [response, isSetUpSuccess, errorMessage] = await zkwasm_prove(
+      prikey,
+      md5,
+      publicInputArray,
+      privateInputArray,
+    );
+
+    console.log(`[*] IMAGE MD5: ${md5}`, "\n");
+    if (isSetUpSuccess) {
+      //   console.log(`[+] IMAGE MD5: ${response.data.result.md5}`, "\n");
+
+      const taskId = response.data.result.id;
+      console.log(`[+] PROVE TASK STARTED. TASK ID: ${taskId}`, "\n");
+
+      console.log(
+        "[*] Please wait for proof generation... (estimated: 1-5 min)",
+        "\n",
+      );
+
+      const loading = logLoadingAnimation();
+
+      let taskDetails;
+      try {
+        taskDetails = await waitTaskStatus(taskId, ["Done", "Fail"], 3000, 0); //TODO: timeout
+      } catch (error) {
+        loading.stopAndClear();
+        console.error(error);
+        process.exit(1);
+      }
+
+      if (taskDetails.status === "Done") {
+        loading.stopAndClear();
+
+        console.log("[+] PROVE SUCCESS!", "\n");
+
+        // write proof to file as txt
+        let outputProofFile = `build/proof_${taskId}.txt`;
+        console.log(`[+] Proof written to ${outputProofFile} .\n`);
+        const instances = toHexStringBytes32Reverse(taskDetails.instances);
+        const proof = toHexStringBytes32Reverse(taskDetails.proof);
+        const aux = toHexStringBytes32Reverse(taskDetails.aux);
+        writeFileSync(
+          outputProofFile,
+          "Instances:\n" +
+            instances +
+            "\n\nProof transcripts:\n" +
+            proof +
+            "\n\nAux data:\n" +
+            aux +
+            "\n",
+        );
+
+        taskPrettyPrint(taskDetails, "[*] ");
+
+        // Log extra new line before divider.
+        console.log();
+
+        logDivider();
+
+        process.exit(0);
+      } else {
+        loading.stopAndClear();
+
+        console.log("[-] PROVE FAILED.", "\n");
+
+        console.log(`[-] ${taskDetails.internal_message}`, "\n");
+
+        logDivider();
+
+        process.exit(1);
+      }
+    } else {
+      console.log(`[-] PROVE CANNOT BE STARTED.`, "\n");
+      // Log status
+      console.log(`[-] ${errorMessage}`, "\n");
+
+      logDivider();
+
+      process.exit(1);
+    }
 }
 
 logDivider();
