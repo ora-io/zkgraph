@@ -49,9 +49,14 @@ if (taskDetails.status !== "Done") {
 const imageId = taskDetails.md5;
 const [imageStatus, error] = await zkwasm_imagedetails(imageId);
 const imageDeployment = imageStatus.data.result[0].deployment;
-const deployedContractInfo = imageDeployment.find(x => x.chain_id === targetNetwork.value)
+const deployedContractInfo = imageDeployment.find(
+  (x) => x.chain_id === targetNetwork.value
+);
 if (!deployedContractInfo) {
-  console.log(`[-] DEPLOYED CONTRACT ADDRESS ON TARGET NETWORK IS NOT FOUND. EXITING...`, "\n");
+  console.log(
+    `[-] DEPLOYED CONTRACT ADDRESS ON TARGET NETWORK IS NOT FOUND. EXITING...`,
+    "\n"
+  );
   logDivider();
   process.exit(1);
 }
@@ -64,19 +69,23 @@ const aux = bytesToBN(taskDetails.aux);
 let arg = parseArgs(taskDetails.public_inputs).map((x) => x.toString(10));
 if (arg.length === 0) arg = [0];
 
-Web3EthContract.setProvider("https://rpc.ankr.com/eth_goerli");
+if (targetNetwork.value === 5) {
+  Web3EthContract.setProvider("https://rpc.ankr.com/eth_goerli");
+}
+if (targetNetwork.value === 11155111) {
+  Web3EthContract.setProvider("https://rpc2.sepolia.org");
+}
 let contract = new Web3EthContract(contract_abi.abi, deployedContractAddress);
 
-try {
-  let result = await contract.methods
-    .verify(proof, instances, aux, [arg])
-    .call();
-} catch (err) {
-  console.log(`[-] VERIFICATION FAILED.`, "\n");
-  console.log(`[*] Error: ${err}`, "\n");
-  logDivider();
-  process.exit(1);
-}
+const result = await contract.methods
+  .verify(proof, instances, aux, [arg])
+  .call()
+  .catch((err) => {
+    console.log(`[-] VERIFICATION FAILED.`, "\n");
+    console.log(`[*] Error: ${err}`, "\n");
+    logDivider();
+    process.exit(1);
+  });
 
 console.log(`[+] VERIFICATION SUCCESS!`, "\n");
 process.exit(0);
