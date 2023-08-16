@@ -48,7 +48,9 @@ sh test.sh
 
 ## Commands
 
-The workflow of local zkGraph development is: `Develop` (code in /src) -> `Compile` (to get compiled wasm image) -> `Execute` (to get expected output) -> `Prove` (to generate input and pre-test for actual proving) -> `Deploy`.
+The workflow of local zkGraph development must follow: `Develop` (code in /src) -> `Compile` (get compiled wasm image) -> `Execute` (get expected output) -> `Prove` (generate input and pre-test for actual proving) -> `Deploy` (deploy verification contract) -> `Verify` (verify proof on-chain).
+
+To upload and publish your zkGraph, you should `Upload` (upload code to IPFS), and then `Publish` (register zkGraph on onchain zkGraph Registry).
 
 If you encounter any problem, please refer to the [test.sh](./test.sh) for the example usage of the commands.
 
@@ -61,7 +63,7 @@ npm run compile-local
 ### Execute Locally
 
 ```bash
-npm run exec-local -- {block_id}
+npm run exec-local -- <block_id>
 ```
 
 ### Set Up Local Image
@@ -73,9 +75,23 @@ npm run setup-local
 ### Prove Local Image (input generation / pre-test / prove)
 
 ```bash
-npm run prove-local -- --inputgen {block_id} {expected_state}
-npm run prove-local -- --pretest {block_id} {expected_state}
-npm run prove-local -- --prove {block_id} {expected_state}
+npm run prove-local -- --inputgen <block_id> <expected_state>
+npm run prove-local -- --pretest <block_id> <expected_state>
+npm run prove-local -- --prove <block_id> <expected_state>
+```
+
+### Deploy Verification Contract for Local Image
+
+```bash
+npm run deploy-local -- <network_name (goerli / sepolia)>
+```
+
+- `network_name`: load `dataDestinations.network` from `zkgraph.yaml` if not passed from command.
+
+### Upload Local zkGraph (Code and Local Image)
+
+```bash
+npm run upload-local
 ```
 
 ### Compile (with Compile Server)
@@ -93,16 +109,38 @@ npm run setup
 ### Prove Full Image (Link Compiled with Compiler Server)
 
 ```bash
-npm run prove -- --inputgen {block_id} {expected_state}
-npm run prove -- --pretest {block_id} {expected_state}
-npm run prove -- --prove {block_id} {expected_state}
+npm run prove -- --inputgen <block_id> <expected_state>
+npm run prove -- --pretest <block_id> <expected_state>
+npm run prove -- --prove <block_id> <expected_state>
 ```
 
-### Verifier Contract Interface
+### Deploy Verification Contract for Full Image
 
-```AggregatorVerifier
-https://github.com/DelphinusLab/halo2aggregator-s/blob/main/sol/contracts/AggregatorVerifier.sol#L40
+```bash
+npm run deploy -- [network_name (sepolia / goerli)]
 ```
+
+- `network_name`: load `dataDestinations.network` from `zkgraph.yaml` if not passed from command.
+
+### Upload zkGraph (Code and Full Image)
+
+```bash
+npm run upload
+```
+
+### Verify Proof Onchain
+
+```bash
+npm run verify -- <verifier_deployed_network_name> <prove_task_id>
+```
+
+### Publish and Register zkGraph Onchain
+
+```bash
+npm run publish -- <verifier_contract_address> <ipfs_hash> <bounty_reward_per_trigger>
+```
+
+See also: [Verifier Contract Interface](https://github.com/DelphinusLab/halo2aggregator-s/blob/main/sol/contracts/AggregatorVerifier.sol#L40).
 
 ## Develop
 

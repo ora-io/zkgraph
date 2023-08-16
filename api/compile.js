@@ -1,10 +1,9 @@
 import { loadZKGraphConfig } from "./common/config_utils.js";
 import {
-  logDivider,
   concatHexStrings,
   fromHexString,
-  currentNpmScriptName,
 } from "./common/utils.js";
+import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
 import fs from "fs";
 import axios from "axios";
@@ -21,7 +20,7 @@ let watPath;
 
 const localCompile = (wasmPath, watPath) => {
   const commands = [
-    `npx asc lib/main_local.ts -t ${watPath} -O --noAssert -o ${wasmPath} --disable bulk-memory --use abort=lib/common/type/abort --exportRuntime --runtime stub`, // note: need --exportRuntime or --bindings esm; (--target release)
+    `npx asc node_modules/@hyperoracle/zkgraph-lib/main_local.ts -t ${watPath} -O --noAssert -o ${wasmPath} --disable bulk-memory --use abort=node_modules/@hyperoracle/zkgraph-lib/common/type/abort --exportRuntime --runtime stub`, // note: need --exportRuntime or --bindings esm; (--target release)
   ];
 
   const combinedCommand = commands.join(" && ");

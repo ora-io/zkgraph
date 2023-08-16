@@ -36,4 +36,21 @@ export function loadZKGraphConfig(fname) {
   return [source_address, source_esigs];
 }
 
+export function loadZKGraphName(fname) {
+  const config = loadYaml(fname);
+  return config.name;
+}
+
 export function applyZKGraphConfig(configObj) {} //placeholder
+
+export function loadZKGraphDestination(fname) {
+  const config = loadYaml(fname);
+  return config.dataDestinations;
+  // [
+  //   {
+  //     kind: 'ethereum/contract',
+  //     network: 'mainnet',
+  //     destination: { address: '0x123abc' }
+  //   }
+  // ]
+}

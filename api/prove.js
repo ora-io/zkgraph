@@ -16,11 +16,8 @@ import {
   toHexString,
   toHexStringBytes32Reverse,
   trimPrefix,
-  logDivider,
-  currentNpmScriptName,
-  logReceiptAndEvents,
-  logLoadingAnimation,
 } from "./common/utils.js";
+import { currentNpmScriptName, logDivider, logLoadingAnimation, logReceiptAndEvents } from "./common/log_utils.js";
 import { ZKWASMMock } from "./common/zkwasm_mock.js";
 import { config } from "../config.js";
 import { zkwasm_prove } from "./requests/zkwasm_prove.js";
@@ -252,6 +249,7 @@ switch (options.inputgen || options.test || options.prove) {
         process.exit(1);
       }
     } else {
+      console.log(`[-] PROVE CANNOT BE STARTED.`, "\n");
       // Log status
       console.log(`[-] ${errorMessage}`, "\n");
 
