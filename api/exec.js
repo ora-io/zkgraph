@@ -1,18 +1,7 @@
-// usage: node prove.js [--inputgen/pretest] <blocknum/blockhash> <state> -> wasm input
-// TODO: add -o --outfile <file> under inputgen mode
 import { program } from "commander";
-import { genStreamAndMatchedEventOffsets } from "./common/api_helper.js";
-import { loadZKGraphConfig } from "./common/config_utils.js";
-import { providers } from "ethers";
-import { getRawReceipts } from "./common/ethers_helper.js";
-import { rlpDecodeAndEventFilter } from "./common/api_helper.js";
-import {
-  fromHexString,
-  toHexString,
-} from "./common/utils.js";
-import { currentNpmScriptName, logDivider, logReceiptAndEvents } from "./common/log_utils.js";
+import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
-import { instantiateWasm } from "./common/bundle.js";
+import * as zkgapi from "@hyperoracle/zkgraph-api"
 
 program.version("1.0.0");
 
@@ -23,62 +12,37 @@ program.argument(
 program.parse(process.argv);
 const args = program.args;
 
-const blockid = args[0].length >= 64 ? args[0] : parseInt(args[0]); //17633573
+// const blockid = args[0].length >= 64 ? args[0] : parseInt(args[0]); //17633573
+const blockid = args[0]
 
-// Load config
-const [source_address, source_esigs] = loadZKGraphConfig("src/zkgraph.yaml");
-
-console.log("[*] Source contract address:", source_address);
-console.log("[*] Source events signatures:", source_esigs, "\n");
-
-const provider = new providers.JsonRpcProvider(config.JsonRpcProviderUrl);
-
-// Fetch raw receipts
-const rawreceiptList = await getRawReceipts(provider, blockid);
-
-// RLP Decode and Filter
-const [filteredRawReceiptList, filteredEventList] = rlpDecodeAndEventFilter(
-  rawreceiptList,
-  fromHexString(source_address),
-  source_esigs.map((esig) => fromHexString(esig)),
-);
-
-// Gen Offsets
-let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
-  filteredRawReceiptList,
-  filteredEventList,
-);
-
-// Log
-logReceiptAndEvents(
-  rawreceiptList,
-  blockid,
-  matchedEventOffsets,
-  filteredEventList,
-);
-
-// may remove
-matchedEventOffsets = Uint32Array.from(matchedEventOffsets);
+// Log script name
+console.log(">> EXEC", "\n");
 
 // Declare Wasm Binary Path
 let wasmPath;
+let isLocal;
 
-let asmain_exported;
 if (currentNpmScriptName() === "exec-local") {
+  isLocal = true
   wasmPath = config.LocalWasmBinPath;
-  const { asmain } = await instantiateWasm(wasmPath);
-  asmain_exported = asmain;
 } else if (currentNpmScriptName() === "exec") {
+  isLocal = false
   wasmPath = config.WasmBinPath;
-  const { asmain, __as_start } = await instantiateWasm(wasmPath);
-  asmain_exported = asmain;
-  __as_start();
 }
 
-// Execute zkgraph that would call mapping.ts
-let state = asmain_exported(rawReceipts, matchedEventOffsets);
+let basePath = import.meta.url + '/../../'
 
-console.log("[+] ZKGRAPH STATE OUTPUT:", toHexString(state), "\n");
+let state = await zkgapi.execute(
+    basePath, 
+    wasmPath, 
+    "src/zkgraph.yaml", 
+    config.JsonRpcProviderUrl,
+    blockid, 
+    isLocal, 
+    true
+)
+
+// console.log("[+] ZKGRAPH STATE OUTPUT:", toHexString(state), "\n");
 
 logDivider();
 
