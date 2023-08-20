@@ -19,4 +19,4 @@ dataDestinations:
   - kind: ethereum/contract
     network: goerli
     destination:
-      address: '0x123abc'
+      address: '0xdf537f08f3cdc02ee6820797b3d9199d5a80d7bb'
