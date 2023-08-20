@@ -1,5 +1,5 @@
 import { config } from "../config.js";
-import { currentNpmScriptName, logDivider, logLoadingAnimation } from "./common/log_utils.js";
+import { currentNpmScriptName } from "./common/log_utils.js";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
 
 let wasmPath;
@@ -19,11 +19,11 @@ if (currentNpmScriptName() === "setup-local") {
 console.log(">> SET UP", "\n");
 
 let [err, result] = await zkgapi.setup(
-    wasmPath, 
+    wasmPath,
     cirSz,
-    config.UserPrivateKey, 
-    config.ZkwasmProviderUrl, 
-    isLocal, 
+    config.UserPrivateKey,
+    config.ZkwasmProviderUrl,
+    isLocal,
     true
 );
 

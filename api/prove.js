@@ -1,7 +1,7 @@
 // usage: node prove.js [--inputgen/test] <blocknum/blockhash> <state> -> wasm input
 // TODO: add -o --outfile <file> under inputgen mode
 import { program } from "commander";
-import { currentNpmScriptName, logDivider, logLoadingAnimation, logReceiptAndEvents } from "./common/log_utils.js";
+import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
 import { writeFileSync } from "fs";
 import * as zkgapi from "@hyperoracle/zkgraph-api"
@@ -63,15 +63,15 @@ let expectedStateStr = args[1];
 let enableLog = true
 
 let [privateInputStr, publicInputStr] = await zkgapi.proveInputGen(
-    "src/zkgraph.yaml", 
+    "src/zkgraph.yaml",
     config.JsonRpcProviderUrl,
-    blockid, 
+    blockid,
     expectedStateStr,
-    isLocal, 
+    isLocal,
     enableLog)
 
 switch (options.inputgen || options.test || options.prove) {
-    
+
   // Input generation mode
   case options.inputgen === true:
     console.log("[+] ZKGRAPH STATE OUTPUT:", expectedStateStr, "\n");
@@ -81,13 +81,13 @@ switch (options.inputgen || options.test || options.prove) {
 
   // Test mode
   case options.test === true:
-    
+
     let basePath = import.meta.url + '/../../'
 
     let mock_succ = await zkgapi.proveMock(
             basePath,
-            wasmPath, 
-            privateInputStr, 
+            wasmPath,
+            privateInputStr,
             publicInputStr)
 
     if (mock_succ){
@@ -100,8 +100,8 @@ switch (options.inputgen || options.test || options.prove) {
   // Prove mode
   case options.prove === true:
     let [err, result] = await zkgapi.prove(
-        wasmPath, 
-        privateInputStr, 
+        wasmPath,
+        privateInputStr,
         publicInputStr,
         config.ZkwasmProviderUrl,
         config.UserPrivateKey,
