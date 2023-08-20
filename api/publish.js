@@ -15,6 +15,9 @@ program
 program.parse(process.argv);
 const args = program.args;
 
+// Log script name
+console.log(">> PUBLISH ZKGRAPH", "\n");
+
 // 0x0000000000000000000000000000000000000000
 const deployedContractAddress = args[0];
 // Qmcpu8YNbHpjnEpxe5vUkz8TZYzv8oCbiUGj3a66rNngjQ
