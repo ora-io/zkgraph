@@ -33,12 +33,12 @@ if (currentNpmScriptName() === "exec-local") {
 let basePath = import.meta.url + '/../../'
 
 let state = await zkgapi.execute(
-    basePath, 
-    wasmPath, 
-    "src/zkgraph.yaml", 
+    basePath,
+    wasmPath,
+    "src/zkgraph.yaml",
     config.JsonRpcProviderUrl,
-    blockid, 
-    isLocal, 
+    blockid,
+    isLocal,
     true
 )
 
