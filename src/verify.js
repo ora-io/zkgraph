@@ -24,9 +24,9 @@ function bytesToBN(data) {
   return bns;
 }
 function hexToBNs(hexString){
-    let bytes = new Array(hexString.length/2);
+    let bytes = new Array(Math.ceil(hexString.length/16));
     for (var i = 0; i < hexString.length; i += 16) {
-      bytes[i] = new BN(hexString.slice(i, i+16), 16);
+      bytes[i] = new BN(hexString.slice(i, Math.min(i+16, hexString.length)), 16, 'le');
     }
     return bytes;
   }
