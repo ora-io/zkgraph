@@ -3,13 +3,13 @@ import Web3EthContract from "web3-eth-contract";
 import BN from "bn.js";
 import {
   ZkWasmUtil,
-  ZkWasmServiceTaskHelper,
-  ZkWasmServiceImageHelper,
+//   ZkWasmServiceTaskHelper,
+  ZkWasmServiceHelper,
 } from "zkwasm-service-helper";
 
 const resturl = "http://zkwasm-explorer.delphinuslab.com:8080";
-const zkwasmTaskHelper = new ZkWasmServiceTaskHelper(resturl, "", "");
-const zkwasmImageHelper = new ZkWasmServiceImageHelper(resturl, "", "");
+// const zkwasmTaskHelper = new ZkWasmServiceTaskHelper(resturl, "", "");
+const zkwasmHelper = new ZkWasmServiceHelper(resturl, "", "");
 
 // https://github.com/zkcrossteam/g1024/blob/916c489fefa65ce8d4ee1a387f2bd4a3dcca8337/src/utils/proof.ts#L7
 function bytesToBN(data) {
@@ -89,14 +89,14 @@ const contract_abi = {
 };
 
 async function testverify() {
-  let taskID = "63fc46fde73963fcd44c936f";
-  let tasks = await zkwasmTaskHelper.loadTasks({ id: taskID });
-  let task = tasks[0];
-
+  let taskID = "64d1e997f0e3eee93f7f63ed";
+  let tasks = await zkwasmHelper.loadTasks({ id: taskID });
+  let task = tasks.data[0];
+  
   let aggregate_proof = bytesToBN(task.proof);
   let instances = bytesToBN(task.instances);
   let aux = bytesToBN(task.aux);
-  let image = await zkwasmImageHelper.queryImage(task.md5);
+  let image = await zkwasmHelper.queryImage(task.md5);
   if (image.deployment.length == 0) {
     console.log("contract not deployed");
   }
@@ -109,7 +109,7 @@ async function testverify() {
     args = [0];
   }
 
-  Web3EthContract.setProvider("https://rpc.ankr.com/eth_goerli");
+  Web3EthContract.setProvider("https://rpc.ankr.com/eth_sepolia");
   let contract = new Web3EthContract(contract_abi.abi, address);
   try {
     let result = await contract.methods
