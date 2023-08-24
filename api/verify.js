@@ -3,8 +3,7 @@ import * as zkgapi from "@hyperoracle/zkgraph-api";
 import { config } from "../config.js";
 import { logDivider } from "./common/log_utils.js";
 
-// npm run verify 64d1e997f0e3eee93f7f63ed
-// npm run verify 64d09a94f0e3eee93f7e8e04
+// npm run verify 64e52295abac08978a0e46cf
 
 program.version("1.0.0");
 program.argument("<prove task id>", "Task id of prove task");
