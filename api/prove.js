@@ -107,7 +107,7 @@ switch (options.inputgen || options.test || options.prove) {
         config.UserPrivateKey,
         enableLog
     )
-    if (err != null) {
+    if (err == null) {
         // write proof to file as txt
         let outputProofFile = `build/proof_${result.taskId}.txt`;
 
@@ -117,12 +117,14 @@ switch (options.inputgen || options.test || options.prove) {
         writeFileSync(
           outputProofFile,
           "Instances:\n" +
-            result.instances +
-            "\n\nProof transcripts:\n" +
-            result.proof +
-            "\n\nAux data:\n" +
-            result.aux +
-            "\n",
+          result.instances +
+          "\n\nBatched Instances:\n" +
+          result.batch_instances +
+          "\n\nProof transcripts:\n" +
+          result.proof +
+          "\n\nAux data:\n" +
+          result.aux +
+          "\n",
         );
     }
     break;
