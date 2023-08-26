@@ -1,4 +1,4 @@
-export const testNets = [
+export const networks = [
   {
       name: "Sepolia",
       label: "Sepolia",

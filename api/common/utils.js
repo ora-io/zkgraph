@@ -1,4 +1,4 @@
-import { testNets } from "./constants.js";
+import { networks } from "./constants.js";
 import { logDivider } from "./log_utils.js";
 
 export function fromHexString(hexString) {
@@ -43,14 +43,14 @@ export function concatHexStrings(hexStrings) {
 }
 
 export function getTargetNetwork(inputtedNetworkName) {
-  const validNetworkNames = testNets.map((net) => net.name.toLowerCase());
+  const validNetworkNames = networks.map((net) => net.name.toLowerCase());
   if (!validNetworkNames.includes(inputtedNetworkName.toLowerCase())) {
     console.log(`[-] NETWORK NAME "${inputtedNetworkName}" IS INVALID.`, "\n");
     console.log(`[*] Valid networks: ${validNetworkNames.join(", ")}.`, "\n");
     logDivider();
     process.exit(1);
   }
-  const targetNetwork = testNets.find(
+  const targetNetwork = networks.find(
     (net) => net.name.toLowerCase() === inputtedNetworkName.toLowerCase()
   );
   return targetNetwork;
