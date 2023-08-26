@@ -5,11 +5,9 @@ import * as zkgapi from "@hyperoracle/zkgraph-api";
 // Log script name
 console.log(">> COMPILE", "\n");
 
-let isCompilationSuccess;
-
 if (currentNpmScriptName() === "compile-local") {
   // Compile Locally
-    isCompilationSuccess = await zkgapi.compile(
+    let isCompilationSuccess = await zkgapi.compile(
     config.LocalWasmBinPath,
     config.LocalWasmBinPath.replace(/\.wasm/, ".wat"),
     "",
@@ -20,23 +18,8 @@ if (currentNpmScriptName() === "compile-local") {
   );
 
 } else if (currentNpmScriptName() === "compile") {
-  // Test Compile Erro with Local Compile
-
-//   isCompilationSuccess = await zkgapi.compileInner()
-//   console.log('inner compile success, err msg:', isCompilationSuccess)
-  isCompilationSuccess = await zkgapi.compile(
-    "build/tmp/tmp.wasm",
-    "build/tmp/tmp.wat",
-    "",
-    "",
-    config.CompilerServerEndpoint,
-    true,
-    false
-  );
-
-  // Only Call Compile Server When No Local Compile Errors
-  if (isCompilationSuccess === true) {
-    isCompilationSuccess = await zkgapi.compile(
+  // Compile Remotely
+  let isCompilationSuccess = await zkgapi.compile(
       config.WasmBinPath,
       config.WasmBinPath.replace(/\.wasm/, ".wat"),
       "src/mapping.ts",
@@ -45,7 +28,6 @@ if (currentNpmScriptName() === "compile-local") {
       false,
       true
     );
-  }
 }
 
 logDivider();
