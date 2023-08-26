@@ -18,22 +18,7 @@ if (currentNpmScriptName() === "compile-local") {
   );
 
 } else if (currentNpmScriptName() === "compile") {
-  // remove this pre test because now we have compile inner.
-  // Test Compile Erro with Local Compile
-
-//   isCompilationSuccess = await zkgapi.compile(
-//     "build/tmp/tmp.wasm",
-//     "build/tmp/tmp.wat",
-//     "",
-//     "",
-//     config.CompilerServerEndpoint,
-//     true,
-//     false
-//   );
-//   console.log("local compile succ")
-
-  // Only Call Compile Server When No Local Compile Errors
-  
+  // Compile Remotely
   let isCompilationSuccess = await zkgapi.compile(
       config.WasmBinPath,
       config.WasmBinPath.replace(/\.wasm/, ".wat"),
