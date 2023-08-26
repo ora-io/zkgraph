@@ -9,7 +9,7 @@ let isCompilationSuccess;
 
 if (currentNpmScriptName() === "compile-local") {
   // Compile Locally
-  isCompilationSuccess = await zkgapi.compile(
+    isCompilationSuccess = await zkgapi.compile(
     config.LocalWasmBinPath,
     config.LocalWasmBinPath.replace(/\.wasm/, ".wat"),
     "",
@@ -18,11 +18,15 @@ if (currentNpmScriptName() === "compile-local") {
     true,
     true
   );
+
 } else if (currentNpmScriptName() === "compile") {
   // Test Compile Erro with Local Compile
+
+//   isCompilationSuccess = await zkgapi.compileInner()
+//   console.log('inner compile success, err msg:', isCompilationSuccess)
   isCompilationSuccess = await zkgapi.compile(
-    "build/tmp.wasm",
-    "build/tmp.wat",
+    "build/tmp/tmp.wasm",
+    "build/tmp/tmp.wat",
     "",
     "",
     config.CompilerServerEndpoint,
