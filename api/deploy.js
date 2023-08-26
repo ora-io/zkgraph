@@ -4,7 +4,7 @@ import {
   getTargetNetwork
 } from "./common/utils.js";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
-import { loadZKGraphDestination } from "./common/config_utils.js";
+import { loadZKGraphDestinations } from "./common/config_utils.js";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
 
 program.version("1.0.0");
@@ -22,7 +22,7 @@ console.log(">> DEPLOY VERIFICATION CONTRACT", "\n");
 let targetNetwork;
 // Set default network name
 if (args[0] == null) {
-  const inputtedNetworkName = loadZKGraphDestination("src/zkgraph.yaml")[0].network;
+  const inputtedNetworkName = loadZKGraphDestinations("src/zkgraph.yaml")[0].network;
   targetNetwork = getTargetNetwork(inputtedNetworkName);
 } else {
   targetNetwork = getTargetNetwork(args[0]);
