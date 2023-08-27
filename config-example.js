@@ -1,6 +1,7 @@
 export const config = {
   // Update your Etherum JSON RPC provider URL here.
   // Please note that the provider must support debug_getRawReceipts RPC method.
+  JsonRpcProviderUrlMainnet: "https://{URL}", // Optional
   JsonRpcProviderUrlSepolia: "https://{URL}", // Optional
   JsonRpcProviderUrlGoerli: "https://{URL}",  // Optional
   // Update your private key here to sign zkwasm messages.
