@@ -3,8 +3,7 @@ import { program } from "commander";
 import { logDivider } from "./common/log_utils.js";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
 import { config } from "../config.js";
-import { loadZKGraphDestinations } from "./common/config_utils.js";
-import { getTargetNetwork } from "./common/utils.js";
+import { loadJsonRpcProviderUrl } from "./common/utils.js";
 
 program.version("1.0.0");
 program
@@ -34,16 +33,7 @@ if (isNaN(bountyRewardPerTrigger)) {
 }
 bountyRewardPerTrigger *= Math.pow(10, 9);
 
-const destinationNetwork = loadZKGraphDestinations("src/zkgraph.yaml")[0].network;
-const JsonRpcProviderUrl = config["JsonRpcProviderUrl" + getTargetNetwork(destinationNetwork).name]
-if (!JsonRpcProviderUrl) {
-  console.log(
-    `[-] JSON RPC PROVIDER URL FOR NETWORK "${sourceNetwork}" IS NOT DEFINED IN CONFIG.JS.`,
-    "\n",
-  );
-  logDivider();
-  process.exit(1);
-}
+const JsonRpcProviderUrl = loadJsonRpcProviderUrl("src/zkgraph.yaml", false);
 
 const publishTxHash = await zkgapi.publish(
   "src/zkgraph.yaml",

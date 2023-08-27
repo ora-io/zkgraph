@@ -1,5 +1,7 @@
 import { networks } from "./constants.js";
 import { logDivider } from "./log_utils.js";
+import { loadZKGraphDestinations, loadZKGraphSources } from "./config_utils.js";
+import { config } from "../../config.js";
 
 export function fromHexString(hexString) {
   hexString = hexString.startsWith("0x") ? hexString.slice(2) : hexString;
@@ -54,4 +56,34 @@ export function getTargetNetwork(inputtedNetworkName) {
     (net) => net.name.toLowerCase() === inputtedNetworkName.toLowerCase()
   );
   return targetNetwork;
+}
+
+/*
+ * @param {string} yamlPath of zkgraph.yaml
+ * @param {boolean} isDataSource, if true, return the first data source, else return the first data destination
+ * @returns {object} JsonRpcProviderUrl from config.js
+ */
+export function loadJsonRpcProviderUrl(yamlPath, isDataSource) {
+  let network;
+  // For exec and prove, we need to load the data source network
+  if (isDataSource) {
+    network = loadZKGraphSources(yamlPath)[0].network;
+  }
+  // For publish, we need to load the data destination network
+  else {
+    network = loadZKGraphDestinations(yamlPath)[0].network;
+  }
+
+  // Check if the network is defined in config.js with "JsonRpcProviderUrl" + network.name (eg. "Goerli")
+  const JsonRpcProviderUrl = config["JsonRpcProviderUrl" + getTargetNetwork(network).name]
+  if (!JsonRpcProviderUrl) {
+    console.log(
+      `[-] JSON RPC PROVIDER URL FOR NETWORK "${network}" IS NOT DEFINED IN CONFIG.JS.`,
+      "\n",
+    );
+    logDivider();
+    process.exit(1);
+  }
+
+  return JsonRpcProviderUrl;
 }

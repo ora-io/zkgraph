@@ -5,8 +5,7 @@ import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
 import { writeFileSync } from "fs";
 import * as zkgapi from "@hyperoracle/zkgraph-api"
-import { loadZKGraphSources } from "./common/config_utils.js";
-import { getTargetNetwork } from "./common/utils.js";
+import { loadJsonRpcProviderUrl } from "./common/utils.js";
 
 program.version("1.0.0");
 
@@ -64,16 +63,7 @@ let expectedStateStr = args[1];
 
 let enableLog = true
 
-const sourceNetwork = loadZKGraphSources("src/zkgraph.yaml")[0].network;
-const JsonRpcProviderUrl = config["JsonRpcProviderUrl" + getTargetNetwork(sourceNetwork).name]
-if (!JsonRpcProviderUrl) {
-  console.log(
-    `[-] JSON RPC PROVIDER URL FOR NETWORK "${sourceNetwork}" IS NOT DEFINED IN CONFIG.JS.`,
-    "\n",
-  );
-  logDivider();
-  process.exit(1);
-}
+const JsonRpcProviderUrl = loadJsonRpcProviderUrl("src/zkgraph.yaml", true)
 
 let [privateInputStr, publicInputStr] = await zkgapi.proveInputGen(
     "src/zkgraph.yaml",
