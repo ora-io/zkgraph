@@ -3,6 +3,7 @@ import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
 import * as zkgapi from "@hyperoracle/zkgraph-api"
 import { loadJsonRpcProviderUrl } from "./common/utils.js";
+import { providers } from "ethers";
 
 program.version("1.0.0");
 
@@ -34,13 +35,14 @@ if (currentNpmScriptName() === "exec-local") {
 let basePath = import.meta.url + '/../../'
 
 const JsonRpcProviderUrl = loadJsonRpcProviderUrl("src/zkgraph.yaml", true)
+const provider = new providers.JsonRpcProvider(JsonRpcProviderUrl);
+let rawReceiptList = await zkgapi.getRawReceipts(provider, blockid, false);
 
-let state = await zkgapi.execute(
+let state = await zkgapi.executeOnRawReceipts(
     basePath,
     wasmPath,
     "src/zkgraph.yaml",
-    JsonRpcProviderUrl,
-    blockid,
+    rawReceiptList,
     isLocal,
     true
 )

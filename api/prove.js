@@ -4,8 +4,9 @@ import { program } from "commander";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
 import { writeFileSync } from "fs";
-import * as zkgapi from "@hyperoracle/zkgraph-api"
+import * as zkgapi from "@hyperoracle/zkgraph-api";
 import { loadJsonRpcProviderUrl } from "./common/utils.js";
+import { providers } from "ethers";
 
 program.version("1.0.0");
 
@@ -46,35 +47,50 @@ switch (options.inputgen || options.test || options.prove) {
 
 // Set wasm path & isLocal
 let wasmPath;
-let isLocal
+let isLocal;
 if (currentNpmScriptName() === "prove-local") {
   wasmPath = config.LocalWasmBinPath;
-  isLocal = true
+  isLocal = true;
 } else if (currentNpmScriptName() === "prove") {
   wasmPath = config.WasmBinPath;
-  isLocal = false
+  isLocal = false;
 }
 
 // Read block id
 // const blockid = args[0].length >= 64 ? args[0] : parseInt(args[0]); //17633573
-const blockid = args[0] //17633573
+const blockid = args[0]; //17633573
 let expectedStateStr = args[1];
 // expectedStateStr = trimPrefix(expectedStateStr, "0x");
 
-let enableLog = true
+let enableLog = true;
 
-const JsonRpcProviderUrl = loadJsonRpcProviderUrl("src/zkgraph.yaml", true)
+const JsonRpcProviderUrl = loadJsonRpcProviderUrl("src/zkgraph.yaml", true);
+const provider = new providers.JsonRpcProvider(JsonRpcProviderUrl);
+let rawReceiptList = await zkgapi.getRawReceipts(provider, blockid, false);
+const simpleblock = await provider.getBlock(parseInt(blockid)).catch(() => {
+  console.log("[-] ERROR: Failed to getBlock()", "\n");
+  process.exit(1);
+});
+const block = await zkgapi.getBlockByNumber(provider, simpleblock.number).catch(() => {
+  console.log("[-] ERROR: Failed to getBlockByNumber()", "\n");
+  process.exit(1);
+});
+const blockNumber = parseInt(block.number);
+const blockHash = block.hash;
+const receiptsRoot = block.receiptsRoot;
 
-let [privateInputStr, publicInputStr] = await zkgapi.proveInputGen(
-    "src/zkgraph.yaml",
-    JsonRpcProviderUrl,
-    blockid,
-    expectedStateStr,
-    isLocal,
-    enableLog)
+let [privateInputStr, publicInputStr] = await zkgapi.proveInputGenOnRawReceipts(
+  "src/zkgraph.yaml",
+  rawReceiptList,
+  blockNumber,
+  blockHash,
+  receiptsRoot,
+  expectedStateStr,
+  isLocal,
+  enableLog
+);
 
 switch (options.inputgen || options.test || options.prove) {
-
   // Input generation mode
   case options.inputgen === true:
     console.log("[+] ZKGRAPH STATE OUTPUT:", expectedStateStr, "\n");
@@ -84,42 +100,42 @@ switch (options.inputgen || options.test || options.prove) {
 
   // Test mode
   case options.test === true:
-
-    let basePath = import.meta.url + '/../../'
+    let basePath = import.meta.url + "/../../";
 
     let mock_succ = await zkgapi.proveMock(
-            basePath,
-            wasmPath,
-            privateInputStr,
-            publicInputStr)
+      basePath,
+      wasmPath,
+      privateInputStr,
+      publicInputStr
+    );
 
-    if (mock_succ){
-        console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
+    if (mock_succ) {
+      console.log("[+] ZKWASM MOCK EXECUTION SUCCESS!", "\n");
     } else {
-        console.log("[-] ZKWASM MOCK EXECUTION FAILED", "\n");
+      console.log("[-] ZKWASM MOCK EXECUTION FAILED", "\n");
     }
     break;
 
   // Prove mode
   case options.prove === true:
     let [err, result] = await zkgapi.prove(
-        wasmPath,
-        privateInputStr,
-        publicInputStr,
-        config.ZkwasmProviderUrl,
-        config.UserPrivateKey,
-        enableLog
-    )
+      wasmPath,
+      privateInputStr,
+      publicInputStr,
+      config.ZkwasmProviderUrl,
+      config.UserPrivateKey,
+      enableLog
+    );
     if (err == null) {
-        // write proof to file as txt
-        let outputProofFile = `build/proof_${result.taskId}.txt`;
+      // write proof to file as txt
+      let outputProofFile = `build/proof_${result.taskId}.txt`;
 
-        if (enableLog) {
-            console.log(`[+] Proof written to ${outputProofFile} .\n`);
-        }
-        writeFileSync(
-          outputProofFile,
-          "Instances:\n" +
+      if (enableLog) {
+        console.log(`[+] Proof written to ${outputProofFile} .\n`);
+      }
+      writeFileSync(
+        outputProofFile,
+        "Instances:\n" +
           result.instances +
           "\n\nBatched Instances:\n" +
           result.batch_instances +
@@ -127,8 +143,8 @@ switch (options.inputgen || options.test || options.prove) {
           result.proof +
           "\n\nAux data:\n" +
           result.aux +
-          "\n",
-        );
+          "\n"
+      );
     }
     break;
 }
