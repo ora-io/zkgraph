@@ -15,7 +15,7 @@ program.parse(process.argv);
 const args = program.args;
 
 // const blockid = args[0].length >= 64 ? args[0] : parseInt(args[0]); //17633573
-const blockid = args[0]
+const blockid = parseInt(args[0])
 
 // Log script name
 console.log(">> EXEC", "\n");

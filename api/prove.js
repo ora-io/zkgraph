@@ -58,7 +58,7 @@ if (currentNpmScriptName() === "prove-local") {
 
 // Read block id
 // const blockid = args[0].length >= 64 ? args[0] : parseInt(args[0]); //17633573
-const blockid = args[0]; //17633573
+const blockid = parseInt(args[0]); //17633573
 let expectedStateStr = args[1];
 // expectedStateStr = trimPrefix(expectedStateStr, "0x");
 
@@ -67,7 +67,7 @@ let enableLog = true;
 const JsonRpcProviderUrl = loadJsonRpcProviderUrl("src/zkgraph.yaml", true);
 const provider = new providers.JsonRpcProvider(JsonRpcProviderUrl);
 let rawReceiptList = await zkgapi.getRawReceipts(provider, blockid, false);
-const simpleblock = await provider.getBlock(parseInt(blockid)).catch(() => {
+const simpleblock = await provider.getBlock(blockid).catch(() => {
   console.log("[-] ERROR: Failed to getBlock()", "\n");
   process.exit(1);
 });
