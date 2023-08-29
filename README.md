@@ -24,9 +24,11 @@ After clone your project, you need to create `config.js` file at root folder bas
 // ./config.js
 export const config = {
   // Update your Etherum JSON RPC provider URL here.
-  // Please note that the provider must support debug_getRawReceipts RPC method.
   // Recommended provider: ANKR.
-  JsonRpcProviderUrl: "https://{URL}",
+  JsonRpcProviderUrl: {
+    mainnet: "https://{URL}",
+    // ...or other networks.
+  },
   UserPrivateKey: "0x{PRIVATE_KEY}",
   // ...and other configs.
 };
