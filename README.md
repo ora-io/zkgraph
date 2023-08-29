@@ -56,16 +56,16 @@ To upload and publish your zkGraph, you should `Upload` (upload code to IPFS), a
 
 If you encounter any problem, please refer to the [test.sh](./test.sh) for the example usage of the commands.
 
-### Compile Locally
+### Compile for Local Image
 
 ```bash
 npm run compile-local
 ```
 
-### Execute Locally
+### Execute Local Image
 
 ```bash
-npm run exec-local -- <block_id>
+npm run exec-local -- <block_id (eg. 69 / 0x45)>
 ```
 
 ### Set Up Local Image
@@ -77,9 +77,9 @@ npm run setup-local
 ### Prove Local Image (input generation / pre-test / prove)
 
 ```bash
-npm run prove-local -- --inputgen <block_id> <expected_state>
-npm run prove-local -- --pretest <block_id> <expected_state>
-npm run prove-local -- --prove <block_id> <expected_state>
+npm run prove-local -- --inputgen <block_id (eg. 69 / 0x45)> <expected_state>
+npm run prove-local -- --pretest <block_id (eg. 69 / 0x45)> <expected_state>
+npm run prove-local -- --prove <block_id (eg. 69 / 0x45)> <expected_state>
 ```
 
 ### Deploy Verification Contract for Local Image
@@ -96,24 +96,30 @@ npm run deploy-local -- <network_name (goerli / sepolia)>
 npm run upload-local
 ```
 
-### Compile (with Compile Server)
+### Compile for Full Image(Link Compiled with Compiler Server)
 
 ```bash
 npm run compile
 ```
 
-### Set Up Image (Link Compiled with Compiler Server)
+### Execute Full Image
+
+```bash
+npm run exec -- <block_id (eg. 69 / 0x45)>
+```
+
+### Set Up Full Image
 
 ```bash
 npm run setup
 ```
 
-### Prove Full Image (Link Compiled with Compiler Server)
+### Prove Full Image
 
 ```bash
-npm run prove -- --inputgen <block_id> <expected_state>
-npm run prove -- --pretest <block_id> <expected_state>
-npm run prove -- --prove <block_id> <expected_state>
+npm run prove -- --inputgen <block_id (eg. 69 / 0x45)> <expected_state>
+npm run prove -- --pretest <block_id (eg. 69 / 0x45)> <expected_state>
+npm run prove -- --prove <block_id (eg. 69 / 0x45)> <expected_state>
 ```
 
 ### Deploy Verification Contract for Full Image
