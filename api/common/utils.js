@@ -75,7 +75,7 @@ export function loadJsonRpcProviderUrl(yamlPath, isDataSource) {
   }
 
   // Check if the network is defined in config.js with "JsonRpcProviderUrl" + network.name (eg. "Goerli")
-  const JsonRpcProviderUrl = config["JsonRpcProviderUrl" + getTargetNetwork(network).name]
+  const JsonRpcProviderUrl = config["JsonRpcProviderUrl"][getTargetNetwork(network).name.toLowerCase()]
   if (!JsonRpcProviderUrl) {
     console.log(
       `[-] JSON RPC PROVIDER URL FOR NETWORK "${network}" IS NOT DEFINED IN CONFIG.JS.`,
