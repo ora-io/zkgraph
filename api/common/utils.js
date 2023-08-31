@@ -1,7 +1,7 @@
-import BN from "bn.js";
-import { ZkWasmUtil } from "zkwasm-service-helper";
-import { testNets } from "./constants.js";
+import { networks } from "./constants.js";
 import { logDivider } from "./log_utils.js";
+import { loadZKGraphDestinations, loadZKGraphSources } from "./config_utils.js";
+import { config } from "../../config.js";
 
 export function fromHexString(hexString) {
   hexString = hexString.startsWith("0x") ? hexString.slice(2) : hexString;
@@ -44,46 +44,46 @@ export function concatHexStrings(hexStrings) {
   return "0x" + result;
 }
 
-// https://github.com/zkcrossteam/g1024/blob/916c489fefa65ce8d4ee1a387f2bd4a3dcca8337/src/utils/proof.ts#L7
-export function bytesToBN(data) {
-  let chunksize = 64;
-  let bns = [];
-  for (let i = 0; i < data.length; i += 32) {
-    const chunk = data.slice(i, i + 32);
-    let a = new BN(chunk, "le");
-    bns.push(a);
-    // do whatever
-  }
-  return bns;
-}
-
-// https://github.com/zkcrossteam/g1024/blob/916c489fefa65ce8d4ee1a387f2bd4a3dcca8337/src/data/image.ts#L95
-export function parseArgs(raw) {
-  let parsedInputs = new Array();
-  for (var input of raw) {
-    input = input.trim();
-    if (input !== "") {
-      let args = ZkWasmUtil.parseArg(input);
-      if (args != null) {
-        parsedInputs.push(args);
-      } else {
-        throw Error(`invalid args in ${input}`);
-      }
-    }
-  }
-  return parsedInputs.flat();
-}
-
 export function getTargetNetwork(inputtedNetworkName) {
-  const validNetworkNames = testNets.map((net) => net.name.toLowerCase());
+  const validNetworkNames = networks.map((net) => net.name.toLowerCase());
   if (!validNetworkNames.includes(inputtedNetworkName.toLowerCase())) {
     console.log(`[-] NETWORK NAME "${inputtedNetworkName}" IS INVALID.`, "\n");
     console.log(`[*] Valid networks: ${validNetworkNames.join(", ")}.`, "\n");
     logDivider();
     process.exit(1);
   }
-  const targetNetwork = testNets.find(
+  const targetNetwork = networks.find(
     (net) => net.name.toLowerCase() === inputtedNetworkName.toLowerCase()
   );
   return targetNetwork;
+}
+
+/*
+ * @param {string} yamlPath of zkgraph.yaml
+ * @param {boolean} isDataSource, if true, return the first data source, else return the first data destination
+ * @returns {object} JsonRpcProviderUrl from config.js
+ */
+export function loadJsonRpcProviderUrl(yamlPath, isDataSource) {
+  let network;
+  // For exec and prove, we need to load the data source network
+  if (isDataSource) {
+    network = loadZKGraphSources(yamlPath)[0].network;
+  }
+  // For publish, we need to load the data destination network
+  else {
+    network = loadZKGraphDestinations(yamlPath)[0].network;
+  }
+
+  // Check if the network is defined in config.js with "JsonRpcProviderUrl" + network.name (eg. "Goerli")
+  const JsonRpcProviderUrl = config["JsonRpcProviderUrl"][getTargetNetwork(network).name.toLowerCase()]
+  if (!JsonRpcProviderUrl) {
+    console.log(
+      `[-] JSON RPC PROVIDER URL FOR NETWORK "${network}" IS NOT DEFINED IN CONFIG.JS.`,
+      "\n",
+    );
+    logDivider();
+    process.exit(1);
+  }
+
+  return JsonRpcProviderUrl;
 }

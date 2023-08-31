@@ -43,7 +43,7 @@ export function loadZKGraphName(fname) {
 
 export function applyZKGraphConfig(configObj) {} //placeholder
 
-export function loadZKGraphDestination(fname) {
+export function loadZKGraphDestinations(fname) {
   const config = loadYaml(fname);
   return config.dataDestinations;
   // [
@@ -51,6 +51,25 @@ export function loadZKGraphDestination(fname) {
   //     kind: 'ethereum/contract',
   //     network: 'mainnet',
   //     destination: { address: '0x123abc' }
+  //   }
+  // ]
+}
+
+export function loadZKGraphSources(fname) {
+  const config = loadYaml(fname);
+  return config.dataSources;
+  // [
+  //   {
+  //     kind: 'ethereum/contract',
+  //     network: 'goerli',
+  //     source: { address: '0xFA5Db19087920F5d0e71d0373F099bd0C03589DA' },
+  //     mapping: {
+  //       kind: 'ethereum/events',
+  //       apiVersion: '0.0.1',
+  //       language: 'wasm/assemblyscript',
+  //       file: './mapping.ts',
+  //       eventHandlers: [Array]
+  //     }
   //   }
   // ]
 }

@@ -4,9 +4,9 @@ description: Demo graph for zkAutomation. Calculate ETH/USDC price as the trigge
 repository: https://github.com/hyperoracle/zkgraph
 dataSources:
   - kind: ethereum/contract
-    network: mainnet
+    network: goerli
     source:
-      address: '0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc'
+      address: '0xFA5Db19087920F5d0e71d0373F099bd0C03589DA'
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.1
@@ -17,6 +17,6 @@ dataSources:
           handler: handleEvents
 dataDestinations:
   - kind: ethereum/contract
-    network: mainnet
+    network: goerli
     destination:
       address: '0x123abc'
