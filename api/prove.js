@@ -5,7 +5,7 @@ import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
 import { writeFileSync } from "fs";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
-import { loadJsonRpcProviderUrl } from "./common/utils.js";
+import { loadJsonRpcProviderUrl, validateProvider } from "./common/utils.js";
 import { providers } from "ethers";
 
 program.version("1.0.0");
@@ -66,6 +66,8 @@ let enableLog = true;
 
 const JsonRpcProviderUrl = loadJsonRpcProviderUrl("src/zkgraph.yaml", true);
 const provider = new providers.JsonRpcProvider(JsonRpcProviderUrl);
+await validateProvider(provider)
+
 let rawReceiptList = await zkgapi.getRawReceipts(provider, blockid, false);
 const simpleblock = await provider.getBlock(blockid).catch(() => {
   console.log("[-] ERROR: Failed to getBlock()", "\n");

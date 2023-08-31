@@ -87,3 +87,15 @@ export function loadJsonRpcProviderUrl(yamlPath, isDataSource) {
 
   return JsonRpcProviderUrl;
 }
+
+export async function validateProvider(ethersProvider){
+    try {
+        await ethersProvider.detectNetwork()
+    } catch (err) {
+        if (err.code == "NETWORK_ERROR"){
+            throw new Error("[-] could not detect network, please provide a valid provider in config.js")
+        } else {
+            throw err
+        }
+    }
+}
