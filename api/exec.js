@@ -44,6 +44,8 @@ const [filteredRawReceiptList, filteredEventList] = rlpDecodeAndEventFilter(
   fromHexString(source_address),
   source_esigs.map((esig) => fromHexString(esig)),
 );
+console.log('filteredRawReceiptList', filteredRawReceiptList)
+console.log('filteredEventList', filteredEventList)
 
 // Gen Offsets
 let [rawReceipts, matchedEventOffsets] = genStreamAndMatchedEventOffsets(
@@ -67,6 +69,7 @@ let wasmPath;
 
 let asmain_exported;
 if (currentNpmScriptName() === "exec-local") {
+  // e.g. build/zkgraph_local.wasm
   wasmPath = config.LocalWasmBinPath;
   const { asmain } = await instantiateWasm(wasmPath);
   asmain_exported = asmain;

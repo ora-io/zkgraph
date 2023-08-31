@@ -30,6 +30,6 @@ export function zkmain(): void {
     matched_event_offset.length / 7,
     matched_event_offset.dataStart,
   ) as Bytes;
-
+    
   require(state == expected_state ? 1 : 0);
 }
