@@ -10,7 +10,7 @@ export const config = {
   UserPrivateKey: "0x{PRIVATE_KEY}",
 
   ZkwasmProviderUrl: "https://zkwasm-explorer.delphinuslab.com:8090",
-  CompilerServerEndpoint: "http://compiler.hyperoracle.io:8123/compile",
+  CompilerServerEndpoint: "http://compiler.hyperoracle.io/compile",
   PinataEndpoint: "https://api.pinata.cloud/pinning/pinFileToIPFS",
   PinataJWT: "eyJhbGc...",
 
