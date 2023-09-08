@@ -132,7 +132,7 @@ After the prove task is completed, please save the proof task id from the output
 npm run deploy -- [network_name (sepolia / goerli)]
 ```
 
--  Please save the `verifer_contract_address` from the output dialog for following publish steps.
+Please save the `verifer_contract_address` from the output dialog for following publish steps.
 
 - `network_name`: load `dataDestinations.network` from `zkgraph.yaml` if not passed from command.
 
@@ -141,6 +141,7 @@ npm run deploy -- [network_name (sepolia / goerli)]
 ```bash
 npm run upload
 ```
+
 Please save the `ipfs_hash` from the output dialog for following publish steps.
 
 ### Verify Proof Onchain
@@ -148,7 +149,6 @@ Please save the `ipfs_hash` from the output dialog for following publish steps.
 ```bash
 npm run verify -- <prove_task_id>
 ```
-
 
 ### Publish and Register zkGraph Onchain
 
