@@ -18,7 +18,7 @@ if (currentNpmScriptName() === "setup-local") {
 // Log script name
 console.log(">> SET UP", "\n");
 
-let [err, result] = await zkgapi.setup(
+let {md5, taskId, success} = await zkgapi.setup(
     wasmPath,
     cirSz,
     config.UserPrivateKey,

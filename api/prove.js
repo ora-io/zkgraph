@@ -120,7 +120,7 @@ switch (options.inputgen || options.test || options.prove) {
 
   // Prove mode
   case options.prove === true:
-    let [err, result] = await zkgapi.prove(
+    let result = await zkgapi.prove(
       wasmPath,
       privateInputStr,
       publicInputStr,
@@ -128,26 +128,29 @@ switch (options.inputgen || options.test || options.prove) {
       config.UserPrivateKey,
       enableLog
     );
-    if (err == null) {
-      // write proof to file as txt
-      let outputProofFile = `build/proof_${result.taskId}.txt`;
 
-      if (enableLog) {
-        console.log(`[+] Proof written to ${outputProofFile} .\n`);
-      }
-      writeFileSync(
-        outputProofFile,
-        "Instances:\n" +
-          result.instances +
-          "\n\nBatched Instances:\n" +
-          result.batch_instances +
-          "\n\nProof transcripts:\n" +
-          result.proof +
-          "\n\nAux data:\n" +
-          result.aux +
-          "\n"
-      );
+    if (result.instances === null && result.batch_instances === null && result.proof === null && result.aux === null) {
+      process.exit(1);
     }
+
+    // write proof to file as txt
+    let outputProofFile = `build/proof_${result.taskId}.txt`;
+
+    if (enableLog) {
+      console.log(`[+] Proof written to ${outputProofFile} .\n`);
+    }
+    writeFileSync(
+      outputProofFile,
+      "Instances:\n" +
+        result.instances +
+        "\n\nBatched Instances:\n" +
+        result.batch_instances +
+        "\n\nProof transcripts:\n" +
+        result.proof +
+        "\n\nAux data:\n" +
+        result.aux +
+        "\n"
+    );
     break;
 }
 
