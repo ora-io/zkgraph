@@ -76,7 +76,7 @@ Please save the `ZKGRAPH_STATE_OUTPUT` string for following prove steps.
 npm run setup-local
 ```
 
-- `circuit-size`: Specify the circuit size of image instead of the default recommended. eg. `npm run setup-local -- --circuit-size <size (eg. 22)`.
+- `circuit-size`: Specify the circuit size of image instead of the default recommended. eg. `npm run setup-local -- --circuit-size <size> (eg. 22)`.
 
 ### Prove Local Image (input generation / pre-test / prove)
 
