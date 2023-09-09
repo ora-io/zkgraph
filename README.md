@@ -76,6 +76,8 @@ Please save the `ZKGRAPH_STATE_OUTPUT` string for following prove steps.
 npm run setup-local
 ```
 
+- `circuit-size`: Specify the circuit size of image instead of the default recommended. eg. `npm run setup-local -- --circuit-size <size (eg. 22)`.
+
 ### Prove Local Image (input generation / pre-test / prove)
 
 ```bash
@@ -87,10 +89,12 @@ npm run prove-local -- --prove <block_id (eg. 69 / 0x45)> <ZKGRAPH_STATE_OUTPUT>
 ### Deploy Verification Contract for Local Image
 
 ```bash
-npm run deploy-local -- <network_name (goerli / sepolia)>
+npm run deploy-local
 ```
 
-- `network_name`: load `dataDestinations.network` from `zkgraph.yaml` if not passed from command.
+Please save the `verifer_contract_address` from the output dialog for following publish steps.
+
+- `network_name`: Specify the network name of deployed verification smart contract, instead of loading `dataDestinations.network` from `zkgraph.yaml`. eg. `npm run deploy-local -- --network-name <network (eg. goerli)>`.
 
 ### Upload Local zkGraph (Code and Local Image)
 
@@ -115,6 +119,8 @@ npm run exec -- <block_id (eg. 69 / 0x45)>
 ```bash
 npm run setup
 ```
+
+- `circuit-size`: Specify the circuit size of image instead of the default recommended. eg. `npm run setup -- --circuit-size <size (eg. 22)`.
 
 ### Prove Full Image
 
