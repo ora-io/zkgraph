@@ -14,7 +14,7 @@ const options = program.opts();
 
 let wasmPath;
 let isLocal;
-let cirSz = options.circuitSize === undefined ? undefined : parseInt(options.circuitSize);
+let cirSz;
 if (currentNpmScriptName() === "setup-local") {
   wasmPath = config.LocalWasmBinPath;
   isLocal = true
@@ -23,6 +23,10 @@ if (currentNpmScriptName() === "setup-local") {
   wasmPath = config.WasmBinPath;
   isLocal = false
     cirSz = 22;
+}
+
+if (options.circuitSize !== undefined) {
+  cirSz = parseInt(options.circuitSize);
 }
 
 // Log script name
@@ -40,7 +44,5 @@ let {md5, taskId, success} = await zkgapi.setup(
 // console.log(err)
 // console.log(result)
 logDivider();
-
-console.log(cirSz)
 
 process.exit(1);
