@@ -45,4 +45,4 @@ let {md5, taskId, success} = await zkgapi.setup(
 // console.log(result)
 logDivider();
 
-process.exit(1);
+process.exit(0);
