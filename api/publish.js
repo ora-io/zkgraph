@@ -1,4 +1,4 @@
-// npm run publish sepolia 0x0000000000000000000000000000000000000000 0x0000000000000000000000000000000000000000 Qmcpu8YNbHpjnEpxe5vUkz8TZYzv8oCbiUGj3a66rNngjQ 0.1
+// npm run publish 0x0000000000000000000000000000000000000000 Qmcpu8YNbHpjnEpxe5vUkz8TZYzv8oCbiUGj3a66rNngjQ 0.1
 import { program } from "commander";
 import { logDivider } from "./common/log_utils.js";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
