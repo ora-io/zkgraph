@@ -1,5 +1,6 @@
 export const config = {
   // Update your Etherum JSON RPC provider URL here.
+  // Recommend using Erigon node RPC.
   JsonRpcProviderUrl: {
     mainnet: "https://{URL}", // Optional
     sepolia: "https://{URL}", // Optional
