@@ -4,7 +4,7 @@ export const config = {
   JsonRpcProviderUrl: {
     mainnet: "https://{URL}", // Optional
     sepolia: "https://{URL}", // Optional
-    goerli: "https://{URL}"   // Optional
+    goerli: "https://{URL}", // Optional
   },
   // Update your private key here to sign zkwasm messages.
   // Please note that (during testnet phrase) your address balance (in zkwasm server) should > 0;

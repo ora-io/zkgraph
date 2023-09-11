@@ -20,7 +20,7 @@ const verifyResult = await zkgapi.verify(
   "src/zkgraph.yaml",
   taskId,
   config.ZkwasmProviderUrl,
-  true
+  true,
 );
 
 logDivider();

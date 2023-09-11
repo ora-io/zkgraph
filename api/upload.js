@@ -1,7 +1,7 @@
 import { program } from "commander";
 import { config } from "../config.js";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
-import * as zkgapi from "@hyperoracle/zkgraph-api"
+import * as zkgapi from "@hyperoracle/zkgraph-api";
 
 program.version("1.0.0");
 
@@ -29,7 +29,7 @@ const isUploadSuccess = await zkgapi.upload(
   config.PinataEndpoint,
   config.PinataJWT,
   true,
-)
+);
 
 logDivider();
 

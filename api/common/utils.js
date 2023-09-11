@@ -53,7 +53,7 @@ export function getTargetNetwork(inputtedNetworkName) {
     process.exit(1);
   }
   const targetNetwork = networks.find(
-    (net) => net.name.toLowerCase() === inputtedNetworkName.toLowerCase()
+    (net) => net.name.toLowerCase() === inputtedNetworkName.toLowerCase(),
   );
   return targetNetwork;
 }
@@ -75,7 +75,8 @@ export function loadJsonRpcProviderUrl(yamlPath, isDataSource) {
   }
 
   // Check if the network is defined in config.js with "JsonRpcProviderUrl" + network.name (eg. "Goerli")
-  const JsonRpcProviderUrl = config["JsonRpcProviderUrl"][getTargetNetwork(network).name.toLowerCase()]
+  const JsonRpcProviderUrl =
+    config["JsonRpcProviderUrl"][getTargetNetwork(network).name.toLowerCase()];
   if (!JsonRpcProviderUrl) {
     console.log(
       `[-] JSON RPC PROVIDER URL FOR NETWORK "${network}" IS NOT DEFINED IN CONFIG.JS.`,
@@ -88,14 +89,16 @@ export function loadJsonRpcProviderUrl(yamlPath, isDataSource) {
   return JsonRpcProviderUrl;
 }
 
-export async function validateProvider(ethersProvider){
-    try {
-        await ethersProvider.detectNetwork()
-    } catch (err) {
-        if (err.code == "NETWORK_ERROR"){
-            throw new Error("[-] could not detect network, please provide a valid provider in config.js")
-        } else {
-            throw err
-        }
+export async function validateProvider(ethersProvider) {
+  try {
+    await ethersProvider.detectNetwork();
+  } catch (err) {
+    if (err.code == "NETWORK_ERROR") {
+      throw new Error(
+        "[-] could not detect network, please provide a valid provider in config.js",
+      );
+    } else {
+      throw err;
     }
+  }
 }

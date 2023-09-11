@@ -66,17 +66,19 @@ let enableLog = true;
 
 const JsonRpcProviderUrl = loadJsonRpcProviderUrl("src/zkgraph.yaml", true);
 const provider = new providers.JsonRpcProvider(JsonRpcProviderUrl);
-await validateProvider(provider)
+await validateProvider(provider);
 
 let rawReceiptList = await zkgapi.getRawReceipts(provider, blockid, false);
 const simpleblock = await provider.getBlock(blockid).catch(() => {
   console.log("[-] ERROR: Failed to getBlock()", "\n");
   process.exit(1);
 });
-const block = await zkgapi.getBlockByNumber(provider, simpleblock.number).catch(() => {
-  console.log("[-] ERROR: Failed to getBlockByNumber()", "\n");
-  process.exit(1);
-});
+const block = await zkgapi
+  .getBlockByNumber(provider, simpleblock.number)
+  .catch(() => {
+    console.log("[-] ERROR: Failed to getBlockByNumber()", "\n");
+    process.exit(1);
+  });
 const blockNumber = parseInt(block.number);
 const blockHash = block.hash;
 const receiptsRoot = block.receiptsRoot;
@@ -89,7 +91,7 @@ let [privateInputStr, publicInputStr] = await zkgapi.proveInputGenOnRawReceipts(
   receiptsRoot,
   expectedStateStr,
   isLocal,
-  enableLog
+  enableLog,
 );
 
 switch (options.inputgen || options.test || options.prove) {
@@ -108,7 +110,7 @@ switch (options.inputgen || options.test || options.prove) {
       basePath,
       wasmPath,
       privateInputStr,
-      publicInputStr
+      publicInputStr,
     );
 
     if (mock_succ) {
@@ -126,10 +128,15 @@ switch (options.inputgen || options.test || options.prove) {
       publicInputStr,
       config.ZkwasmProviderUrl,
       config.UserPrivateKey,
-      enableLog
+      enableLog,
     );
 
-    if (result.instances === null && result.batch_instances === null && result.proof === null && result.aux === null) {
+    if (
+      result.instances === null &&
+      result.batch_instances === null &&
+      result.proof === null &&
+      result.aux === null
+    ) {
       process.exit(1);
     }
 
@@ -149,7 +156,7 @@ switch (options.inputgen || options.test || options.prove) {
         result.proof +
         "\n\nAux data:\n" +
         result.aux +
-        "\n"
+        "\n",
     );
     break;
 }

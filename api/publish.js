@@ -9,7 +9,7 @@ program.version("1.0.0");
 program
   .argument(
     "<deployed contract address>",
-    "Contract address of deployed verification contract address"
+    "Contract address of deployed verification contract address",
   )
   .argument("<ipfs hash>", "IPFS hash of uploaded zkGraph")
   .argument("<bounty reward per trigger>", "Bounty reward per trigger in ETH");
@@ -42,7 +42,7 @@ const publishTxHash = await zkgapi.publish(
   ipfsHash,
   bountyRewardPerTrigger,
   config.UserPrivateKey,
-  true
+  true,
 );
 
 logDivider();

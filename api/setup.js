@@ -17,12 +17,12 @@ let isLocal;
 let cirSz;
 if (currentNpmScriptName() === "setup-local") {
   wasmPath = config.LocalWasmBinPath;
-  isLocal = true
-    cirSz = 20;
+  isLocal = true;
+  cirSz = 20;
 } else if (currentNpmScriptName() === "setup") {
   wasmPath = config.WasmBinPath;
-  isLocal = false
-    cirSz = 22;
+  isLocal = false;
+  cirSz = 22;
 }
 
 if (options.circuitSize !== undefined) {
@@ -32,13 +32,13 @@ if (options.circuitSize !== undefined) {
 // Log script name
 console.log(">> SET UP", "\n");
 
-let {md5, taskId, success} = await zkgapi.setup(
-    wasmPath,
-    cirSz,
-    config.UserPrivateKey,
-    config.ZkwasmProviderUrl,
-    isLocal,
-    true
+let { md5, taskId, success } = await zkgapi.setup(
+  wasmPath,
+  cirSz,
+  config.UserPrivateKey,
+  config.ZkwasmProviderUrl,
+  isLocal,
+  true,
 );
 
 // console.log(err)
