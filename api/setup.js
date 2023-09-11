@@ -1,6 +1,16 @@
 import { config } from "../config.js";
-import { currentNpmScriptName } from "./common/log_utils.js";
+import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
+import { program } from "commander";
+
+program.version("1.0.0");
+
+program.option("-k, --circuit-size <size>", "Circuit size (k in 2^k) of image");
+
+program.parse(process.argv);
+
+const args = program.args;
+const options = program.opts();
 
 let wasmPath;
 let isLocal;
@@ -15,10 +25,14 @@ if (currentNpmScriptName() === "setup-local") {
     cirSz = 22;
 }
 
+if (options.circuitSize !== undefined) {
+  cirSz = parseInt(options.circuitSize);
+}
+
 // Log script name
 console.log(">> SET UP", "\n");
 
-let [err, result] = await zkgapi.setup(
+let {md5, taskId, success} = await zkgapi.setup(
     wasmPath,
     cirSz,
     config.UserPrivateKey,
@@ -29,5 +43,6 @@ let [err, result] = await zkgapi.setup(
 
 // console.log(err)
 // console.log(result)
+logDivider();
 
 process.exit(1);

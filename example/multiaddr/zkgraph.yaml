@@ -33,4 +33,4 @@ dataDestinations:
   - kind: ethereum/contract
     network: sepolia
     destination:
-      address: "{Your Destination Contract Address Here}"
+      address: "0x0000000000000000000000000000000000000000"

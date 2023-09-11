@@ -8,24 +8,24 @@ import { loadZKGraphDestinations } from "./common/config_utils.js";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
 
 program.version("1.0.0");
-program.argument(
-  "[network name]",
-  "Name of deployed network for verification contract",
-  "sepolia"
-);
+
+program.option("-n, --network-name <name>", "Name of deployed network for verification contract");
+
 program.parse(process.argv);
+
 const args = program.args;
+const options = program.opts();
 
 // Log script name
 console.log(">> DEPLOY VERIFICATION CONTRACT", "\n");
 
 let targetNetwork;
 // Set default network name
-if (args[0] == null) {
+if (options.networkName === undefined) {
   const inputtedNetworkName = loadZKGraphDestinations("src/zkgraph.yaml")[0].network;
   targetNetwork = getTargetNetwork(inputtedNetworkName);
 } else {
-  targetNetwork = getTargetNetwork(args[0]);
+  targetNetwork = getTargetNetwork(options.networkName);
 }
 
 // Get wasm path

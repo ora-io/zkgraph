@@ -68,27 +68,33 @@ npm run compile-local
 npm run exec-local -- <block_id (eg. 69 / 0x45)>
 ```
 
+Please save the `ZKGRAPH_STATE_OUTPUT` string for following prove steps.
+
 ### Set Up Local Image
 
 ```bash
 npm run setup-local
 ```
 
+- `circuit-size`: Specify the circuit size of image instead of the default recommended. eg. `npm run setup-local -- --circuit-size <size> (eg. 22)`.
+
 ### Prove Local Image (input generation / pre-test / prove)
 
 ```bash
-npm run prove-local -- --inputgen <block_id (eg. 69 / 0x45)> <expected_state>
-npm run prove-local -- --pretest <block_id (eg. 69 / 0x45)> <expected_state>
-npm run prove-local -- --prove <block_id (eg. 69 / 0x45)> <expected_state>
+npm run prove-local -- --inputgen <block_id (eg. 69 / 0x45)> <ZKGRAPH_STATE_OUTPUT>
+npm run prove-local -- --test <block_id (eg. 69 / 0x45)> <ZKGRAPH_STATE_OUTPUT>
+npm run prove-local -- --prove <block_id (eg. 69 / 0x45)> <ZKGRAPH_STATE_OUTPUT>
 ```
 
 ### Deploy Verification Contract for Local Image
 
 ```bash
-npm run deploy-local -- <network_name (goerli / sepolia)>
+npm run deploy-local
 ```
 
-- `network_name`: load `dataDestinations.network` from `zkgraph.yaml` if not passed from command.
+Please save the `verifer_contract_address` from the output dialog for following publish steps.
+
+- `network_name`: Specify the network name of deployed verification smart contract, instead of loading `dataDestinations.network` from `zkgraph.yaml`. eg. `npm run deploy-local -- --network-name <network (eg. goerli)>`.
 
 ### Upload Local zkGraph (Code and Local Image)
 
@@ -114,6 +120,8 @@ npm run exec -- <block_id (eg. 69 / 0x45)>
 npm run setup
 ```
 
+- `circuit-size`: Specify the circuit size of image instead of the default recommended. eg. `npm run setup -- --circuit-size <size (eg. 22)`.
+
 ### Prove Full Image
 
 ```bash
@@ -122,11 +130,15 @@ npm run prove -- --pretest <block_id (eg. 69 / 0x45)> <expected_state>
 npm run prove -- --prove <block_id (eg. 69 / 0x45)> <expected_state>
 ```
 
+After the prove task is completed, please save the proof task id from the output dialog for following verify step.
+
 ### Deploy Verification Contract for Full Image
 
 ```bash
 npm run deploy -- [network_name (sepolia / goerli)]
 ```
+
+Please save the `verifer_contract_address` from the output dialog for following publish steps.
 
 - `network_name`: load `dataDestinations.network` from `zkgraph.yaml` if not passed from command.
 
@@ -135,6 +147,8 @@ npm run deploy -- [network_name (sepolia / goerli)]
 ```bash
 npm run upload
 ```
+
+Please save the `ipfs_hash` from the output dialog for following publish steps.
 
 ### Verify Proof Onchain
 
