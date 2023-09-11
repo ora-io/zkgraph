@@ -137,7 +137,7 @@ switch (options.inputgen || options.test || options.prove) {
     let outputProofFile = `build/proof_${result.taskId}.txt`;
 
     if (enableLog) {
-      console.log(`[+] Proof written to ${outputProofFile} .\n`);
+      console.log(`[+] Proof written to ${outputProofFile}.\n`);
     }
     writeFileSync(
       outputProofFile,
