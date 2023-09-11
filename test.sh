@@ -4,11 +4,11 @@
 # Then run `sh test.sh`
 
 npm run compile-local &&
-npm run exec-local -- 17633573 &&
-npm run prove-local -- --inputgen 0x10d1125 b4e16d0168e52d35cacd2c6185b44281ec28c9dc &&
-npm run prove-local -- --test 0x10d1125 b4e16d0168e52d35cacd2c6185b44281ec28c9dc
+npm run exec-local -- 2279547 &&
+npm run prove-local -- --inputgen 2279547 a60ecf32309539dd84f27a9563754dca818b815e &&
+npm run prove-local -- --test 2279547 a60ecf32309539dd84f27a9563754dca818b815e
 
 npm run compile &&
-npm run exec -- 17633573 &&
-npm run prove -- --inputgen 0x10d1125 b4e16d0168e52d35cacd2c6185b44281ec28c9dc &&
-npm run prove -- --test 0x10d1125 b4e16d0168e52d35cacd2c6185b44281ec28c9dc
+npm run exec -- 2279547 &&
+npm run prove -- --inputgen 2279547 a60ecf32309539dd84f27a9563754dca818b815e &&
+npm run prove -- --test 2279547 a60ecf32309539dd84f27a9563754dca818b815e

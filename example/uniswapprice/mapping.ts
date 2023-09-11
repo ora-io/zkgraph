@@ -1,6 +1,6 @@
 //@ts-ignore
-import { require } from "../lib/common/zkwasm";
-import { Bytes, Event, BigInt } from "../lib/common/type";
+import { require } from "@hyperoracle/zkgraph-lib";
+import { Bytes, Event, BigInt } from "@hyperoracle/zkgraph-lib";
 
 var esig_sync = Bytes.fromHexString(
   "0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1",
