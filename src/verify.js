@@ -131,7 +131,7 @@ const contract_abi = {
 };
 
 async function testverify() {
-  let taskID = "64d1e997f0e3eee93f7f63ed";
+  let taskID = "650aa378a476965e5d8f1dba";
   let tasks = await zkwasmHelper.loadTasks({ id: taskID });
   let task = tasks.data[0];
   
