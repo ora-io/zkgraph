@@ -27,7 +27,7 @@ if (currentNpmScriptName() === "compile-local") {
     config.WasmBinPath,
     config.WasmBinPath.replace(/\.wasm/, ".wat"),
     "src/mapping.ts",
-    yamlContent,
+    "src/zkgraph.yaml",
     config.CompilerServerEndpoint,
     false,
     true,
