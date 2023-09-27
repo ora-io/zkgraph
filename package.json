@@ -20,8 +20,8 @@
   },
   "type": "module",
   "dependencies": {
-    "@hyperoracle/zkgraph-api": "^0.1.2",
-    "@hyperoracle/zkgraph-lib": "^0.0.7",
+    "@hyperoracle/zkgraph-api": "0.1.2",
+    "@hyperoracle/zkgraph-lib": "0.0.7",
     "axios": "^1.4.0",
     "bn.js": "^5.2.1",
     "commander": "^11.0.0",
