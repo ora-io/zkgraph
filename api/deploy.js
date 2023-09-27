@@ -1,3 +1,6 @@
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url';
 import { program } from "commander";
 import { config } from "../config.js";
 import { getTargetNetwork } from "./common/utils.js";
@@ -37,9 +40,11 @@ if (currentNpmScriptName() === "deploy-local") {
 } else if (currentNpmScriptName() === "deploy") {
   wasmPath = config.WasmBinPath;
 }
-
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const wasm = fs.readFileSync(path.join(dirname,'../', wasmPath));
+const wasmUnit8Array = new Uint8Array(wasm);
 const deployedVerificationContractAddress = await zkgapi.deploy(
-  wasmPath,
+  wasmUnit8Array,
   targetNetwork.value,
   config.ZkwasmProviderUrl,
   config.UserPrivateKey,
