@@ -1,11 +1,8 @@
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url';
 import { program } from "commander";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
-import { loadJsonRpcProviderUrl, validateProvider } from "./common/utils.js";
+import { getAbsolutePath, getWasmUint8Array, getYamlContent, loadJsonRpcProviderUrl, validateProvider } from "./common/utils.js";
 import { providers } from "ethers";
 
 program.version("1.0.0");
@@ -35,19 +32,14 @@ if (currentNpmScriptName() === "exec-local") {
   wasmPath = config.WasmBinPath;
 }
 
-let basePath = import.meta.url + "/../../";
-
-const dirname = path.dirname(fileURLToPath(import.meta.url));
-
 const JsonRpcProviderUrl = loadJsonRpcProviderUrl("src/zkgraph.yaml", true);
 const provider = new providers.JsonRpcProvider(JsonRpcProviderUrl);
 await validateProvider(provider);
 
 let rawReceiptList = await zkgapi.getRawReceipts(provider, blockid, false);
 
-const wasm = fs.readFileSync(path.join(dirname,'../', wasmPath));
-const wasmUnit8Array = new Uint8Array(wasm);
-const yamlContent = fs.readFileSync(path.join(dirname, "../src/zkgraph.yaml"), "utf8");
+const wasmUnit8Array = getWasmUint8Array(getAbsolutePath('../' + wasmPath));
+const yamlContent = getYamlContent(getAbsolutePath("../src/zkgraph.yaml"));
 
 let state = await zkgapi.executeOnRawReceipts(
   wasmUnit8Array,

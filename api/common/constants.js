@@ -1,3 +1,6 @@
+import path from 'path'
+import { fileURLToPath } from 'url';
+
 export const networks = [
   {
     name: "Sepolia",
@@ -19,3 +22,5 @@ export const networks = [
     value: 1,
   },
 ];
+
+export const CURRENT_DIRNAME = path.dirname(fileURLToPath(import.meta.url))

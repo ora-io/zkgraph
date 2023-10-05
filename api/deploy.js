@@ -1,9 +1,6 @@
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url';
 import { program } from "commander";
 import { config } from "../config.js";
-import { getTargetNetwork } from "./common/utils.js";
+import { getAbsolutePath, getTargetNetwork, getWasmUint8Array } from "./common/utils.js";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { loadZKGraphDestinations } from "./common/config_utils.js";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
@@ -40,9 +37,8 @@ if (currentNpmScriptName() === "deploy-local") {
 } else if (currentNpmScriptName() === "deploy") {
   wasmPath = config.WasmBinPath;
 }
-const dirname = path.dirname(fileURLToPath(import.meta.url));
-const wasm = fs.readFileSync(path.join(dirname,'../', wasmPath));
-const wasmUnit8Array = new Uint8Array(wasm);
+
+const wasmUnit8Array = getWasmUint8Array(getAbsolutePath('../' + wasmPath));
 const deployedVerificationContractAddress = await zkgapi.deploy(
   wasmUnit8Array,
   targetNetwork.value,

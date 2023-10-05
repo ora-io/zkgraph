@@ -1,10 +1,8 @@
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url';
 import { program } from "commander";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
 import { config } from "../config.js";
 import { logDivider } from "./common/log_utils.js";
+import { getAbsolutePath, getYamlContent } from './common/utils.js';
 
 // npm run verify 64fee557abfa8fdad38d73f3
 
@@ -18,8 +16,7 @@ console.log(">> VERIFY PROOF ONCHAIN", "\n");
 
 // Inputs from command line
 const taskId = args[0];
-const dirname = path.dirname(fileURLToPath(import.meta.url));
-const yamlContent = fs.readFileSync(path.join(dirname, "../src/zkgraph.yaml"), "utf8");
+const yamlContent = getYamlContent(getAbsolutePath("../src/zkgraph.yaml"));
 const verifyResult = await zkgapi.verify(
   yamlContent,
   taskId,

@@ -1,4 +1,6 @@
-import { networks } from "./constants.js";
+import fs from 'fs'
+import path from 'path'
+import { CURRENT_DIRNAME, networks } from "./constants.js";
 import { logDivider } from "./log_utils.js";
 import { loadZKGraphDestinations, loadZKGraphSources } from "./config_utils.js";
 import { config } from "../../config.js";
@@ -101,4 +103,17 @@ export async function validateProvider(ethersProvider) {
       throw err;
     }
   }
+}
+
+export function getWasmUint8Array(wasmPath) {
+  const wasm = fs.readFileSync(wasmPath);
+  return new Uint8Array(wasm)
+}
+
+export function getYamlContent(yamlPath) {
+  return fs.readFileSync(yamlPath, "utf8");
+}
+
+export function getAbsolutePath(...args) {
+  return path.join(CURRENT_DIRNAME, '../', ...args)
 }
