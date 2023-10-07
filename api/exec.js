@@ -1,6 +1,6 @@
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { program } from "commander";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
@@ -45,9 +45,12 @@ await validateProvider(provider);
 
 let rawReceiptList = await zkgapi.getRawReceipts(provider, blockid, false);
 
-const wasm = fs.readFileSync(path.join(dirname,'../', wasmPath));
+const wasm = fs.readFileSync(path.join(dirname, "../", wasmPath));
 const wasmUnit8Array = new Uint8Array(wasm);
-const yamlContent = fs.readFileSync(path.join(dirname, "../src/zkgraph.yaml"), "utf8");
+const yamlContent = fs.readFileSync(
+  path.join(dirname, "../src/zkgraph.yaml"),
+  "utf8",
+);
 
 let state = await zkgapi.executeOnRawReceipts(
   wasmUnit8Array,

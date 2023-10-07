@@ -1,6 +1,6 @@
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { program } from "commander";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
 import { config } from "../config.js";
@@ -19,7 +19,10 @@ console.log(">> VERIFY PROOF ONCHAIN", "\n");
 // Inputs from command line
 const taskId = args[0];
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const yamlContent = fs.readFileSync(path.join(dirname, "../src/zkgraph.yaml"), "utf8");
+const yamlContent = fs.readFileSync(
+  path.join(dirname, "../src/zkgraph.yaml"),
+  "utf8",
+);
 const verifyResult = await zkgapi.verify(
   yamlContent,
   taskId,

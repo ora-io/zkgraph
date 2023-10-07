@@ -1,8 +1,8 @@
 // usage: node prove.js [--inputgen/test] <blocknum/blockhash> <state> -> wasm input
 // TODO: add -o --outfile <file> under inputgen mode
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { program } from "commander";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
@@ -87,9 +87,12 @@ const blockHash = block.hash;
 const receiptsRoot = block.receiptsRoot;
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const wasm = fs.readFileSync(path.join(dirname,'../', wasmPath));
+const wasm = fs.readFileSync(path.join(dirname, "../", wasmPath));
 const wasmUnit8Array = new Uint8Array(wasm);
-const yamlContent = fs.readFileSync(path.join(dirname, "../src/zkgraph.yaml"), "utf8");
+const yamlContent = fs.readFileSync(
+  path.join(dirname, "../src/zkgraph.yaml"),
+  "utf8",
+);
 
 let [privateInputStr, publicInputStr] = await zkgapi.proveInputGenOnRawReceipts(
   yamlContent,
