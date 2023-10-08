@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { program } from "commander";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
@@ -34,16 +37,24 @@ if (currentNpmScriptName() === "exec-local") {
 
 let basePath = import.meta.url + "/../../";
 
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const JsonRpcProviderUrl = loadJsonRpcProviderUrl("src/zkgraph.yaml", true);
 const provider = new providers.JsonRpcProvider(JsonRpcProviderUrl);
 await validateProvider(provider);
 
 let rawReceiptList = await zkgapi.getRawReceipts(provider, blockid, false);
 
+const wasm = fs.readFileSync(path.join(dirname, "../", wasmPath));
+const wasmUnit8Array = new Uint8Array(wasm);
+const yamlContent = fs.readFileSync(
+  path.join(dirname, "../src/zkgraph.yaml"),
+  "utf8",
+);
+
 let state = await zkgapi.executeOnRawReceipts(
-  basePath,
-  wasmPath,
-  "src/zkgraph.yaml",
+  wasmUnit8Array,
+  yamlContent,
   rawReceiptList,
   isLocal,
   true,

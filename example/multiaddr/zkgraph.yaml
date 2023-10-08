@@ -29,8 +29,3 @@ dataSources:
       eventHandlers:
         - event: "SubmissionReceived(int256,uint32,address)"
           handler: handleEvents
-dataDestinations:
-  - kind: ethereum/contract
-    network: sepolia
-    destination:
-      address: "0x0000000000000000000000000000000000000000"

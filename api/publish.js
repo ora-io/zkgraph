@@ -1,4 +1,7 @@
 // npm run publish 0x0000000000000000000000000000000000000000 Qmcpu8YNbHpjnEpxe5vUkz8TZYzv8oCbiUGj3a66rNngjQ 0.1
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { program } from "commander";
 import { logDivider } from "./common/log_utils.js";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
@@ -35,8 +38,14 @@ bountyRewardPerTrigger *= Math.pow(10, 9);
 
 const JsonRpcProviderUrl = loadJsonRpcProviderUrl("src/zkgraph.yaml", false);
 
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const yamlContent = fs.readFileSync(
+  path.join(dirname, "../src/zkgraph.yaml"),
+  "utf8",
+);
+
 const publishTxHash = await zkgapi.publish(
-  "src/zkgraph.yaml",
+  yamlContent,
   JsonRpcProviderUrl,
   deployedContractAddress,
   ipfsHash,

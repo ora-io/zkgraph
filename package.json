@@ -20,7 +20,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@hyperoracle/zkgraph-api": "0.1.2",
+    "@hyperoracle/zkgraph-api": "0.1.6",
     "@hyperoracle/zkgraph-lib": "0.0.8",
     "axios": "^1.4.0",
     "bn.js": "^5.2.1",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "assemblyscript": "^0.27.0",
+    "bumpp": "^9.2.0",
     "prettier": "2.8.8"
   }
 }

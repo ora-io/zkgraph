@@ -1,5 +1,8 @@
 // usage: node prove.js [--inputgen/test] <blocknum/blockhash> <state> -> wasm input
 // TODO: add -o --outfile <file> under inputgen mode
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { program } from "commander";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
@@ -83,8 +86,16 @@ const blockNumber = parseInt(block.number);
 const blockHash = block.hash;
 const receiptsRoot = block.receiptsRoot;
 
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const wasm = fs.readFileSync(path.join(dirname, "../", wasmPath));
+const wasmUnit8Array = new Uint8Array(wasm);
+const yamlContent = fs.readFileSync(
+  path.join(dirname, "../src/zkgraph.yaml"),
+  "utf8",
+);
+
 let [privateInputStr, publicInputStr] = await zkgapi.proveInputGenOnRawReceipts(
-  "src/zkgraph.yaml",
+  yamlContent,
   rawReceiptList,
   blockNumber,
   blockHash,
@@ -107,8 +118,7 @@ switch (options.inputgen || options.test || options.prove) {
     let basePath = import.meta.url + "/../../";
 
     let mock_succ = await zkgapi.proveMock(
-      basePath,
-      wasmPath,
+      wasmUnit8Array,
       privateInputStr,
       publicInputStr,
     );
@@ -123,7 +133,7 @@ switch (options.inputgen || options.test || options.prove) {
   // Prove mode
   case options.prove === true:
     let result = await zkgapi.prove(
-      wasmPath,
+      wasmUnit8Array,
       privateInputStr,
       publicInputStr,
       config.ZkwasmProviderUrl,

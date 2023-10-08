@@ -15,8 +15,3 @@ dataSources:
       eventHandlers:
         - event: "Sync(uint112,uint112)"
           handler: handleEvents
-dataDestinations:
-  - kind: ethereum/contract
-    network: sepolia
-    destination:
-      address: "0x0000000000000000000000000000000000000000"

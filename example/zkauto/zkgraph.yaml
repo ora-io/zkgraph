@@ -1,0 +1,23 @@
+specVersion: 0.0.1
+name: ex_hello
+description: Demo graph for zkAutomation. Use greeting string as the trigger payload.
+repository: https://github.com/hyperoracle/zkgraph
+dataSources:
+  - kind: ethereum/contract
+    network: sepolia
+    source:
+      address: '0x362b63b77448C2ffBC03511FE100fCd3d879795F'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.1
+      language: wasm/assemblyscript
+      file: ./mapping.ts
+      eventHandlers:
+        - event: 'eventTriggered(uint256,uint256)'
+          handler: handleEvents
+# dataDestinations field is required for zkAutomation.
+dataDestinations:
+  - kind: ethereum/contract
+    network: sepolia
+    destination:
+      address: '0x362b63b77448C2ffBC03511FE100fCd3d879795F'

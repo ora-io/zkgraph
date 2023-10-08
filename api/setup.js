@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { config } from "../config.js";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
@@ -32,8 +35,13 @@ if (options.circuitSize !== undefined) {
 // Log script name
 console.log(">> SET UP", "\n");
 
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const wasm = fs.readFileSync(path.join(dirname, "../", wasmPath));
+const wasmUnit8Array = new Uint8Array(wasm);
+
 let { md5, taskId, success } = await zkgapi.setup(
-  wasmPath,
+  "poc.wasm",
+  wasmUnit8Array,
   cirSz,
   config.UserPrivateKey,
   config.ZkwasmProviderUrl,
