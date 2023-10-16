@@ -68,6 +68,10 @@ await tx.wait();
 
 const txhash = tx.hash;
 const taskId = await queryTaskId(txhash);
+if (!taskId) {
+  console.log("[+] DEPLOY TASK FAILED. \n");
+  process.exit(1);
+}
 console.log(
   `[+] SETUP TASK STARTED. TXHASH: ${txhash}, TASK ID: ${taskId}`,
   "\n"

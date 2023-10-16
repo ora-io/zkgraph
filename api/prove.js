@@ -162,6 +162,10 @@ switch (options.inputgen || options.test || options.prove) {
 
     const txhash = tx.hash;
     const taskId = await queryTaskId(txhash);
+    if (!taskId) {
+      console.log("[+] DEPLOY TASK FAILED. \n");
+      process.exit(1);
+    }
     console.log(
       `[+] PROVE TASK STARTED. TXHASH: ${txhash}, TASK ID: ${taskId}`,
       "\n"

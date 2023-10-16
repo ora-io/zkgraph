@@ -66,12 +66,14 @@ const tx = await dispatcherContract.deploy(md5, targetNetwork.value, {
   value: feeInWei,
 });
 
-// const dispatcher = new TaskDispatch(config.DispatcherQueryrApi, config.DispatcherContract, feeInWei, config.DispatcherProviderUrl, config.UserPrivateKey);
-// const txhash = await dispatcher.deploy(md5, targetNetwork.value);
 await tx.wait();
 
 let txhash = tx.hash;
 const taskId = await queryTaskId(txhash);
+if (!taskId) {
+  console.log("[+] DEPLOY TASK FAILED. \n");
+  process.exit(1);
+}
 console.log(`[+] DEPLOY TASK STARTED. TXHASH: ${txhash}, TASK ID: ${taskId}`, "\n");
 
 const deployedVerificationContractAddress = await waitDeploy(
