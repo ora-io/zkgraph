@@ -5,7 +5,7 @@ import { config } from "../config.js";
 import { queryTaskId, uoloadWasmToTd } from "./common/utils.js";
 import { TdABI } from "./common/constants.js";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
-import { waitSetup } from "@hyperoracle/zkgraph-api";
+import { waitSetup, zkwasm_imagedetails } from "@hyperoracle/zkgraph-api";
 import { program } from "commander";
 
 program.version("1.0.0");
@@ -42,6 +42,12 @@ const wasmFullPath = path.join(dirname, "../", wasmPath);
 
 const md5 = await uoloadWasmToTd(wasmFullPath);
 console.log(`[*] IMAGE MD5: ${md5}`, "\n");
+
+let deatails = await zkwasm_imagedetails(config.ZkwasmProviderUrl, md5);
+if (deatails[0].data.result[0] !== null) {
+  console.log(`[*] IMAGE ALREADY EXISTS`, "\n");
+  process.exit(1);
+}
 
 const feeInWei = ethers.utils.parseEther("0.005");
 const provider = new ethers.providers.JsonRpcProvider(
