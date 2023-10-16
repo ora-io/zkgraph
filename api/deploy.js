@@ -1,18 +1,21 @@
 import fs from "fs";
 import path from "path";
+import { ethers } from "ethers";
+import { ZkWasmUtil } from "zkWasm-service-helper";
 import { fileURLToPath } from "url";
 import { program } from "commander";
 import { config } from "../config.js";
-import { getTargetNetwork } from "./common/utils.js";
+import { getTargetNetwork, queryTaskId } from "./common/utils.js";
+import { TdABI } from "./common/constants.js";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { loadZKGraphDestinations } from "./common/config_utils.js";
-import * as zkgapi from "@hyperoracle/zkgraph-api";
+import { waitDeploy } from "@hyperoracle/zkgraph-api";
 
 program.version("1.0.0");
 
 program.option(
   "-n, --network-name <name>",
-  "Name of deployed network for verification contract",
+  "Name of deployed network for verification contract"
 );
 
 program.parse(process.argv);
@@ -43,12 +46,40 @@ if (currentNpmScriptName() === "deploy-local") {
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const wasm = fs.readFileSync(path.join(dirname, "../", wasmPath));
 const wasmUnit8Array = new Uint8Array(wasm);
-const deployedVerificationContractAddress = await zkgapi.deploy(
-  wasmUnit8Array,
-  targetNetwork.value,
+const md5 = ZkWasmUtil.convertToMd5(wasmUnit8Array).toUpperCase();
+
+console.log(`[*] IMAGE MD5: ${md5}`, "\n");
+
+const feeInWei = ethers.utils.parseEther("0.005");
+const provider = new ethers.providers.JsonRpcProvider(
+  config.DispatcherProviderUrl
+);
+const signer = new ethers.Wallet(config.UserPrivateKey, provider);
+
+let dispatcherContract = new ethers.Contract(
+  config.DispatcherContract,
+  TdABI,
+  provider
+).connect(signer);
+
+const tx = await dispatcherContract.deploy(md5, targetNetwork.value, {
+  value: feeInWei,
+});
+
+// const dispatcher = new TaskDispatch(config.DispatcherQueryrApi, config.DispatcherContract, feeInWei, config.DispatcherProviderUrl, config.UserPrivateKey);
+// const txhash = await dispatcher.deploy(md5, targetNetwork.value);
+await tx.wait();
+
+let txhash = tx.hash;
+const taskId = await queryTaskId(txhash);
+console.log(`[+] DEPLOY TASK STARTED. TXHASH: ${txhash}, TASK ID: ${taskId}`, "\n");
+
+const deployedVerificationContractAddress = await waitDeploy(
   config.ZkwasmProviderUrl,
-  config.UserPrivateKey,
-  true,
+  taskId,
+  md5,
+  targetNetwork.value,
+  true
 );
 
 logDivider();

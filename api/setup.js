@@ -1,9 +1,11 @@
-import fs from "fs";
 import path from "path";
+import { ethers } from "ethers";
 import { fileURLToPath } from "url";
 import { config } from "../config.js";
+import { queryTaskId, uoloadWasmToTd } from "./common/utils.js";
+import { TdABI } from "./common/constants.js";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
-import * as zkgapi from "@hyperoracle/zkgraph-api";
+import { waitSetup } from "@hyperoracle/zkgraph-api";
 import { program } from "commander";
 
 program.version("1.0.0");
@@ -36,21 +38,37 @@ if (options.circuitSize !== undefined) {
 console.log(">> SET UP", "\n");
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const wasm = fs.readFileSync(path.join(dirname, "../", wasmPath));
-const wasmUnit8Array = new Uint8Array(wasm);
+const wasmFullPath = path.join(dirname, "../", wasmPath);
 
-let { md5, taskId, success } = await zkgapi.setup(
-  "poc.wasm",
-  wasmUnit8Array,
-  cirSz,
-  config.UserPrivateKey,
-  config.ZkwasmProviderUrl,
-  isLocal,
-  true,
+const md5 = await uoloadWasmToTd(wasmFullPath);
+console.log(`[*] IMAGE MD5: ${md5}`, "\n");
+
+const feeInWei = ethers.utils.parseEther("0.005");
+const provider = new ethers.providers.JsonRpcProvider(
+  config.DispatcherProviderUrl
+);
+const signer = new ethers.Wallet(config.UserPrivateKey, provider);
+
+let dispatcherContract = new ethers.Contract(
+  config.DispatcherContract,
+  TdABI,
+  provider
+).connect(signer);
+const tx = await dispatcherContract.setup(md5, cirSz, {
+  value: feeInWei,
+});
+
+await tx.wait();
+
+const txhash = tx.hash;
+const taskId = await queryTaskId(txhash);
+console.log(
+  `[+] SETUP TASK STARTED. TXHASH: ${txhash}, TASK ID: ${taskId}`,
+  "\n"
 );
 
-// console.log(err)
-// console.log(result)
+const result = await waitSetup(config.ZkwasmProviderUrl, taskId, true);
+
 logDivider();
 
 process.exit(0);

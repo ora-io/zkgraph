@@ -1,7 +1,18 @@
+import fs from "fs";
+import axios from "axios";
+import axiosRetry from "axios-retry";
+import FormData from "form-data";
 import { networks } from "./constants.js";
 import { logDivider } from "./log_utils.js";
 import { loadZKGraphDestinations, loadZKGraphSources } from "./config_utils.js";
 import { config } from "../../config.js";
+
+axiosRetry(axios, {
+  retries: 3,
+  retryDelay: (retryCount) => {
+    return retryCount * 1000;
+  },
+});
 
 export function fromHexString(hexString) {
   hexString = hexString.startsWith("0x") ? hexString.slice(2) : hexString;
@@ -53,7 +64,7 @@ export function getTargetNetwork(inputtedNetworkName) {
     process.exit(1);
   }
   const targetNetwork = networks.find(
-    (net) => net.name.toLowerCase() === inputtedNetworkName.toLowerCase(),
+    (net) => net.name.toLowerCase() === inputtedNetworkName.toLowerCase()
   );
   return targetNetwork;
 }
@@ -80,7 +91,7 @@ export function loadJsonRpcProviderUrl(yamlPath, isDataSource) {
   if (!JsonRpcProviderUrl) {
     console.log(
       `[-] JSON RPC PROVIDER URL FOR NETWORK "${network}" IS NOT DEFINED IN CONFIG.JS.`,
-      "\n",
+      "\n"
     );
     logDivider();
     process.exit(1);
@@ -95,10 +106,39 @@ export async function validateProvider(ethersProvider) {
   } catch (err) {
     if (err.code == "NETWORK_ERROR") {
       throw new Error(
-        "[-] could not detect network, please provide a valid provider in config.js",
+        "[-] could not detect network, please provide a valid provider in config.js"
       );
     } else {
       throw err;
     }
   }
+}
+
+export async function queryTaskId(txhash) {
+  const response = await axios.get(
+    `${config.DispatcherQueryrApi}/task?txhash=${txhash}`
+  );
+  const taskId = response.data.task.id;
+  return taskId;
+}
+
+export async function uoloadWasmToTd(wasmPath) {
+  let data = new FormData();
+  data.append("file", fs.createReadStream(wasmPath));
+
+  let requestConfig = {
+    method: "post",
+    maxBodyLength: Infinity,
+    url: `${config.DispatcherQueryrApi}/upload`,
+    headers: {
+      ...data.getHeaders(),
+    },
+    data: data,
+  };
+
+  const response = await axios.request(requestConfig).catch((error) => {
+    throw error;
+  });
+
+  return response.data.filename
 }
