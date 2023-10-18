@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { ethers } from "ethers";
+import inquirer from "inquirer";
 import { ZkWasmUtil } from "zkWasm-service-helper";
 import { fileURLToPath } from "url";
 import { program } from "commander";
@@ -50,7 +51,25 @@ const md5 = ZkWasmUtil.convertToMd5(wasmUnit8Array).toUpperCase();
 
 console.log(`[*] IMAGE MD5: ${md5}`, "\n");
 
-const feeInWei = ethers.utils.parseEther("0.005");
+let fee = "0.005";
+const feeInWei = ethers.utils.parseEther(fee);
+
+const questions = [
+  {
+    type: "confirm",
+    name: "confirmation",
+    message: `You are going to publish a Deploy request to the Sepolia testnet, which would require ${fee} SepoliaETH. Proceed?`,
+    default: true,
+  },
+];
+
+inquirer.prompt(questions).then((answers) => {
+  if (!answers.confirmation) {
+    console.log("Task canceled.");
+    process.exit(0);
+  }
+});
+
 const provider = new ethers.providers.JsonRpcProvider(TdConfig.providerUrl);
 const signer = new ethers.Wallet(config.UserPrivateKey, provider);
 
@@ -64,15 +83,15 @@ const tx = await dispatcherContract.deploy(md5, targetNetwork.value, {
   value: feeInWei,
 });
 
+let txhash = tx.hash;
 console.log(
-  `Deploy Request Transaction Sent: ${txhash}, Waiting for Confirmation`
+  `[+] Deploy Request Transaction Sent: ${txhash}, Waiting for Confirmation`
 );
 
 await tx.wait();
 
-console.log("Transaction Confirmed. Creating Deploy Task");
+console.log("[+] Transaction Confirmed. Creating Deploy Task");
 
-let txhash = tx.hash;
 const taskId = await queryTaskId(txhash);
 if (!taskId) {
   console.log("[+] DEPLOY TASK FAILED. \n");

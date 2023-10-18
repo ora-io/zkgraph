@@ -140,7 +140,24 @@ switch (options.inputgen || options.test || options.prove) {
 
   // Prove mode
   case options.prove === true:
-    const feeInWei = ethers.utils.parseEther("0.005");
+    let fee = "0.005";
+    const feeInWei = ethers.utils.parseEther(fee);
+
+    const questions = [
+      {
+        type: "confirm",
+        name: "confirmation",
+        message: `You are going to publish a Prove request to the Sepolia testnet, which would require ${fee} SepoliaETH. Proceed?`,
+        default: true,
+      },
+    ];
+
+    inquirer.prompt(questions).then((answers) => {
+      if (!answers.confirmation) {
+        console.log("Task canceled.");
+        process.exit(0);
+      }
+    });
     const provider = new ethers.providers.JsonRpcProvider(TdConfig.providerUrl);
     const signer = new ethers.Wallet(config.UserPrivateKey, provider);
 
@@ -160,15 +177,15 @@ switch (options.inputgen || options.test || options.prove) {
       }
     );
 
+    const txhash = tx.hash;
     console.log(
-      `Prove Request Transaction Sent: ${txhash}, Waiting for Confirmation`
+      `[+] Prove Request Transaction Sent: ${txhash}, Waiting for Confirmation`
     );
 
     await tx.wait();
 
-    console.log("Transaction Confirmed. Creating Prove Task");
+    console.log("[+] Transaction Confirmed. Creating Prove Task");
 
-    const txhash = tx.hash;
     const taskId = await queryTaskId(txhash);
     if (!taskId) {
       console.log("[+] DEPLOY TASK FAILED. \n");

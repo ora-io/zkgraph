@@ -49,7 +49,24 @@ if (deatails[0].data.result[0] !== null) {
   process.exit(1);
 }
 
-const feeInWei = ethers.utils.parseEther("0.005");
+let fee = "0.005";
+const feeInWei = ethers.utils.parseEther(fee);
+
+const questions = [
+  {
+    type: "confirm",
+    name: "confirmation",
+    message: `You are going to publish a Setup request to the Sepolia testnet, which would require ${fee} SepoliaETH. Proceed?`,
+    default: true,
+  },
+];
+
+inquirer.prompt(questions).then((answers) => {
+  if (!answers.confirmation) {
+    console.log("Task canceled.");
+    process.exit(0);
+  }
+});
 const provider = new ethers.providers.JsonRpcProvider(TdConfig.providerUrl);
 const signer = new ethers.Wallet(config.UserPrivateKey, provider);
 
@@ -62,24 +79,20 @@ const tx = await dispatcherContract.setup(md5, cirSz, {
   value: feeInWei,
 });
 
+const txhash = tx.hash;
 console.log(
-  `Setup Request Transaction Sent: ${txhash}, Waiting for Confirmation`
+  `[+] Setup Request Transaction Sent: ${txhash}, Waiting for Confirmation`
 );
 
 await tx.wait();
 
-console.log("Transaction Confirmed. Creating Setup Task");
-
-const txhash = tx.hash;
+console.log("[+] Transaction Confirmed. Creating Setup Task");
 const taskId = await queryTaskId(txhash);
 if (!taskId) {
   console.log("[+] DEPLOY TASK FAILED. \n");
   process.exit(1);
 }
-console.log(
-  `[+] SETUP TASK STARTED. TASK ID: ${taskId}`,
-  "\n"
-);
+console.log(`[+] SETUP TASK STARTED. TASK ID: ${taskId}`, "\n");
 
 const result = await waitSetup(config.ZkwasmProviderUrl, taskId, true);
 
