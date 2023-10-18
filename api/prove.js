@@ -6,7 +6,7 @@ import { ethers } from "ethers";
 import { ZkWasmUtil } from "zkWasm-service-helper";
 import { fileURLToPath } from "url";
 import { program } from "commander";
-import { TdABI } from "./common/constants.js";
+import { TdABI, TdConfig } from "./common/constants.js";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
 import { writeFileSync } from "fs";
@@ -138,12 +138,12 @@ switch (options.inputgen || options.test || options.prove) {
   case options.prove === true:
     const feeInWei = ethers.utils.parseEther("0.005");
     const provider = new ethers.providers.JsonRpcProvider(
-      config.DispatcherProviderUrl
+      TdConfig.providerUrl
     );
     const signer = new ethers.Wallet(config.UserPrivateKey, provider);
 
     let dispatcherContract = new ethers.Contract(
-      config.DispatcherContract,
+      TdABI.contract,
       TdABI,
       provider
     ).connect(signer);

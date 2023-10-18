@@ -6,6 +6,7 @@ import { networks } from "./constants.js";
 import { logDivider } from "./log_utils.js";
 import { loadZKGraphDestinations, loadZKGraphSources } from "./config_utils.js";
 import { config } from "../../config.js";
+import { TdConfig } from "../common/constants.js";
 
 axiosRetry(axios, {
   retries: 3,
@@ -116,7 +117,7 @@ export async function validateProvider(ethersProvider) {
 
 export async function queryTaskId(txhash) {
   const response = await axios.get(
-    `${config.DispatcherQueryrApi}/task?txhash=${txhash}`
+    `${TdConfig.queryrApi}/task?txhash=${txhash}`
   );
   const taskId = response.data.task.id;
   return taskId;
@@ -129,7 +130,7 @@ export async function uoloadWasmToTd(wasmPath) {
   let requestConfig = {
     method: "post",
     maxBodyLength: Infinity,
-    url: `${config.DispatcherQueryrApi}/upload`,
+    url: `${TdConfig.queryrApi}/upload`,
     headers: {
       ...data.getHeaders(),
     },

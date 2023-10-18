@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import { fileURLToPath } from "url";
 import { config } from "../config.js";
 import { queryTaskId, uoloadWasmToTd } from "./common/utils.js";
-import { TdABI } from "./common/constants.js";
+import { TdABI, TdConfig } from "./common/constants.js";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { waitSetup, zkwasm_imagedetails } from "@hyperoracle/zkgraph-api";
 import { program } from "commander";
@@ -51,12 +51,12 @@ if (deatails[0].data.result[0] !== null) {
 
 const feeInWei = ethers.utils.parseEther("0.005");
 const provider = new ethers.providers.JsonRpcProvider(
-  config.DispatcherProviderUrl
+  TdConfig.providerUrl
 );
 const signer = new ethers.Wallet(config.UserPrivateKey, provider);
 
 let dispatcherContract = new ethers.Contract(
-  config.DispatcherContract,
+  TdConfig.contract,
   TdABI,
   provider
 ).connect(signer);

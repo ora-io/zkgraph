@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import { program } from "commander";
 import { config } from "../config.js";
 import { getTargetNetwork, queryTaskId } from "./common/utils.js";
-import { TdABI } from "./common/constants.js";
+import { TdABI, TdConfig } from "./common/constants.js";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { loadZKGraphDestinations } from "./common/config_utils.js";
 import { waitDeploy } from "@hyperoracle/zkgraph-api";
@@ -52,12 +52,12 @@ console.log(`[*] IMAGE MD5: ${md5}`, "\n");
 
 const feeInWei = ethers.utils.parseEther("0.005");
 const provider = new ethers.providers.JsonRpcProvider(
-  config.DispatcherProviderUrl
+  TdConfig.providerUrl
 );
 const signer = new ethers.Wallet(config.UserPrivateKey, provider);
 
 let dispatcherContract = new ethers.Contract(
-  config.DispatcherContract,
+  TdConfig.contract,
   TdABI,
   provider
 ).connect(signer);
