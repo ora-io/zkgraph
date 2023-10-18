@@ -50,9 +50,7 @@ if (deatails[0].data.result[0] !== null) {
 }
 
 const feeInWei = ethers.utils.parseEther("0.005");
-const provider = new ethers.providers.JsonRpcProvider(
-  TdConfig.providerUrl
-);
+const provider = new ethers.providers.JsonRpcProvider(TdConfig.providerUrl);
 const signer = new ethers.Wallet(config.UserPrivateKey, provider);
 
 let dispatcherContract = new ethers.Contract(
@@ -64,7 +62,13 @@ const tx = await dispatcherContract.setup(md5, cirSz, {
   value: feeInWei,
 });
 
+console.log(
+  `Setup Request Transaction Sent: ${txhash}, Waiting for Confirmation`
+);
+
 await tx.wait();
+
+console.log("Transaction Confirmed. Creating Setup Task");
 
 const txhash = tx.hash;
 const taskId = await queryTaskId(txhash);
@@ -73,7 +77,7 @@ if (!taskId) {
   process.exit(1);
 }
 console.log(
-  `[+] SETUP TASK STARTED. TXHASH: ${txhash}, TASK ID: ${taskId}`,
+  `[+] SETUP TASK STARTED. TASK ID: ${taskId}`,
   "\n"
 );
 

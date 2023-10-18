@@ -11,7 +11,11 @@ import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
 import { writeFileSync } from "fs";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
-import { loadJsonRpcProviderUrl, validateProvider, queryTaskId } from "./common/utils.js";
+import {
+  loadJsonRpcProviderUrl,
+  validateProvider,
+  queryTaskId,
+} from "./common/utils.js";
 import { providers } from "ethers";
 import { waitProve } from "@hyperoracle/zkgraph-api";
 
@@ -137,9 +141,7 @@ switch (options.inputgen || options.test || options.prove) {
   // Prove mode
   case options.prove === true:
     const feeInWei = ethers.utils.parseEther("0.005");
-    const provider = new ethers.providers.JsonRpcProvider(
-      TdConfig.providerUrl
-    );
+    const provider = new ethers.providers.JsonRpcProvider(TdConfig.providerUrl);
     const signer = new ethers.Wallet(config.UserPrivateKey, provider);
 
     let dispatcherContract = new ethers.Contract(
@@ -158,7 +160,13 @@ switch (options.inputgen || options.test || options.prove) {
       }
     );
 
+    console.log(
+      `Prove Request Transaction Sent: ${txhash}, Waiting for Confirmation`
+    );
+
     await tx.wait();
+
+    console.log("Transaction Confirmed. Creating Prove Task");
 
     const txhash = tx.hash;
     const taskId = await queryTaskId(txhash);
@@ -166,10 +174,7 @@ switch (options.inputgen || options.test || options.prove) {
       console.log("[+] DEPLOY TASK FAILED. \n");
       process.exit(1);
     }
-    console.log(
-      `[+] PROVE TASK STARTED. TXHASH: ${txhash}, TASK ID: ${taskId}`,
-      "\n"
-    );
+    console.log(`[+] PROVE TASK STARTED. TASK ID: ${taskId}`, "\n");
 
     const result = await waitProve(config.ZkwasmProviderUrl, taskId, true);
 

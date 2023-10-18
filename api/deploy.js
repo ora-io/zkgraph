@@ -51,9 +51,7 @@ const md5 = ZkWasmUtil.convertToMd5(wasmUnit8Array).toUpperCase();
 console.log(`[*] IMAGE MD5: ${md5}`, "\n");
 
 const feeInWei = ethers.utils.parseEther("0.005");
-const provider = new ethers.providers.JsonRpcProvider(
-  TdConfig.providerUrl
-);
+const provider = new ethers.providers.JsonRpcProvider(TdConfig.providerUrl);
 const signer = new ethers.Wallet(config.UserPrivateKey, provider);
 
 let dispatcherContract = new ethers.Contract(
@@ -66,7 +64,13 @@ const tx = await dispatcherContract.deploy(md5, targetNetwork.value, {
   value: feeInWei,
 });
 
+console.log(
+  `Deploy Request Transaction Sent: ${txhash}, Waiting for Confirmation`
+);
+
 await tx.wait();
+
+console.log("Transaction Confirmed. Creating Deploy Task");
 
 let txhash = tx.hash;
 const taskId = await queryTaskId(txhash);
@@ -74,7 +78,7 @@ if (!taskId) {
   console.log("[+] DEPLOY TASK FAILED. \n");
   process.exit(1);
 }
-console.log(`[+] DEPLOY TASK STARTED. TXHASH: ${txhash}, TASK ID: ${taskId}`, "\n");
+console.log(`[+] DEPLOY TASK STARTED. TASK ID: ${taskId}`, "\n");
 
 const deployedVerificationContractAddress = await waitDeploy(
   config.ZkwasmProviderUrl,
