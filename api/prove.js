@@ -3,6 +3,7 @@
 import fs from "fs";
 import path from "path";
 import { ethers } from "ethers";
+import inquirer from "inquirer";
 import { ZkWasmUtil } from "zkWasm-service-helper";
 import { fileURLToPath } from "url";
 import { program } from "commander";

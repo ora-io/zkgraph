@@ -1,5 +1,6 @@
 import path from "path";
 import { ethers } from "ethers";
+import inquirer from "inquirer";
 import { fileURLToPath } from "url";
 import { config } from "../config.js";
 import { queryTaskId, uoloadWasmToTd } from "./common/utils.js";
