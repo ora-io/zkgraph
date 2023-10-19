@@ -163,7 +163,7 @@ switch (options.inputgen || options.test || options.prove) {
     const signer = new ethers.Wallet(config.UserPrivateKey, provider);
 
     let dispatcherContract = new ethers.Contract(
-      TdABI.contract,
+      TdConfig.contract,
       TdABI,
       provider
     ).connect(signer);
