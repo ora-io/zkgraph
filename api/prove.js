@@ -2,14 +2,23 @@
 // TODO: add -o --outfile <file> under inputgen mode
 import fs from "fs";
 import path from "path";
+import { ethers } from "ethers";
+import inquirer from "inquirer";
+import { ZkWasmUtil } from "zkWasm-service-helper";
 import { fileURLToPath } from "url";
 import { program } from "commander";
+import { TdABI, TdConfig } from "./common/constants.js";
 import { currentNpmScriptName, logDivider } from "./common/log_utils.js";
 import { config } from "../config.js";
 import { writeFileSync } from "fs";
 import * as zkgapi from "@hyperoracle/zkgraph-api";
-import { loadJsonRpcProviderUrl, validateProvider } from "./common/utils.js";
+import {
+  loadJsonRpcProviderUrl,
+  validateProvider,
+  queryTaskId,
+} from "./common/utils.js";
 import { providers } from "ethers";
+import { waitProve } from "@hyperoracle/zkgraph-api";
 
 program.version("1.0.0");
 
@@ -132,14 +141,60 @@ switch (options.inputgen || options.test || options.prove) {
 
   // Prove mode
   case options.prove === true:
-    let result = await zkgapi.prove(
-      wasmUnit8Array,
+    let fee = "0.005";
+    const feeInWei = ethers.utils.parseEther(fee);
+
+    const questions = [
+      {
+        type: "confirm",
+        name: "confirmation",
+        message: `You are going to publish a Prove request to the Sepolia testnet, which would require ${fee} SepoliaETH. Proceed?`,
+        default: true,
+      },
+    ];
+
+    inquirer.prompt(questions).then((answers) => {
+      if (!answers.confirmation) {
+        console.log("Task canceled.");
+        process.exit(0);
+      }
+    });
+    const provider = new ethers.providers.JsonRpcProvider(TdConfig.providerUrl);
+    const signer = new ethers.Wallet(config.UserPrivateKey, provider);
+
+    let dispatcherContract = new ethers.Contract(
+      TdConfig.contract,
+      TdABI,
+      provider,
+    ).connect(signer);
+
+    const md5 = ZkWasmUtil.convertToMd5(wasmUnit8Array).toUpperCase();
+    const tx = await dispatcherContract.prove(
+      md5,
       privateInputStr,
       publicInputStr,
-      config.ZkwasmProviderUrl,
-      config.UserPrivateKey,
-      enableLog,
+      {
+        value: feeInWei,
+      },
     );
+
+    const txhash = tx.hash;
+    console.log(
+      `[+] Prove Request Transaction Sent: ${txhash}, Waiting for Confirmation`,
+    );
+
+    await tx.wait();
+
+    console.log("[+] Transaction Confirmed. Creating Prove Task");
+
+    const taskId = await queryTaskId(txhash);
+    if (!taskId) {
+      console.log("[+] DEPLOY TASK FAILED. \n");
+      process.exit(1);
+    }
+    console.log(`[+] PROVE TASK STARTED. TASK ID: ${taskId}`, "\n");
+
+    const result = await waitProve(config.ZkwasmProviderUrl, taskId, true);
 
     if (
       result.instances === null &&
