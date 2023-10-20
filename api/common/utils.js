@@ -65,7 +65,7 @@ export function getTargetNetwork(inputtedNetworkName) {
     process.exit(1);
   }
   const targetNetwork = networks.find(
-    (net) => net.name.toLowerCase() === inputtedNetworkName.toLowerCase()
+    (net) => net.name.toLowerCase() === inputtedNetworkName.toLowerCase(),
   );
   return targetNetwork;
 }
@@ -92,7 +92,7 @@ export function loadJsonRpcProviderUrl(yamlPath, isDataSource) {
   if (!JsonRpcProviderUrl) {
     console.log(
       `[-] JSON RPC PROVIDER URL FOR NETWORK "${network}" IS NOT DEFINED IN CONFIG.JS.`,
-      "\n"
+      "\n",
     );
     logDivider();
     process.exit(1);
@@ -107,7 +107,7 @@ export async function validateProvider(ethersProvider) {
   } catch (err) {
     if (err.code == "NETWORK_ERROR") {
       throw new Error(
-        "[-] could not detect network, please provide a valid provider in config.js"
+        "[-] could not detect network, please provide a valid provider in config.js",
       );
     } else {
       throw err;
@@ -117,7 +117,7 @@ export async function validateProvider(ethersProvider) {
 
 export async function queryTaskId(txhash) {
   const response = await axios.get(
-    `${TdConfig.queryrApi}/task?txhash=${txhash}`
+    `${TdConfig.queryrApi}/task?txhash=${txhash}`,
   );
   const taskId = response.data.task.id;
   return taskId;
@@ -141,5 +141,5 @@ export async function uoloadWasmToTd(wasmPath) {
     throw error;
   });
 
-  return response.data.filename
+  return response.data.filename;
 }

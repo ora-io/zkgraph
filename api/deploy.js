@@ -16,7 +16,7 @@ program.version("1.0.0");
 
 program.option(
   "-n, --network-name <name>",
-  "Name of deployed network for verification contract"
+  "Name of deployed network for verification contract",
 );
 
 program.parse(process.argv);
@@ -76,7 +76,7 @@ const signer = new ethers.Wallet(config.UserPrivateKey, provider);
 let dispatcherContract = new ethers.Contract(
   TdConfig.contract,
   TdABI,
-  provider
+  provider,
 ).connect(signer);
 
 const tx = await dispatcherContract.deploy(md5, targetNetwork.value, {
@@ -85,7 +85,7 @@ const tx = await dispatcherContract.deploy(md5, targetNetwork.value, {
 
 let txhash = tx.hash;
 console.log(
-  `[+] Deploy Request Transaction Sent: ${txhash}, Waiting for Confirmation`
+  `[+] Deploy Request Transaction Sent: ${txhash}, Waiting for Confirmation`,
 );
 
 await tx.wait();
@@ -104,7 +104,7 @@ const deployedVerificationContractAddress = await waitDeploy(
   taskId,
   md5,
   targetNetwork.value,
-  true
+  true,
 );
 
 logDivider();

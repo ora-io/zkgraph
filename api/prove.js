@@ -100,7 +100,7 @@ const wasm = fs.readFileSync(path.join(dirname, "../", wasmPath));
 const wasmUnit8Array = new Uint8Array(wasm);
 const yamlContent = fs.readFileSync(
   path.join(dirname, "../src/zkgraph.yaml"),
-  "utf8"
+  "utf8",
 );
 
 let [privateInputStr, publicInputStr] = await zkgapi.proveInputGenOnRawReceipts(
@@ -111,7 +111,7 @@ let [privateInputStr, publicInputStr] = await zkgapi.proveInputGenOnRawReceipts(
   receiptsRoot,
   expectedStateStr,
   isLocal,
-  enableLog
+  enableLog,
 );
 
 switch (options.inputgen || options.test || options.prove) {
@@ -129,7 +129,7 @@ switch (options.inputgen || options.test || options.prove) {
     let mock_succ = await zkgapi.proveMock(
       wasmUnit8Array,
       privateInputStr,
-      publicInputStr
+      publicInputStr,
     );
 
     if (mock_succ) {
@@ -165,7 +165,7 @@ switch (options.inputgen || options.test || options.prove) {
     let dispatcherContract = new ethers.Contract(
       TdConfig.contract,
       TdABI,
-      provider
+      provider,
     ).connect(signer);
 
     const md5 = ZkWasmUtil.convertToMd5(wasmUnit8Array).toUpperCase();
@@ -175,12 +175,12 @@ switch (options.inputgen || options.test || options.prove) {
       publicInputStr,
       {
         value: feeInWei,
-      }
+      },
     );
 
     const txhash = tx.hash;
     console.log(
-      `[+] Prove Request Transaction Sent: ${txhash}, Waiting for Confirmation`
+      `[+] Prove Request Transaction Sent: ${txhash}, Waiting for Confirmation`,
     );
 
     await tx.wait();
@@ -221,7 +221,7 @@ switch (options.inputgen || options.test || options.prove) {
         result.proof +
         "\n\nAux data:\n" +
         result.aux +
-        "\n"
+        "\n",
     );
     break;
 }

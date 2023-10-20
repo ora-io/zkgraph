@@ -74,7 +74,7 @@ const signer = new ethers.Wallet(config.UserPrivateKey, provider);
 let dispatcherContract = new ethers.Contract(
   TdConfig.contract,
   TdABI,
-  provider
+  provider,
 ).connect(signer);
 const tx = await dispatcherContract.setup(md5, cirSz, {
   value: feeInWei,
@@ -82,7 +82,7 @@ const tx = await dispatcherContract.setup(md5, cirSz, {
 
 const txhash = tx.hash;
 console.log(
-  `[+] Setup Request Transaction Sent: ${txhash}, Waiting for Confirmation`
+  `[+] Setup Request Transaction Sent: ${txhash}, Waiting for Confirmation`,
 );
 
 await tx.wait();

@@ -30,4 +30,4 @@ export const TdConfig = {
   contract: "0x25AA9Ec3CA462f5AEA7fbd83A207E29Df4691380",
   queryrApi: "https://zkwasm.hyperoracle.io/td/",
   providerUrl: "https://ethereum-sepolia.publicnode.com",
-}
+};
