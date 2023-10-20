@@ -20,13 +20,15 @@
   },
   "type": "module",
   "dependencies": {
-    "@hyperoracle/zkgraph-api": "0.1.6",
+    "@hyperoracle/zkgraph-api": "0.1.8",
     "@hyperoracle/zkgraph-lib": "0.0.8",
     "axios": "^1.4.0",
+    "axios-retry": "^3.8.0",
     "bn.js": "^5.2.1",
     "commander": "^11.0.0",
     "ethers": "^5.7.2",
     "form-data": "^4.0.0",
+    "inquirer": "^9.2.11",
     "js-yaml": "^4.1.0",
     "zkwasm-service-helper": "github:DelphinusLab/zkWasm-service-helper"
   },

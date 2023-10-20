@@ -1,7 +1,19 @@
+import fs from "fs";
+import axios from "axios";
+import axiosRetry from "axios-retry";
+import FormData from "form-data";
 import { networks } from "./constants.js";
 import { logDivider } from "./log_utils.js";
 import { loadZKGraphDestinations, loadZKGraphSources } from "./config_utils.js";
 import { config } from "../../config.js";
+import { TdConfig } from "../common/constants.js";
+
+axiosRetry(axios, {
+  retries: 3,
+  retryDelay: (retryCount) => {
+    return retryCount * 1000;
+  },
+});
 
 export function fromHexString(hexString) {
   hexString = hexString.startsWith("0x") ? hexString.slice(2) : hexString;
@@ -101,4 +113,33 @@ export async function validateProvider(ethersProvider) {
       throw err;
     }
   }
+}
+
+export async function queryTaskId(txhash) {
+  const response = await axios.get(
+    `${TdConfig.queryrApi}/task?txhash=${txhash}`,
+  );
+  const taskId = response.data.task.id;
+  return taskId;
+}
+
+export async function uoloadWasmToTd(wasmPath) {
+  let data = new FormData();
+  data.append("file", fs.createReadStream(wasmPath));
+
+  let requestConfig = {
+    method: "post",
+    maxBodyLength: Infinity,
+    url: `${TdConfig.queryrApi}/upload`,
+    headers: {
+      ...data.getHeaders(),
+    },
+    data: data,
+  };
+
+  const response = await axios.request(requestConfig).catch((error) => {
+    throw error;
+  });
+
+  return response.data.filename;
 }
