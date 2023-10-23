@@ -124,8 +124,6 @@ switch (options.inputgen || options.test || options.prove) {
 
   // Test mode
   case options.test === true:
-    let basePath = import.meta.url + "/../../";
-
     let mock_succ = await zkgapi.proveMock(
       wasmUnit8Array,
       privateInputStr,
