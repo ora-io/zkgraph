@@ -13,8 +13,8 @@ if (currentNpmScriptName() === "compile-local") {
   let isCompilationSuccess = await zkgapi.compile(
     config.LocalWasmBinPath,
     config.LocalWasmBinPath.replace(/\.wasm/, ".wat"),
-    "",
-    "",
+    "src",
+    "src/zkgraph.yaml",
     config.CompilerServerEndpoint,
     true,
     true,
@@ -29,7 +29,7 @@ if (currentNpmScriptName() === "compile-local") {
   let isCompilationSuccess = await zkgapi.compile(
     config.WasmBinPath,
     config.WasmBinPath.replace(/\.wasm/, ".wat"),
-    "src/mapping.ts",
+    "src/",
     "src/zkgraph.yaml",
     config.CompilerServerEndpoint,
     false,
