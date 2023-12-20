@@ -1,5 +1,7 @@
 # zkGraph Template
 
+> **_NOTE:_**  For the latest version, please check out [zkgraph-cli](https://github.com/hyperoracle/zkgraph-cli).
+
 ## Getting Started
 
 To create your zkGraph project based on this template:
